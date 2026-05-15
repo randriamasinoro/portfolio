@@ -1,0 +1,67 @@
+---
+id: can-bus
+title: Sécurité CAN Bus — Attaques et détection
+description: Analyse de sécurité du bus CAN sur banc de test automobile. Fuzzing de trames, injection de commandes, et prototype de système de détection d'intrusion (IDS).
+domains:
+  - embedded
+  - cybersecurity
+tags:
+  - Python
+  - C
+  - CAN
+  - SocketCAN
+  - STM32
+date: "2025"
+github: https://github.com/randriamasinoro-elisa/can-bus
+featured: false
+---
+
+## Contexte
+
+Le bus CAN est le protocole dominant dans l'embarqué automobile. Il ne dispose d'aucun mécanisme d'authentification natif — n'importe quel nœud peut envoyer n'importe quelle trame. Ce projet explore les vecteurs d'attaque et prototype un IDS basé sur l'analyse comportementale.
+
+## Banc de test
+
+Deux STM32F4 connectés sur un bus CAN physique (120Ω terminaison), avec un adaptateur USB-CAN pour la capture laptop via SocketCAN.
+
+## Attaques réalisées
+
+### Injection de trame
+
+```python
+import can
+
+bus = can.interface.Bus(channel='can0', bustype='socketcan')
+# Injection d'une trame simulant le module de freinage
+msg = can.Message(arbitration_id=0x0CF, is_extended_id=False,
+                  data=[0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+bus.send(msg)
+```
+
+<Callout type="danger">
+  Sur un vrai véhicule, des trames malveillantes sur l'ID du module ABS peuvent déclencher des comportements imprévisibles. Ces tests sont réalisés exclusivement sur banc isolé.
+</Callout>
+
+### Fuzzing
+
+Mutation aléatoire des payloads sur les IDs critiques identifiés par sniffing passif. 3 000 trames/seconde en mode rafale.
+
+## Prototype IDS
+
+Détection par profil temporel : chaque ID CAN a une fréquence d'émission normale (ex : 10 ms pour les trames moteur). Une déviation > 20% déclenche une alerte.
+
+```c
+void can_ids_check(uint32_t id, uint32_t timestamp_ms) {
+    Profile *p = &profiles[id];
+    uint32_t interval = timestamp_ms - p->last_ts;
+    if (abs((int)interval - p->expected_ms) > p->expected_ms / 5)
+        ids_alert(id, interval);
+    p->last_ts = timestamp_ms;
+}
+```
+
+## Résultats
+
+- 100% des injections détectées par l'IDS sur le banc de test
+- Taux de faux positifs : 0,3% sur 10 min de trafic normal
+- Latence détection : < 1 trame de délai

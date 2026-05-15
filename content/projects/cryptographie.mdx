@@ -1,0 +1,60 @@
+---
+id: cryptographie
+title: Cryptographie appliquée — Protocoles et attaques
+description: Implémentation et analyse de protocoles cryptographiques. Attaques sur RSA (timing, padding oracle), implémentation ChaCha20-Poly1305 sur contrainte mémoire.
+domains:
+  - cybersecurity
+tags:
+  - Python
+  - C
+  - RSA
+  - ChaCha20
+  - Cryptanalyse
+date: "2024"
+github: https://github.com/randriamasinoro-elisa/cryptographie
+featured: false
+---
+
+## Contexte
+
+Travaux pratiques de cryptographie appliquée : d'abord comprendre les protocoles en les implémentant, ensuite les attaquer pour en voir les limites.
+
+## Attaque padding oracle sur RSA-OAEP
+
+Démonstration d'une attaque padding oracle contre une implémentation vulnérable de RSA-OAEP. L'oracle renvoie un message d'erreur différent selon la validité du padding.
+
+```python
+def padding_oracle_attack(ciphertext, oracle, n, e):
+    """Récupère le plaintext par requêtes adaptatives à l'oracle."""
+    s = 2
+    M = {(2 * B, 3 * B - 1)}  # B = 2^(8*(k-2))
+    
+    while len(M) != 1 or M != {(m, m)}:
+        s = find_s(ciphertext, oracle, n, s)
+        M = narrow_M(M, s, n, B)
+    
+    return next(iter(M))[0]
+```
+
+<Callout type="info">
+  Cette attaque nécessite ~2^20 requêtes oracle en pratique. Les implémentations modernes utilisent des comparaisons en temps constant pour s'en défendre.
+</Callout>
+
+## ChaCha20-Poly1305 sur contrainte mémoire
+
+Implémentation de l'AEAD ChaCha20-Poly1305 en C sans allocation dynamique, ciblant les MCU Cortex-M0 (< 8 Ko RAM).
+
+```c
+void chacha20_block(uint32_t out[16], const uint32_t key[8],
+                    const uint32_t nonce[3], uint32_t counter) {
+    uint32_t x[16];
+    chacha20_init_state(x, key, nonce, counter);
+    for (int i = 0; i < 10; i++) chacha20_double_round(x);
+    for (int i = 0; i < 16; i++) out[i] = x[i] + ((uint32_t[]){...})[i];
+}
+```
+
+## Résultats
+
+- Attaque padding oracle : plaintext récupéré en 18 min sur RSA-2048 vulnérable
+- ChaCha20-Poly1305 : 142 octets de RAM stack, 1,2 Mo/s sur Cortex-M0 à 48 MHz

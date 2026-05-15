@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import type { Domain, Project } from "@/types/project";
 import FilterBar from "./FilterBar";
@@ -29,9 +29,7 @@ export default function ProjectsClient({ projects }: Props) {
         ...updates,
       };
       Object.entries(merged).forEach(([key, values]) => {
-        values.forEach((v) => {
-          if (v) params.append(key, v);
-        });
+        values.forEach((v) => { if (v) params.append(key, v); });
       });
       const qs = params.toString();
       router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
@@ -39,32 +37,47 @@ export default function ProjectsClient({ projects }: Props) {
     [activeDomains, activeTags, search, pathname, router]
   );
 
-  const setDomains = (domains: Domain[]) => updateParams({ domain: domains });
-  const setTags = (tags: string[]) => updateParams({ tag: tags });
-  const setSearch = (q: string) => updateParams({ q: q ? [q] : [] });
+  const setDomains = useCallback(
+    (domains: Domain[]) => updateParams({ domain: domains }),
+    [updateParams]
+  );
+  const setTags = useCallback(
+    (tags: string[]) => updateParams({ tag: tags }),
+    [updateParams]
+  );
+  const setSearch = useCallback(
+    (q: string) => updateParams({ q: q ? [q] : [] }),
+    [updateParams]
+  );
+  const handleTagClick = useCallback(
+    (tag: string) => {
+      const next = activeTags.includes(tag)
+        ? activeTags.filter((t) => t !== tag)
+        : [...activeTags, tag];
+      setTags(next);
+    },
+    [activeTags, setTags]
+  );
 
-  const handleTagClick = (tag: string) => {
-    const next = activeTags.includes(tag)
-      ? activeTags.filter((t) => t !== tag)
-      : [...activeTags, tag];
-    setTags(next);
-  };
-
-  const filtered = projects.filter((p) => {
-    if (activeDomains.length > 0 && !p.domains.some((d) => activeDomains.includes(d)))
-      return false;
-    if (activeTags.length > 0 && !p.tags.some((t) => activeTags.includes(t)))
-      return false;
-    if (search) {
-      const q = search.toLowerCase();
-      const match =
-        p.title.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q));
-      if (!match) return false;
-    }
-    return true;
-  });
+  const filtered = useMemo(
+    () =>
+      projects.filter((p) => {
+        if (activeDomains.length > 0 && !p.domains.some((d) => activeDomains.includes(d)))
+          return false;
+        if (activeTags.length > 0 && !p.tags.some((t) => activeTags.includes(t)))
+          return false;
+        if (search) {
+          const q = search.toLowerCase();
+          return (
+            p.title.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q) ||
+            p.tags.some((t) => t.toLowerCase().includes(q))
+          );
+        }
+        return true;
+      }),
+    [projects, activeDomains, activeTags, search]
+  );
 
   return (
     <>

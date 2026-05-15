@@ -1,0 +1,64 @@
+---
+id: devsecops-landing
+title: Pipeline DevSecOps — SBOM & scan CI
+description: Intégration sécurité dans un pipeline CI/CD GitHub Actions. Génération SBOM CycloneDX, scan Trivy, blocage automatique sur CVE critique.
+domains:
+  - devsecops
+  - cybersecurity
+tags:
+  - GitHub Actions
+  - Trivy
+  - CycloneDX
+  - Docker
+  - YAML
+date: "2024"
+github: https://github.com/randriamasinoro-elisa/devsecops-landing
+featured: true
+---
+
+## Contexte
+
+Mise en place d'une chaîne DevSecOps complète pour un projet web containerisé. L'objectif : détecter les vulnérabilités connues avant que l'image n'atteigne la production.
+
+## Architecture du pipeline
+
+Le pipeline GitHub Actions s'exécute en 4 étapes séquentielles :
+
+1. **Build** — construction de l'image Docker ARM64
+2. **SBOM** — génération de la liste de composants avec Syft/CycloneDX
+3. **Scan** — analyse Trivy sur l'image et le SBOM
+4. **Gate** — blocage si CVE de sévérité CRITICAL ou HIGH
+
+```yaml
+- name: Scan image — Trivy
+  uses: aquasecurity/trivy-action@master
+  with:
+    image-ref: ${{ env.IMAGE }}
+    format: sarif
+    exit-code: 1
+    severity: CRITICAL,HIGH
+    output: trivy-results.sarif
+```
+
+<Callout type="warning">
+  Le flag `exit-code: 1` est critique — sans lui, Trivy log mais ne bloque pas le pipeline.
+</Callout>
+
+## Génération du SBOM
+
+Le SBOM CycloneDX est généré à chaque build et archivé comme artifact GitHub Actions. Il liste tous les packages, licences et CVE connues à la date du build.
+
+```yaml
+- name: Generate SBOM
+  uses: anchore/sbom-action@v0
+  with:
+    image: ${{ env.IMAGE }}
+    format: cyclonedx-json
+    output-file: sbom.cdx.json
+```
+
+## Résultats
+
+- Temps d'exécution pipeline complet : ~4 min
+- 0 CVE CRITICAL sur l'image finale (Alpine base)
+- SBOM archivé à chaque release pour traçabilité supply chain

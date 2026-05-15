@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Projets techniques",
+  description:
+    "Projets en cybersécurité des systèmes embarqués : reverse engineering de firmware, analyse de protocoles radio (Zigbee, BLE, CAN Bus), sécurité IoT, data science et pipelines DevSecOps. UBS Lorient.",
+};
 import { readProjects } from "@/lib/projects";
 import SectionTitle from "@/components/SectionTitle";
 import ProjectsClient from "@/components/ProjectsClient";

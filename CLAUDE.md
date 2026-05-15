@@ -271,3 +271,40 @@ Validation :
 ## Règle générale
 Toute modification passe par : @dev → @review → @doc
 Pas de code non validé en production.
+
+
+## Gestion des images
+
+### Emplacement
+Toutes les images dans /public/images/[id-projet]/
+Exemple : /public/images/zigbee-security/setup.png
+
+### Nommage
+kebab-case obligatoire : zigbee-capture.png, schema-architecture.png
+
+### Dans le frontmatter MDX
+media: [/images/zigbee-security/setup.png, /images/zigbee-security/capture.png]
+
+### Dans le corps MDX
+![Description claire de l'image](/images/zigbee-security/schema.png)
+Toujours mettre une description (accessibilité + SEO)
+
+### Formats acceptés
+- PNG : screenshots, schémas, captures terminal
+- JPG : photos hardware
+- SVG : diagrammes et schémas (préféré quand possible)
+- WebP : images optimisées (converti automatiquement par Next.js)
+
+### Optimisation
+Next.js optimise automatiquement via le composant Image.
+@dev doit utiliser next/image et non la balise img HTML :
+  import Image from 'next/image'
+  <Image src="/images/..." alt="description" width={800} height={400} />
+
+### Ce qu'on peut mettre comme images
+- Screenshots Wireshark (captures Zigbee, CAN)
+- Photos hardware (ESP32, nRF52840, STM32)
+- Schémas d'architecture
+- Graphiques résultats ML (matplotlib, Power BI)
+- Captures terminal
+- Diagrammes de flux

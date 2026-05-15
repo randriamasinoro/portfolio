@@ -1,0 +1,51 @@
+---
+id: reverse-engineering
+title: Reverse Engineering — Firmware embarqué
+description: Analyse statique et dynamique d'un firmware ARM Cortex-M extrait par JTAG. Identification de la surface d'attaque et reconstruction du flux de contrôle.
+domains:
+  - cybersecurity
+tags:
+  - Ghidra
+  - GDB
+  - OpenOCD
+  - Python
+  - ARM
+date: "2025"
+github: https://github.com/randriamasinoro-elisa/reverse-engineering
+featured: false
+---
+
+## Contexte
+
+Analyse d'un firmware ARM Cortex-M3 extrait par interface JTAG depuis un équipement IoT industriel. L'objectif : identifier les fonctions critiques (authentification, mise à jour OTA) et évaluer la surface d'attaque.
+
+## Extraction du firmware
+
+Dump de la flash via OpenOCD sur une sonde J-Link :
+
+```bash
+openocd -f interface/jlink.cfg -f target/stm32f1x.cfg \
+  -c "init; halt; dump_image firmware.bin 0x08000000 0x40000; exit"
+```
+
+<Callout type="warning">
+  Vérifier que le Read Protection Level est à 0 avant le dump — RDP1 bloque la lecture JTAG mais laisse le debug fonctionnel.
+</Callout>
+
+## Analyse statique avec Ghidra
+
+Chargement du binaire comme ARM LE 32-bit. Reconstruction du vecteur d'interruptions pour identifier les handlers critiques :
+
+- `0x0800_0004` → Reset_Handler (point d'entrée)
+- `0x0800_0020` → USART2_IRQHandler (interface série)
+- `0x0800_0034` → fonction anonyme → identifiée comme `ota_verify_signature`
+
+## Résultats
+
+- Surface d'attaque : interface série USART2 non authentifiée sur les commandes de diagnostic
+- Fonction `ota_verify_signature` utilise une clé RSA-1024 hardcodée en flash
+- Buffer overflow identifié dans le parser de commandes AT
+
+<Callout type="danger">
+  Les clés cryptographiques hardcodées en flash sont extractibles par n'importe qui ayant accès physique au JTAG.
+</Callout>

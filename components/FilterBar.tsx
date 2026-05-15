@@ -2,6 +2,7 @@
 
 import type { Domain, Project } from "@/types/project";
 import { DOMAIN_CONFIG } from "@/types/project";
+import { SearchIcon } from "./icons";
 
 interface Props {
   allProjects: Project[];
@@ -85,7 +86,7 @@ export default function FilterBar({
               className="font-mono text-xs inline-flex items-center gap-[6px] rounded-full cursor-pointer transition-all duration-200"
               style={{
                 padding: "5px 11px",
-                border: `1px solid ${active ? `${color}66` : "#2A2A3E"}`,
+                border: `1px solid ${active ? `${color}66` : "var(--border-strong)"}`,
                 background: active ? `${color}1F` : "transparent",
                 color: active ? color : "#6B7280",
                 letterSpacing: "0.02em",
@@ -124,11 +125,12 @@ export default function FilterBar({
               <button
                 key={tag}
                 onClick={() => toggleTag(tag)}
-                className="font-mono text-[11px] cursor-pointer rounded-sm transition-all duration-200 border-none"
+                className="font-mono text-[11px] cursor-pointer rounded-sm transition-all duration-200"
                 style={{
                   padding: "3px 8px",
-                  background: active ? "#20203A" : "#1A1A2E",
-                  color: active ? "#E8E8F0" : "#B0B0C0",
+                  background: active ? "rgba(45,125,210,0.12)" : "var(--surface-2)",
+                  color: active ? "var(--accent-strong)" : "var(--fg-2)",
+                  border: active ? "1px solid rgba(45,125,210,0.45)" : "1px solid transparent",
                   letterSpacing: "0.04em",
                 }}
                 aria-pressed={active}
@@ -171,21 +173,3 @@ export default function FilterBar({
   );
 }
 
-function SearchIcon() {
-  return (
-    <svg
-      width={14}
-      height={14}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx={11} cy={11} r={8} />
-      <path d="m21 21-4.35-4.35" />
-    </svg>
-  );
-}

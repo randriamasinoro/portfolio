@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Light mode (défaut) ─────────────────────────────────────────── */
+:root {
+  --bg:            #F4F4F8;
+  --surface:       #FFFFFF;
+  --surface-2:     #EAEAF2;
+  --surface-3:     #E0E0EC;
+  --border:        #D0D0DE;
+  --border-strong: #B8B8CC;
+  --fg:            #0D0D16;
+  --fg-2:          #3C3C52;
+  --fg-muted:      #70708A;
+  --fg-dim:        #A0A0BC;
+  --accent:        #2D7DD2;
+  --accent-strong: #2468BA;
+
+  --nav-bg:        rgba(244, 244, 248, 0.88);
+  --nav-menu-bg:   rgba(244, 244, 248, 0.97);
+  --dot-color:     rgba(0, 0, 0, 0.055);
+  --selection-bg:  rgba(45, 125, 210, 0.2);
+}
+
+/* ── Dark mode ───────────────────────────────────────────────────── */
+.dark {
+  --bg:            #0A0A0F;
+  --surface:       #12121A;
+  --surface-2:     #1A1A2E;
+  --surface-3:     #20203A;
+  --border:        #1E1E2E;
+  --border-strong: #2A2A3E;
+  --fg:            #E8E8F0;
+  --fg-2:          #B0B0C0;
+  --fg-muted:      #6B7280;
+  --fg-dim:        #4B5563;
+  --accent:        #2D7DD2;
+  --accent-strong: #4A95E0;
+
+  --nav-bg:        rgba(10, 10, 15, 0.72);
+  --nav-menu-bg:   rgba(10, 10, 15, 0.95);
+  --dot-color:     rgba(255, 255, 255, 0.045);
+  --selection-bg:  rgba(45, 125, 210, 0.35);
+}
+
 @layer base {
   html,
   body {
@@ -11,16 +53,14 @@
     text-rendering: optimizeLegibility;
   }
 
-  h1,
-  h2,
-  h3 {
+  h1, h2, h3 {
     font-family: var(--font-syne), ui-sans-serif, system-ui;
     @apply font-bold text-fg;
     margin: 0;
   }
 
   ::selection {
-    background: rgba(45, 125, 210, 0.35);
+    background: var(--selection-bg);
     @apply text-fg;
   }
 
@@ -28,27 +68,31 @@
     @apply outline outline-2 outline-offset-2 outline-accent rounded;
   }
 
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 }
 
 @layer utilities {
   .dot-grid {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
     background-size: 24px 24px;
     background-position: 0 0;
   }
 
-  .text-balance {
-    text-wrap: balance;
+  .nav-blur {
+    background: var(--nav-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .nav-menu-blur {
+    background: var(--nav-menu-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }

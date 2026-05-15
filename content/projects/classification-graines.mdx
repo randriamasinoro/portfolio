@@ -1,0 +1,58 @@
+---
+id: classification-graines
+title: Classification de graines par ML
+description: Pipeline complet de classification de graines agricoles par vision et machine learning. Extraction de features morphologiques et comparaison de classifieurs.
+domains:
+  - data-science
+tags:
+  - Python
+  - scikit-learn
+  - OpenCV
+  - Pandas
+  - Matplotlib
+date: "2024"
+github: https://github.com/randriamasinoro-elisa/classification-graines
+featured: false
+---
+
+## Contexte
+
+Projet de classification supervisée sur un dataset de graines céréalières (blé, seigle, orge). L'objectif : identifier automatiquement l'espèce à partir de mesures morphologiques extraites par traitement d'image.
+
+## Méthodologie
+
+### Extraction de features
+
+Depuis les images binaires des graines, extraction de 7 descripteurs :
+
+- Aire, périmètre, compacité
+- Longueur et largeur du noyau
+- Coefficient d'asymétrie
+- Longueur de la rainure
+
+```python
+def extract_features(mask):
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL,
+                                   cv2.CHAIN_APPROX_SIMPLE)
+    cnt = max(contours, key=cv2.contourArea)
+    area   = cv2.contourArea(cnt)
+    perim  = cv2.arcLength(cnt, closed=True)
+    compact = (4 * np.pi * area) / (perim ** 2)
+    return area, perim, compact
+```
+
+### Comparaison de classifieurs
+
+| Modèle | Accuracy | F1-macro |
+|--------|----------|----------|
+| KNN (k=5) | 91.4% | 0.913 |
+| SVM RBF | 94.7% | 0.946 |
+| Random Forest | 93.1% | 0.930 |
+
+<Callout type="tip">
+  Le SVM avec noyau RBF surpasse tous les autres — les features morphologiques forment des clusters bien séparés dans l'espace de décision.
+</Callout>
+
+## Résultats
+
+SVM RBF retenu : 94,7% d'accuracy en validation croisée 5-fold. Matrice de confusion quasi-diagonale sur les 3 classes.

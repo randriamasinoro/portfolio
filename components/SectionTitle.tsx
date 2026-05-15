@@ -5,9 +5,10 @@ interface Props {
   children: React.ReactNode;
   as?: "h1" | "h2" | "h3";
   domain?: Domain | "accent";
+  className?: string;
 }
 
-export default function SectionTitle({ children, as: Tag = "h2", domain = "accent" }: Props) {
+export default function SectionTitle({ children, as: Tag = "h2", domain = "accent", className }: Props) {
   const color =
     domain === "accent"
       ? "#2D7DD2"
@@ -20,7 +21,7 @@ export default function SectionTitle({ children, as: Tag = "h2", domain = "accen
 
   return (
     <Tag
-      className="font-display font-bold tracking-[-0.02em] text-fg m-0"
+      className={`font-display font-bold tracking-[-0.02em] text-fg m-0${className ? ` ${className}` : ""}`}
       style={{
         fontSize,
         lineHeight: 1.1,

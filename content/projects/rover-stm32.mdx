@@ -1,0 +1,52 @@
+---
+id: rover-stm32
+title: Rover STM32 — Pilotage bas niveau
+description: Rover mobile piloté par STM32F4. Contrôle moteurs via PWM, capteurs ultrasons pour évitement d'obstacles, communication UART vers Raspberry Pi.
+domains:
+  - embedded
+tags:
+  - C
+  - STM32
+  - FreeRTOS
+  - UART
+  - PWM
+date: "2024"
+github: https://github.com/randriamasinoro-elisa/rover-stm32
+featured: false
+---
+
+## Contexte
+
+Projet de contrôle bas niveau d'un rover mobile sur STM32F446RE. L'objectif était de maîtriser la gestion temps-réel avec FreeRTOS tout en interfaçant des périphériques hardware (moteurs DC, ultrasons, encodeurs).
+
+## Architecture
+
+Le firmware est découpé en trois tâches FreeRTOS :
+
+- Tâche `motor_ctrl` — génération PWM sur TIM1/TIM2 pour les ponts en H
+- Tâche `sensor_poll` — mesure distance HC-SR04 par capture IC
+- Tâche `comm_rx` — réception des commandes UART depuis le Raspberry Pi
+
+<Callout type="info">
+  Les tâches partagent une file de messages FreeRTOS — pas de mutex, pas de conflit d'accès aux périphériques.
+</Callout>
+
+## Implémentation
+
+Chaque moteur est contrôlé par deux canaux PWM en complémentaire. La vitesse est encodée sur 12 bits pour une résolution suffisante à basse vitesse.
+
+```c
+void motor_set_speed(Motor *m, int16_t speed) {
+    uint16_t duty = (uint16_t)((abs(speed) * TIM_PERIOD) / 4095);
+    __HAL_TIM_SET_COMPARE(m->htim, m->channel_fwd,
+                          speed >= 0 ? duty : 0);
+    __HAL_TIM_SET_COMPARE(m->htim, m->channel_rev,
+                          speed < 0  ? duty : 0);
+}
+```
+
+## Résultats
+
+- Navigation autonome en évitement d'obstacles à 15 cm/s
+- Latence commande UART → action moteur : < 8 ms
+- Consommation RAM FreeRTOS : 3,2 Ko pour les 3 tâches

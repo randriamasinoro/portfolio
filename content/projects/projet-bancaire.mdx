@@ -1,0 +1,30 @@
+---
+id: projet-bancaire
+title: Détection de fraude bancaire
+description: Pipeline de machine learning pour la détection de transactions frauduleuses en temps réel. Modèle d'isolation forest avec alerting Grafana.
+domains:
+  - data-science
+tags:
+  - Python
+  - scikit-learn
+  - Kafka
+  - Pandas
+  - Grafana
+date: "2024"
+github: https://github.com/randriamasinoro-elisa/projet-bancaire
+featured: true
+---
+
+## Contexte
+
+Détection d'anomalies sur un flux de transactions bancaires simulées.
+
+## Architecture
+
+- Ingestion Kafka pour le streaming des transactions
+- Isolation Forest pour la détection d'anomalies non-supervisée
+- Dashboard Grafana pour le monitoring en temps réel
+
+## Résultats
+
+Taux de détection de 94% sur le jeu de test avec moins de 2% de faux positifs.

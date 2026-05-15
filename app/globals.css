@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply bg-bg text-fg;
+    font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-syne), ui-sans-serif, system-ui;
+    @apply font-bold text-fg;
+    margin: 0;
+  }
+
+  ::selection {
+    background: rgba(45, 125, 210, 0.35);
+    @apply text-fg;
+  }
+
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-accent rounded;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer utilities {
+  .dot-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: 0 0;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

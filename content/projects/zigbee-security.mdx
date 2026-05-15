@@ -1,0 +1,31 @@
+---
+id: zigbee-security
+title: Sécurité Zigbee — Analyse passive
+description: Capture et analyse du protocole Zigbee par SDR. Extraction de clés réseau et reverse engineering du handshake d'appairage.
+domains:
+  - cybersecurity
+  - embedded
+tags:
+  - Python
+  - SDR
+  - Wireshark
+  - Zigbee
+  - GNU Radio
+date: "2025"
+github: https://github.com/randriamasinoro-elisa/zigbee-security
+featured: true
+---
+
+## Contexte
+
+Analyse passive du protocole Zigbee par Software Defined Radio (SDR).
+
+## Méthodologie
+
+- Capture des trames 802.15.4 avec HackRF One
+- Déchiffrement des paquets après extraction de la clé réseau
+- Reconstruction du graphe de topology réseau
+
+## Résultats
+
+Extraction complète de la clé réseau sur un hub domotique grand public en moins de 30 minutes d'écoute passive.

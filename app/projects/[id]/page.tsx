@@ -10,14 +10,15 @@ import TableOfContents from "@/components/TableOfContents";
 import MDXContent from "@/components/MDXContent";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const data = readProject(params.id);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const data = readProject(id);
   if (!data) return {};
   return {
-    title: `${data.frontmatter.title} — Elisa Randriamasinoro`,
+    title: `${data.frontmatter.title} — Sehenonirina Elisa Randriamasinoro`,
     description: data.frontmatter.description,
   };
 }
@@ -27,8 +28,9 @@ export function generateStaticParams() {
   return projects.map((p) => ({ id: p.id }));
 }
 
-export default function ProjectDetailPage({ params }: Props) {
-  const data = readProject(params.id);
+export default async function ProjectDetailPage({ params }: Props) {
+  const { id } = await params;
+  const data = readProject(id);
   if (!data) notFound();
 
   const { frontmatter: project, content } = data;

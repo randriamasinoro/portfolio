@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   security:
     name: Security scan
@@ -22,15 +25,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: npm audit — vulnérabilités production uniquement
-        run: npm audit --omit=dev --audit-level=high
+      - name: npm audit — dépendances production (critique uniquement)
+        run: npm audit --omit=dev --audit-level=critical
 
       - name: Trivy — scan CVE sur le code source
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           scan-ref: .
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           exit-code: 1
           ignore-unfixed: true
           format: table

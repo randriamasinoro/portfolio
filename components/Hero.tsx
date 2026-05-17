@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { GitHubIcon, ArrowRightIcon, ArrowUpRightIcon } from "./icons";
@@ -25,6 +25,16 @@ function useTypewriter(text: string, speed = 90) {
 
   return displayed;
 }
+
+const BlinkingCursor = memo(function BlinkingCursor() {
+  return (
+    <span
+      className="inline-block w-[0.5ch] h-[0.9em] bg-accent align-bottom ml-2 animate-blink"
+      aria-hidden="true"
+      style={{ willChange: "opacity", transform: "translateZ(0)" }}
+    />
+  );
+});
 
 const ease = "easeOut";
 
@@ -54,10 +64,7 @@ export default function Hero() {
           aria-label="Elisa"
         >
           {displayed}
-          <span
-            className="inline-block w-[0.5ch] h-[0.9em] bg-accent align-bottom ml-2 animate-blink"
-            aria-hidden="true"
-          />
+          <BlinkingCursor />
         </div>
 
         <motion.p

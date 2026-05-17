@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
+import "./globals.css"
 import NavBar from "@/components/NavBar";
 import ThemeProvider from "@/components/ThemeProvider";
 
@@ -14,7 +14,7 @@ const syne = Syne({
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-ibm-plex-sans",
+  variable: "--font-ibm-plex-sans", 
   display: "swap",
 });
 
@@ -64,7 +64,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${syne.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-bg text-fg min-h-screen">
+      <body 
+      className="bg-bg text-fg min-h-screen" 
+      suppressHydrationWarning
+      >
         <ThemeProvider>
           <NavBar />
           <main className="pt-[60px]">{children}</main>

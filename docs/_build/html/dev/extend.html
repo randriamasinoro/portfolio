@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Étendre le site &mdash; Portfolio Elisa — Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=54f26393" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=7a28dfa3"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/translations.js?v=e6b791cb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Recherche" href="../search.html" />
+    <link rel="prev" title="Déploiement" href="deploy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Portfolio Elisa
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" aria-label="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenu</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Vue d’ensemble</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#architecture-generale">Architecture générale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#principe-data-driven">Principe data-driven</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#stack-technique">Stack technique</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#domaines-disponibles">Domaines disponibles</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../content/projects.html">Gérer les projets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../content/projects.html#structure-d-un-fichier-projet">Structure d’un fichier projet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/projects.html#champs-frontmatter-detailles">Champs frontmatter détaillés</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/projects.html#ajouter-un-nouveau-projet">Ajouter un nouveau projet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/projects.html#modifier-un-projet-existant">Modifier un projet existant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/projects.html#mettre-un-projet-en-avant-sur-l-accueil">Mettre un projet en avant sur l’accueil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/projects.html#ajouter-des-images-a-un-projet">Ajouter des images à un projet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/projects.html#elements-disponibles-dans-le-corps-mdx">Éléments disponibles dans le corps MDX</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../content/about.html">Page À propos</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../content/about.html#section-profil-bio">Section Profil (bio)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/about.html#section-competences">Section Compétences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/about.html#section-formation">Section Formation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/about.html#section-contact">Section Contact</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../content/home.html">Page d’accueil</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../content/home.html#section-hero">Section Hero</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/home.html#section-domaines">Section Domaines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/home.html#section-projets-mis-en-avant">Section Projets mis en avant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/home.html#section-teaser-a-propos">Section Teaser À propos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../content/home.html#metadonnees-seo-titre-description">Métadonnées SEO (titre, description)</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Développement &amp; Déploiement</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="local.html">Test en local</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="local.html#prerequis">Prérequis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html#installation-des-dependances">Installation des dépendances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html#demarrer-le-serveur-de-developpement">Démarrer le serveur de développement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html#verifier-le-build-de-production">Vérifier le build de production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html#audit-de-securite">Audit de sécurité</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html#linter">Linter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html#resume-des-commandes-de-developpement">Résumé des commandes de développement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html#test-docker-en-local-optionnel">Test Docker en local (optionnel)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deploy.html">Déploiement</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deploy.html#infrastructure">Infrastructure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploy.html#pipeline-ci-cd-github-actions">Pipeline CI/CD (GitHub Actions)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deploy.html#secrets-github-requis">Secrets GitHub requis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deploy.html#deploiement-manuel-sans-ci-cd">Déploiement manuel (sans CI/CD)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploy.html#activer-https-certbot">Activer HTTPS (Certbot)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploy.html#verifier-l-etat-du-site">Vérifier l’état du site</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploy.html#redemarrer-le-container">Redémarrer le container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deploy.html#structure-docker">Structure Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Étendre le site</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ajouter-un-nouveau-domaine">Ajouter un nouveau domaine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changer-les-couleurs-du-design">Changer les couleurs du design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#changer-les-polices">Changer les polices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ajouter-une-nouvelle-page">Ajouter une nouvelle page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modifier-la-navigation">Modifier la navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modifier-les-metadonnees-seo">Modifier les métadonnées SEO</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Portfolio Elisa</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Étendre le site</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/dev/extend.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="etendre-le-site">
+<h1>Étendre le site<a class="headerlink" href="#etendre-le-site" title="Lien vers cette rubrique"></a></h1>
+<section id="ajouter-un-nouveau-domaine">
+<h2>Ajouter un nouveau domaine<a class="headerlink" href="#ajouter-un-nouveau-domaine" title="Lien vers cette rubrique"></a></h2>
+<p>Les domaines sont définis en un seul endroit. Ajouter un domaine = modifier deux fichiers.</p>
+<p><strong>Étape 1 — Déclarer le type et la couleur</strong></p>
+<p>Fichier : <code class="docutils literal notranslate"><span class="pre">types/project.ts</span></code></p>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Domain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;data-science&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;cybersecurity&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;embedded&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;devsecops&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">&quot;mon-domaine&quot;</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">DOMAIN_CONFIG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ... existants ...</span>
+<span class="w">  </span><span class="s2">&quot;mon-domaine&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Mon Domaine&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;#F59E0B&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p><strong>Étape 2 — Utiliser le domaine dans un projet MDX</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">domains</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mon-domaine</span>
+</pre></div>
+</div>
+<p>Le domaine apparaît automatiquement dans les filtres, les badges et les cards.</p>
+<p>Aucune autre modification n’est nécessaire.</p>
+</section>
+<section id="changer-les-couleurs-du-design">
+<h2>Changer les couleurs du design<a class="headerlink" href="#changer-les-couleurs-du-design" title="Lien vers cette rubrique"></a></h2>
+<p>Toutes les couleurs sont des variables CSS définies dans <code class="docutils literal notranslate"><span class="pre">app/globals.css</span></code>.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="nd">root</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">--bg</span><span class="p">:</span><span class="w"> </span><span class="mh">#F8F9FA</span><span class="p">;</span><span class="w">         </span><span class="c">/* fond en mode light */</span>
+<span class="w">  </span><span class="nv">--accent</span><span class="p">:</span><span class="w"> </span><span class="mh">#2D7DD2</span><span class="p">;</span><span class="w">     </span><span class="c">/* couleur d&#39;accentuation globale */</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">dark</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">--bg</span><span class="p">:</span><span class="w"> </span><span class="mh">#0A0A0F</span><span class="p">;</span><span class="w">         </span><span class="c">/* fond en mode dark */</span>
+<span class="w">  </span><span class="nv">--accent</span><span class="p">:</span><span class="w"> </span><span class="mh">#2D7DD2</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Modifier une variable ici change la couleur partout sur le site.</p>
+</section>
+<section id="changer-les-polices">
+<h2>Changer les polices<a class="headerlink" href="#changer-les-polices" title="Lien vers cette rubrique"></a></h2>
+<p>Les polices sont déclarées dans <code class="docutils literal notranslate"><span class="pre">app/layout.tsx</span></code> via <code class="docutils literal notranslate"><span class="pre">next/font/google</span></code> :</p>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">syne</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Syne</span><span class="p">({</span><span class="w"> </span><span class="nx">subsets</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;latin&quot;</span><span class="p">],</span><span class="w"> </span><span class="nx">variable</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;--font-display&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">ibmPlexSans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">IBM_Plex_Sans</span><span class="p">({</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="nx">variable</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;--font-body&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">jetbrainsMono</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">JetBrains_Mono</span><span class="p">({</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="nx">variable</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;--font-mono&quot;</span><span class="w"> </span><span class="p">});</span>
+</pre></div>
+</div>
+<p>Pour changer une police :</p>
+<ol class="arabic simple">
+<li><p>Importer la nouvelle police depuis <code class="docutils literal notranslate"><span class="pre">next/font/google</span></code></p></li>
+<li><p>Remplacer l’import existant</p></li>
+<li><p>Conserver le même nom de variable CSS (<code class="docutils literal notranslate"><span class="pre">--font-display</span></code>, etc.)</p></li>
+</ol>
+</section>
+<section id="ajouter-une-nouvelle-page">
+<h2>Ajouter une nouvelle page<a class="headerlink" href="#ajouter-une-nouvelle-page" title="Lien vers cette rubrique"></a></h2>
+<ol class="arabic simple">
+<li><p>Créer <code class="docutils literal notranslate"><span class="pre">app/ma-page/page.tsx</span></code></p></li>
+<li><p>Ajouter le lien dans <code class="docutils literal notranslate"><span class="pre">components/NavBar.tsx</span></code> (liste <code class="docutils literal notranslate"><span class="pre">NAV_LINKS</span></code>)</p></li>
+<li><p>Tester en local avec <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">dev</span></code></p></li>
+</ol>
+</section>
+<section id="modifier-la-navigation">
+<h2>Modifier la navigation<a class="headerlink" href="#modifier-la-navigation" title="Lien vers cette rubrique"></a></h2>
+<p><strong>Fichier :</strong> <code class="docutils literal notranslate"><span class="pre">components/NavBar.tsx</span></code></p>
+<p>Chercher la constante <code class="docutils literal notranslate"><span class="pre">NAV_LINKS</span></code> (ou la liste des liens) et modifier les entrées.</p>
+<p>Exemple de structure :</p>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">NAV_LINKS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">href</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Accueil&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">href</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/projects&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Projets&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">href</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/about&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;À propos&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="c1">// Ajouter ici une nouvelle entrée</span>
+<span class="p">];</span>
+</pre></div>
+</div>
+</section>
+<section id="modifier-les-metadonnees-seo">
+<h2>Modifier les métadonnées SEO<a class="headerlink" href="#modifier-les-metadonnees-seo" title="Lien vers cette rubrique"></a></h2>
+<p><strong>Métadonnées globales</strong> (titre et description par défaut) :</p>
+<p>Fichier : <code class="docutils literal notranslate"><span class="pre">app/layout.tsx</span></code></p>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">metadata</span><span class="o">:</span><span class="w"> </span><span class="kt">Metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">default</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Elisa Randriamasinoro&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">template</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;%s | Elisa&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Portfolio technique...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">openGraph</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">},</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p><strong>Métadonnées par page</strong> :</p>
+<p>Chaque page peut surcharger les métadonnées globales en exportant sa propre constante <code class="docutils literal notranslate"><span class="pre">metadata</span></code>.
+C’est déjà fait pour <code class="docutils literal notranslate"><span class="pre">/about</span></code> et chaque page projet <code class="docutils literal notranslate"><span class="pre">/projects/[id]</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pied de page">
+        <a href="deploy.html" class="btn btn-neutral float-left" title="Déploiement" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Droits d'auteur 2026, Sehenonirina Elisa Randriamasinoro.</p>
+  </div>
+
+  Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -45,7 +45,7 @@ const CONTACTS = [
     icon: <LinkedInIcon />,
   },
   {
-    href: "https://github.com/randriamasinoro-elisa",
+    href: "https://github.com/randriamasinoro",
     label: "GitHub",
     text: "randriamasinoro-elisa",
     icon: <GitHubIcon />,

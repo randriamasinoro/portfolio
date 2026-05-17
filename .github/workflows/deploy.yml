@@ -6,12 +6,12 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  IMAGE_NAME: ghcr.io/randriamasinoro/portfolio
 
 jobs:
   security:
     name: Security scan
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,10 +25,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: npm audit — dépendances production (critique uniquement)
+      - name: npm audit
         run: npm audit --omit=dev --audit-level=critical
 
-      - name: Trivy — scan CVE sur le code source
+      - name: Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
@@ -38,9 +38,35 @@ jobs:
           ignore-unfixed: true
           format: table
 
+  build:
+    name: Build & Push Docker image
+    needs: security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:latest
+
   deploy:
     name: Deploy to VPS
-    needs: security
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -52,8 +78,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             cd ~/portfolio
-            git pull origin main
-            sudo docker compose build
-            sudo docker compose up -d
-            sudo docker image prune -f
+            docker compose pull
+            docker compose up -d
+            docker image prune -f

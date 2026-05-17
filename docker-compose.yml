@@ -1,6 +1,6 @@
 services:
   portfolio:
-    build: .
+    image: ghcr.io/randriamasinoro/portfolio:latest
     container_name: portfolio
     restart: unless-stopped
     ports:

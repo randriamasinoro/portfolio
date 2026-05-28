@@ -1,7 +1,9 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import type { ReactElement, ReactNode } from "react";
+import remarkGfm from "remark-gfm";
 import CodeBlock from "./CodeBlock";
 import Callout from "./Callout";
+import ImageFigure from "./ImageFigure";
 import { slugify } from "@/lib/toc";
 
 interface Props {
@@ -13,7 +15,11 @@ export default function MDXContent({ content, domainColor }: Props) {
   const components = buildComponents(domainColor);
   return (
     <div className="mdx-content">
-      <MDXRemote source={content} components={components} />
+      <MDXRemote
+        source={content}
+        components={components}
+        options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+      />
     </div>
   );
 }
@@ -112,6 +118,43 @@ function buildComponents(domainColor: string) {
         </blockquote>
       );
     },
+    table({ children }: { children?: ReactNode }) {
+      return (
+        <div className="overflow-x-auto my-6">
+          <table className="w-full border-collapse font-mono text-sm">
+            {children}
+          </table>
+        </div>
+      );
+    },
+    thead({ children }: { children?: ReactNode }) {
+      return <thead className="border-b border-border">{children}</thead>;
+    },
+    tbody({ children }: { children?: ReactNode }) {
+      return <tbody>{children}</tbody>;
+    },
+    tr({ children }: { children?: ReactNode }) {
+      return (
+        <tr className="border-b border-border last:border-0 hover:bg-surface-2 transition-colors">
+          {children}
+        </tr>
+      );
+    },
+    th({ children }: { children?: ReactNode }) {
+      return (
+        <th className="px-4 py-2 text-left text-fg font-semibold whitespace-nowrap">
+          {children}
+        </th>
+      );
+    },
+    td({ children }: { children?: ReactNode }) {
+      return (
+        <td className="px-4 py-2 text-fg-2">
+          {children}
+        </td>
+      );
+    },
     Callout,
+    ImageFigure,
   };
 }

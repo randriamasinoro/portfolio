@@ -1,15 +1,18 @@
 ---
 id: classification-graines
-title: Classification de graines par ML
-description: Pipeline complet de classification de graines agricoles par vision et machine learning. Extraction de features morphologiques et comparaison de classifieurs.
+title: Triage automatique de haricots par CNN embarqué
+description: Système de classification binaire de haricots blancs (bonne/mauvaise graine) en temps réel via un CNN Keras déployé sur ESP32-CAM. Projet de fin d'études L2 Génie Industriel — IST Antananarivo.
 domains:
   - data-science
+  - embedded
 tags:
   - Python
-  - scikit-learn
-  - OpenCV
-  - Pandas
-  - Matplotlib
+  - Keras
+  - TensorFlow
+  - CNN
+  - ESP32-CAM
+  - C++
+  - HTTP
 date: "2024"
 github: https://github.com/randriamasinoro-elisa/classification-graines
 featured: false
@@ -17,42 +20,174 @@ featured: false
 
 ## Contexte
 
-Projet de classification supervisée sur un dataset de graines céréalières (blé, seigle, orge). L'objectif : identifier automatiquement l'espèce à partir de mesures morphologiques extraites par traitement d'image.
+Projet de fin d'études réalisé en L2 Génie Industriel à l'Institut Supérieur de Technologie d'Antananarivo. Première approche complète alliant mécanique, systèmes embarqués et machine learning.
 
-## Méthodologie
+Objectif : concevoir une machine compacte et économique pour trier automatiquement les haricots blancs (bonnes vs mauvaises graines) en remplaçant le tri manuel par une classification CNN en temps réel via ESP32-CAM.
 
-### Extraction de features
+## Dataset
 
-Depuis les images binaires des graines, extraction de 7 descripteurs :
+340 images de haricots blancs capturées en conditions contrôlées (luminosité constante, même angle, même appareil) :
 
-- Aire, périmètre, compacité
-- Longueur et largeur du noyau
-- Coefficient d'asymétrie
-- Longueur de la rainure
+| Classe | Images |
+|--------|--------|
+| Mauvaise graine | 209 |
+| Bonne graine | 131 |
+| **Total** | **340** |
+
+Split : **60% entraînement / 30% validation / 10% test**. Les images sont redimensionnées à 224×224 pixels avant entraînement.
+
+## Architecture du modèle CNN
+
+Réseau convolutif binaire avec extracteur de caractéristiques (blocs Conv2D + MaxPooling) suivi d'un classifieur dense. Sortie : 1 neurone sigmoïde (classification binaire). **31 561 441 paramètres entraînables.**
 
 ```python
-def extract_features(mask):
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-                                   cv2.CHAIN_APPROX_SIMPLE)
-    cnt = max(contours, key=cv2.contourArea)
-    area   = cv2.contourArea(cnt)
-    perim  = cv2.arcLength(cnt, closed=True)
-    compact = (4 * np.pi * area) / (perim ** 2)
-    return area, perim, compact
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(224, 224, 3)),
+    MaxPooling2D(2, 2),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Conv2D(128, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Flatten(),
+    Dense(512, activation='relu'),
+    Dropout(0.5),
+    Dense(1, activation='sigmoid')
+])
+
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',
+    metrics=['accuracy']
+)
 ```
 
-### Comparaison de classifieurs
+## Entraînement
 
-| Modèle | Accuracy | F1-macro |
-|--------|----------|----------|
-| KNN (k=5) | 91.4% | 0.913 |
-| SVM RBF | 94.7% | 0.946 |
-| Random Forest | 93.1% | 0.930 |
+10 époques sur les 204 images d'entraînement, avec validation en temps réel sur les 102 images de validation.
 
-<Callout type="tip">
-  Le SVM avec noyau RBF surpasse tous les autres — les features morphologiques forment des clusters bien séparés dans l'espace de décision.
+| Époque | Loss | Accuracy | Val Loss | Val Accuracy |
+|--------|------|----------|----------|--------------|
+| 1 | 2.3908 | 0.4479 | 0.6265 | 0.6250 |
+| 2 | 0.6637 | 0.5938 | 0.5801 | 0.6146 |
+| 3 | 0.5558 | 0.6979 | 0.5058 | 0.9792 |
+| 4 | 0.4434 | 0.9167 | 0.3162 | 0.9583 |
+| 5 | 0.2651 | 0.9740 | 0.2464 | 0.9062 |
+| 6 | 0.1485 | 0.9583 | 0.0746 | 0.9792 |
+| 7 | 0.0566 | 0.9948 | 0.0919 | 0.9688 |
+| 8 | 0.0502 | 0.9948 | 0.0161 | 1.0000 |
+| 9 | 0.0207 | 0.9896 | 0.0102 | 1.0000 |
+
+<Callout type="info">
+  Les courbes loss/val_loss descendent conjointement jusqu'à l'époque 6,
+  indiquant une bonne généralisation. À partir de l'époque 8, la
+  val_accuracy atteint 1.0 tandis que la loss continue de descendre —
+  signe d'un léger surapprentissage en fin d'entraînement. Un early
+  stopping à l'époque 7-8 aurait été préférable.
 </Callout>
+
+<ImageFigure
+  src="/images/classification/loss.jpeg"
+  alt="Courbes loss et val_loss sur 10 époques"
+  caption="Courbes loss / val_loss — convergence jusqu'à l'époque 6, légère divergence ensuite"
+  size="md"
+/>
 
 ## Résultats
 
-SVM RBF retenu : 94,7% d'accuracy en validation croisée 5-fold. Matrice de confusion quasi-diagonale sur les 3 classes.
+**98% d'accuracy sur le jeu de test** (34 images non vues pendant l'entraînement). Le modèle est sauvegardé sous `image_model.h5` et rechargé par le script d'inférence Python qui pilote la bascule via HTTP.
+
+```python
+model = load_model('image_model.h5')
+
+resp = requests.get('http://192.168.1.100/capture')
+img = preprocess(resp.content)          # resize 224x224, normalize
+pred = model.predict(img)[0][0]         # sigmoid → [0, 1]
+
+direction = 'droite' if pred > 0.5 else 'gauche'  # seuil 0.5 — version fonctionnelle initiale
+requests.get(f'http://192.168.1.100/servo?dir={direction}')
+```
+
+Seuil de décision fixé à 0.5 — frontière naturelle de la fonction sigmoid pour une classification binaire. Valeur choisie pour cette première version fonctionnelle.
+
+## Pipeline système
+
+```
+Tas de haricots
+      ↓
+Cylindre + disque perforé
+(alimentation unitaire — 1 haricot à la fois)
+      ↓
+Plateau d'acquisition
+      ↓
+ESP32-CAM capture l'image
+      ↓ HTTP GET /capture.jpg
+Ordinateur (Python)
+      ↓
+Prétraitement (resize 224×224, normalisation)
+      ↓
+CNN — image_model.h5
+      ↓
+Prédiction sigmoid → valeur entre 0 et 1
+      ↓ HTTP POST /prediction
+ESP32-CAM reçoit la décision
+      ↓
+Servomoteur SG90
+  ├── prédiction > 0.5 → bascule droite (bonne graine)
+  └── prédiction ≤ 0.5 → bascule gauche (mauvaise graine)
+```
+
+## Limites
+
+- **Dataset limité** — 340 images au total, jeu de test de seulement 34 images. La valeur de 98% d'accuracy est statistiquement fragile sur un si petit échantillon de test.
+- **Conditions contrôlées** — luminosité fixe, angle fixe, même appareil. La robustesse du modèle en conditions réelles (variations d'éclairage, position des graines) n'a pas été testée.
+- **Modèle surdimensionné** — 31 561 441 paramètres pour une classification binaire simple. Un modèle beaucoup plus léger serait suffisant et plus adapté à un contexte embarqué.
+- **Métriques basiques** — seule l'accuracy a été mesurée. Matrice de confusion, F1-score et courbe ROC n'ont pas été calculés dans le cadre de ce projet L2.
+
+## Perspectives
+
+- **Data augmentation** — rotations, variations de luminosité, flips pour enrichir le dataset sans nouvelles captures
+- **Transfer learning** — remplacer le CNN custom par MobileNetV2, 10× plus léger et plus robuste sur petits datasets
+- **Edge AI** — déployer le modèle directement sur l'ESP32 via TensorFlow Lite pour éliminer la dépendance à l'ordinateur
+- **Métriques complètes** — calculer la matrice de confusion, précision et rappel par classe pour mieux évaluer les erreurs réelles du modèle
+
+## Système embarqué et mécanique
+
+Un cylindre + disque perforé alimente les haricots un par un sur un plateau d'acquisition. L'ESP32-CAM capture la photo, l'ordinateur fait l'inférence CNN, puis commande le servomoteur SG90 qui bascule à droite (bonne graine) ou à gauche (mauvaise graine).
+
+L'ESP32-CAM est programmée en C++ et configurée en **point d'accès WiFi**
+agissant comme serveur HTTP. L'ordinateur Python se connecte comme client.
+
+**Communication :**
+- `GET /capture.jpg` — ESP32-CAM déclenche la rotation du disque,
+  capture l'image et la retourne au PC
+- `POST /prediction` — PC envoie la décision CNN (0 ou 1),
+  ESP32-CAM commande le servomoteur en conséquence
+
+**Composants partie opérative :**
+
+| Composant | Rôle |
+|---|---|
+| Moteur CC JgA25-370 (12V, 10 RPM) | Rotation du disque perforé |
+| Driver L298N | Régulation vitesse et sens du moteur |
+| Servomoteur SG90 (0°–180°) | Bascule de tri droite/gauche |
+
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+  <ImageFigure
+    src="/images/classification/vue-eclatee-nomenclature.png"
+    alt="Vue éclatée du système"
+    caption="Vue éclatée — nomenclature des 9 pièces du mécanisme d'alimentation"
+    size="xs"
+  />
+  <ImageFigure
+    src="/images/classification/vue-assemblee.png"
+    alt="Vue assemblée du système"
+    caption="Vue assemblée — cylindre et disque perforé montés"
+    size="xs"
+  />
+  <ImageFigure
+    src="/images/classification/systeme-complet.png"
+    alt="Système complet avec ESP32-CAM et servomoteur"
+    caption="Système complet — ESP32-CAM et servomoteur SG90 intégrés"
+    size="xs"
+  />
+</div>

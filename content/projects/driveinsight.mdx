@@ -63,6 +63,8 @@ Interface     Interface
 
 ## Couche web — interface client
 
+![Interface client — calendrier de réservation et sélection de véhicule](/images/park/client.png)
+
 Le calendrier de disponibilité (Flatpickr) grise automatiquement les dates réservées. La sélection d'une plage déclenche le calcul du tarif et la réservation se finalise via une modale, sans changement de page.
 
 La disponibilité est vérifiée à deux niveaux — côté client par Flatpickr, côté serveur avant insertion — avec la logique de chevauchement d'intervalles :
@@ -73,6 +75,10 @@ AND date_fin_existante > date_debut_demandée
 ```
 
 ## Couche web — tableau de bord admin
+
+![Tableau de bord admin — vue d'ensemble du parc et réservations](/images/park/admin1.png)
+
+![Tableau de bord admin — suivi IoT temps réel et position GPS](/images/park/admin2.png)
 
 Le dashboard sépare les données en trois requêtes indépendantes : véhicules en location, réservations à venir, véhicules disponibles. Un même véhicule peut apparaître dans plusieurs sections sans ambiguïté — contrairement à un `LEFT JOIN … LIMIT 1` qui masquait silencieusement les réservations futures.
 

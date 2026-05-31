@@ -1,7 +1,7 @@
 ---
 id: can-bus
-title: Apprendre à « parler » à une voiture
-description: Une voiture moderne, c'est une trentaine d'ordinateurs qui se parlent en permanence. J'ai appris à écouter cette conversation, à comprendre ce qu'ils se disent, puis à parler leur langue pour commander la voiture moi-même.
+title: Analyse et injection sur bus CAN automobile
+description: Reverse engineering des trames CAN d'une maquette véhicule — cartographie des bus, décodage des signaux moteur/éclairage/confort, base DBC et DLL d'injection en C simulant un système ADAS.
 domains:
   - embedded
   - cybersecurity
@@ -11,106 +11,120 @@ tags:
   - Automotive
   - MuxTrace
   - C
+  - OBDII
 date: "2026"
 github: https://github.com/randriamasinoro/Vetronique
 featured: false
 ---
 
-## L'idée de départ
+## Contexte
 
-Quand on appuie sur le bouton des phares d'une voiture récente, le bouton n'est **pas** relié directement à l'ampoule par un fil. À la place, il envoie un petit message électronique qui voyage sur un réseau interne, jusqu'à l'ordinateur qui, lui, allume la lumière. Une voiture moderne, c'est en réalité une trentaine de petits ordinateurs (les *calculateurs*) qui discutent entre eux en continu : le moteur, les freins, les portes, le tableau de bord…
+TP réalisé dans le cadre du Master Cybersécurité des Systèmes Embarqués (UBS Lorient) — en binôme, 3 séances.
 
-Ce réseau de discussion s'appelle le **bus CAN**. C'est un peu comme une grande table où tout le monde parle à voix haute : chaque message est entendu par tous, mais chacun ne réagit qu'à ce qui le concerne.
+L'objectif : comprendre comment circulent les commandes d'un véhicule réel sur ses bus CAN, puis démontrer qu'un acteur connecté au réseau peut observer, décoder et forger ses propres trames.
 
-**Mon objectif** : me mettre à l'écoute de cette conversation que personne ne nous traduit, comprendre *qui dit quoi*, puis aller plus loin — apprendre à parler cette langue moi-même pour donner des ordres à la voiture.
+Le travail s'est fait sur une **maquette physique** (banc MT-CAN-LIN-BSI) regroupant les calculateurs réels d'une automobile, interconnectés via une passerelle BSI et accessibles par prise OBDII. Outil d'analyse : **MuxTrace** en mode sniffer.
 
-<Callout type="info">
-  Ce « langage » des voitures n'a aucune sécurité : pas de mot de passe, pas de signature pour vérifier qui parle. N'importe qui branché sur le réseau peut lire tout ce qui circule, et même envoyer de faux messages que les ordinateurs croiront sur parole. Comprendre cette faiblesse, c'est la première étape pour savoir comment protéger un véhicule — tout l'enjeu du Master en cybersécurité des systèmes embarqués.
+<Callout type="warning">
+  Le protocole CAN n'embarque ni authentification ni chiffrement. Toute station raccordée au bus peut lire l'intégralité du trafic et émettre des trames que les calculateurs accepteront sans vérification.
 </Callout>
 
-Le projet s'est fait sur une **maquette pédagogique** : un vrai morceau de voiture (calculateurs d'origine, boutons, moteurs des rétroviseurs…) monté sur un banc, sans la carrosserie. On s'y branche par la **prise de diagnostic** (la même que celle qu'utilise un garagiste, sous le volant), avec un logiciel d'analyse appelé **MuxTrace**.
+---
+
+## Architecture réseau de la maquette
+
+La maquette s'organise autour du **BSI** (Boîtier de Servitude Intelligent), passerelle entre trois bus CAN distincts :
+
+| Bus | Débit | Domaine | Calculateurs clés |
+|-----|-------|---------|-------------------|
+| CAN HS I/S | 500 kbit/s | Inter-systèmes | Moteur (1320), ESP (7800), Airbag |
+| CAN LS CAR | 125 kbit/s | Carrosserie | Volant (CV00), Airbag (6570) |
+| CAN LS CONF | 125 kbit/s | Confort | Porte conducteur (6032), Clim (8080) |
+
+Le **port OBDII** (ISO 15765-4, broches 6 et 14) expose directement le bus haute vitesse — principale surface d'attaque physique d'un véhicule.
 
 ---
 
-## Étape 1 — Dresser le plan du réseau
+## Reverse engineering des trames
 
-Avant d'écouter, il fallait comprendre la « géographie » des conversations. La maquette n'a pas un seul réseau mais **trois**, organisés autour d'un boîtier central qui joue le rôle de standard téléphonique (le *BSI*) et fait passer les messages d'un réseau à l'autre.
+Aucune documentation fournie : décodage par observation. Méthodologie appliquée sur chaque signal :
 
-Chaque réseau a sa spécialité — un peu comme des canaux radio dédiés :
+1. Écoute passive avec MuxTrace
+2. Stimulation physique (clé, comodo, potentiomètre d'accélération…)
+3. Identification de l'ID dont la valeur change au moment de l'action
+4. Isolation de l'octet porteur du signal
+5. Calcul de la loi de conversion `physique = a × octet + b`
 
-- un réseau **rapide** pour les fonctions vitales (moteur, freinage, vitesse) ;
-- un réseau **carrosserie** (volant, airbag) ;
-- un réseau **confort**, plus lent, pour tout ce qui n'est pas urgent (lève-vitres, essuie-glaces, rétroviseurs).
+### Signaux décodés
 
-Le fait que ces réseaux soient séparés est déjà, en soi, une mesure de sécurité : on ne veut pas qu'un défaut côté « lève-vitre » puisse perturber le freinage.
+**Régime moteur** — ID `0x208`, octet 0, bus HS I/S :
 
----
+| Affichage | Octet 0 | Loi |
+|-----------|---------|-----|
+| 1000 tr/min | 0x1E (30) | `N = octet × 33,33` |
+| 2000 tr/min | 0x3C (60) | |
+| 3000 tr/min | 0x5A (90) | |
 
-## Étape 2 — Décoder la langue, sans dictionnaire
+**Vitesse** — ID `0x44D` : +40 km/h → +16 sur l'octet → `V = octet × 2,5`
 
-Voilà le cœur du projet, et la partie la plus proche d'une enquête. Personne ne nous donne la traduction des messages : il faut la **deviner par observation**.
+**Comodo d'éclairage** — ID `0x612`, octet 1 : un seul octet combine deux fonctions par champs de bits — nibble bas pour l'éclairage, nibble haut pour les clignotants.
 
-Les messages, vus à l'écran, ne sont qu'une suite de codes du genre `208 → 5A 00 00 ...`. Ma méthode, répétée pour chaque fonction, tenait en une idée simple : **bouger une chose réelle et regarder quel code change au même moment.**
+| Fonction | Octet 1 |
+|----------|---------|
+| Tout éteint | 0x01 |
+| Feux de croisement | 0x03 |
+| Feux de route | 0x07 |
+| Clignotant droit | 0x06 |
+| Clignotant gauche | 0x0A |
 
-Concrètement, pour le **régime moteur** :
+**Rétroviseurs** — ID `0x115`, bus CONFORT : `mouvement (bits 7–4) | sélection rétro (bits 3–0)`
 
-1. J'accélère sur la maquette.
-2. Je repère le seul message qui change pile à ce moment-là.
-3. Je note la correspondance entre le code affiché et la vraie valeur.
-
-À 1000 tr/min le code valait 30, à 2000 il valait 60, à 3000 il valait 90. La logique saute aux yeux : le code, c'est tout simplement le régime moteur divisé par 33. **J'avais trouvé la formule de traduction.**
-
-J'ai répété ce petit jeu d'enquête pour toute une série de fonctions :
-
-| Ce que j'ai actionné | Ce que j'ai découvert |
-|----------------------|-----------------------|
-| L'accélérateur | Le message du régime moteur, et sa formule de conversion |
-| La vitesse du véhicule | Un autre message, où chaque cran de 40 km/h ajoute 16 au code |
-| Le bouton des phares | Un seul code gère à la fois l'éclairage **et** les clignotants, chacun sur une « moitié » du message |
-| Les rétroviseurs | Un message qui combine *quel* rétroviseur et *dans quel sens* il bouge |
-| Lève-vitres, essuie-glaces, dégivrage | Chacun sa fonction et son code dédié |
-
-Découverte marquante : un seul message transporte souvent **plusieurs informations en même temps**, rangées comme des tiroirs dans un même octet. Tout est optimisé pour économiser la place sur le réseau.
+Autres signaux décodés : lève-vitres (`0x14C`), essuie-glaces (`0x592`), dégivrage (`0x12D`).
 
 ---
 
-## Étape 3 — Écrire le dictionnaire
+## Base de données DBC
 
-Garder toutes ces traductions dans la tête n'est pas viable. J'ai créé un **dictionnaire numérique** du véhicule — un fichier au format standard de l'industrie (le *DBC*) — qui dit, pour chaque message : voici son nom, voici comment transformer le code brut en valeur lisible.
+L'ensemble des signaux décodés a été formalisé dans des **fichiers DBC** (un par bus) avec DBEdit — format standard de l'industrie automobile. Chaque ID est associé à ses signaux, leur position en bits, leur facteur d'échelle et leur unité.
 
-Une fois ce dictionnaire chargé dans le logiciel, la magie opère : à la place du code obscur `5A`, l'écran affiche directement **« 3000 tr/min »**. Et ça marche dans les deux sens : je peux demander « roule à 130 km/h » sans avoir à calculer le code moi-même — c'est le dictionnaire qui fait la traduction inverse. C'est exactement l'outil dont se servent les ingénieurs automobiles (et les chercheurs en sécurité) au quotidien.
+Une fois chargé dans MuxTrace, `0x5A` s'affiche directement en « 3000 tr/min ». Couplé au générateur de trames, le DBC permet de piloter la maquette en grandeurs physiques sans recalculer l'hexadécimal à la main.
 
 ---
 
-## Étape 4 — Prendre la parole : faire agir la voiture
+## DLL d'injection en C
 
-Jusque-là, j'écoutais et je traduisais. La dernière étape était de **parler** : écrire un petit programme en C qui, branché sur le réseau, envoie ses propres messages pour commander réellement la maquette.
+Dernière étape : une **DLL en C** (compilée sous Code::Blocks) qui émet ses propres trames sur le bus en réaction à l'état du véhicule. L'architecture repose sur les callbacks MuxTrace (`OnStart`, `OnStop`, `OnCanEvent`) et une FIFO de messages.
 
-J'ai imaginé un scénario inspiré des aides à la conduite modernes, que j'ai appelé **« Sécurité Active »** :
+### Scénario — Sécurité Active Pluie & Vitesse
 
-> *Si la voiture roule vite (plus de 110 km/h) **et** qu'il pleut fort (essuie-glaces en mode rapide), alors allume automatiquement les feux.*
+Allumage automatique des feux de croisement lorsque deux conditions sont réunies simultanément :
 
-Mon programme écoute en permanence deux informations décodées — la vitesse et le mode des essuie-glaces — et dès que les deux conditions de danger sont réunies, il envoie tout seul l'ordre d'allumer les phares, en forgeant exactement le bon message dans la bonne langue.
+- Vitesse > 110 km/h — lecture ID `0x44D`
+- Essuie-glaces mode rapide — lecture ID `0x592`
+- Action : émission ID `0x612`, octet 1 = `0x18`
 
 ```c
-// Le cœur de la logique : deux conditions, une action
-if (vitesse > 110 && essuieGlaceRapide) {
-    allumerLesPhares();   // le programme forge et envoie le message
+#define ID_VITESSE      0x44D
+#define ID_ESSUIE_GLACE 0x592
+#define ID_COMODO       0x612
+#define FACTEUR_VITESSE 2.5f
+
+if (msg.id == ID_ESSUIE_GLACE)
+    ModePluieIntense = ((msg.bData[2] & 0x0F) == 4) ? 1 : 0;
+
+if (msg.id == ID_VITESSE)
+    VitesseElevee = (msg.bData[0] * FACTEUR_VITESSE > 110.0f) ? 1 : 0;
+
+if (VitesseElevee && ModePluieIntense) {
+    CanCmd_Msg_Tx.bData[1] = 0x18;
+    CanSendMsg(0, 0, &CanCmd_Msg_Tx);
 }
 ```
 
-Et ça a fonctionné : la commande a été acceptée et exécutée par la maquette, comme si elle venait d'un vrai équipement du véhicule. C'est la démonstration concrète qu'un simple programme tiers peut **agir sur une voiture** dès lors qu'il connaît son langage.
+La commande a été observée et exécutée par la maquette — un nœud logiciel tiers peut piloter des actionneurs réels dès lors qu'il connaît les IDs et les facteurs de conversion.
 
 ---
 
-## Ce que ce projet m'a appris
+## Perspectives sécurité
 
-- **À enquêter sur un système fermé** : comprendre une technologie sans documentation, juste en l'observant méthodiquement. C'est exactement la démarche du *reverse engineering*.
-- **Que la sécurité n'est pas une option par défaut** : un système conçu pour la fiabilité peut être complètement ouvert d'un point de vue sécurité. Savoir le démontrer, c'est savoir où placer les protections.
-- **À aller de l'observation jusqu'à l'action** : écouter, comprendre, modéliser, puis reprogrammer — la chaîne complète.
-
-Et ça ouvre directement sur la suite : **comment protéger un véhicule** contre ce genre d'intrusion — détecter les faux messages, authentifier qui a le droit de parler, cloisonner les réseaux.
-
----
-
-*Projet réalisé en binôme dans le cadre du Master Cybersécurité des Systèmes Embarqués — UBS Lorient. Outils : MuxTrace, DBEdit, Code::Blocks, langage C.*
+Ce travail ouvre sur les contre-mesures étudiées en sécurité automobile : **IDS CAN** par analyse de fréquence et d'entropie des trames, **authentification de messages (SecOC)**, et segmentation des domaines par la passerelle BSI.

@@ -1,67 +1,116 @@
 ---
 id: can-bus
-title: Sécurité CAN Bus — Attaques et détection
-description: Analyse de sécurité du bus CAN sur banc de test automobile. Fuzzing de trames, injection de commandes, et prototype de système de détection d'intrusion (IDS).
+title: Apprendre à « parler » à une voiture
+description: Une voiture moderne, c'est une trentaine d'ordinateurs qui se parlent en permanence. J'ai appris à écouter cette conversation, à comprendre ce qu'ils se disent, puis à parler leur langue pour commander la voiture moi-même.
 domains:
   - embedded
   - cybersecurity
 tags:
-  - Python
+  - Bus CAN
+  - Reverse Engineering
+  - Automotive
+  - MuxTrace
   - C
-  - CAN
-  - SocketCAN
-  - STM32
-date: "2025"
-github: https://github.com/randriamasinoro-elisa/can-bus
+date: "2026"
+github: https://github.com/randriamasinoro/Vetronique
 featured: false
 ---
 
-## Contexte
+## L'idée de départ
 
-Le bus CAN est le protocole dominant dans l'embarqué automobile. Il ne dispose d'aucun mécanisme d'authentification natif — n'importe quel nœud peut envoyer n'importe quelle trame. Ce projet explore les vecteurs d'attaque et prototype un IDS basé sur l'analyse comportementale.
+Quand on appuie sur le bouton des phares d'une voiture récente, le bouton n'est **pas** relié directement à l'ampoule par un fil. À la place, il envoie un petit message électronique qui voyage sur un réseau interne, jusqu'à l'ordinateur qui, lui, allume la lumière. Une voiture moderne, c'est en réalité une trentaine de petits ordinateurs (les *calculateurs*) qui discutent entre eux en continu : le moteur, les freins, les portes, le tableau de bord…
 
-## Banc de test
+Ce réseau de discussion s'appelle le **bus CAN**. C'est un peu comme une grande table où tout le monde parle à voix haute : chaque message est entendu par tous, mais chacun ne réagit qu'à ce qui le concerne.
 
-Deux STM32F4 connectés sur un bus CAN physique (120Ω terminaison), avec un adaptateur USB-CAN pour la capture laptop via SocketCAN.
+**Mon objectif** : me mettre à l'écoute de cette conversation que personne ne nous traduit, comprendre *qui dit quoi*, puis aller plus loin — apprendre à parler cette langue moi-même pour donner des ordres à la voiture.
 
-## Attaques réalisées
-
-### Injection de trame
-
-```python
-import can
-
-bus = can.interface.Bus(channel='can0', bustype='socketcan')
-# Injection d'une trame simulant le module de freinage
-msg = can.Message(arbitration_id=0x0CF, is_extended_id=False,
-                  data=[0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
-bus.send(msg)
-```
-
-<Callout type="danger">
-  Sur un vrai véhicule, des trames malveillantes sur l'ID du module ABS peuvent déclencher des comportements imprévisibles. Ces tests sont réalisés exclusivement sur banc isolé.
+<Callout type="info">
+  Ce « langage » des voitures n'a aucune sécurité : pas de mot de passe, pas de signature pour vérifier qui parle. N'importe qui branché sur le réseau peut lire tout ce qui circule, et même envoyer de faux messages que les ordinateurs croiront sur parole. Comprendre cette faiblesse, c'est la première étape pour savoir comment protéger un véhicule — tout l'enjeu du Master en cybersécurité des systèmes embarqués.
 </Callout>
 
-### Fuzzing
+Le projet s'est fait sur une **maquette pédagogique** : un vrai morceau de voiture (calculateurs d'origine, boutons, moteurs des rétroviseurs…) monté sur un banc, sans la carrosserie. On s'y branche par la **prise de diagnostic** (la même que celle qu'utilise un garagiste, sous le volant), avec un logiciel d'analyse appelé **MuxTrace**.
 
-Mutation aléatoire des payloads sur les IDs critiques identifiés par sniffing passif. 3 000 trames/seconde en mode rafale.
+---
 
-## Prototype IDS
+## Étape 1 — Dresser le plan du réseau
 
-Détection par profil temporel : chaque ID CAN a une fréquence d'émission normale (ex : 10 ms pour les trames moteur). Une déviation > 20% déclenche une alerte.
+Avant d'écouter, il fallait comprendre la « géographie » des conversations. La maquette n'a pas un seul réseau mais **trois**, organisés autour d'un boîtier central qui joue le rôle de standard téléphonique (le *BSI*) et fait passer les messages d'un réseau à l'autre.
+
+Chaque réseau a sa spécialité — un peu comme des canaux radio dédiés :
+
+- un réseau **rapide** pour les fonctions vitales (moteur, freinage, vitesse) ;
+- un réseau **carrosserie** (volant, airbag) ;
+- un réseau **confort**, plus lent, pour tout ce qui n'est pas urgent (lève-vitres, essuie-glaces, rétroviseurs).
+
+Le fait que ces réseaux soient séparés est déjà, en soi, une mesure de sécurité : on ne veut pas qu'un défaut côté « lève-vitre » puisse perturber le freinage.
+
+---
+
+## Étape 2 — Décoder la langue, sans dictionnaire
+
+Voilà le cœur du projet, et la partie la plus proche d'une enquête. Personne ne nous donne la traduction des messages : il faut la **deviner par observation**.
+
+Les messages, vus à l'écran, ne sont qu'une suite de codes du genre `208 → 5A 00 00 ...`. Ma méthode, répétée pour chaque fonction, tenait en une idée simple : **bouger une chose réelle et regarder quel code change au même moment.**
+
+Concrètement, pour le **régime moteur** :
+
+1. J'accélère sur la maquette.
+2. Je repère le seul message qui change pile à ce moment-là.
+3. Je note la correspondance entre le code affiché et la vraie valeur.
+
+À 1000 tr/min le code valait 30, à 2000 il valait 60, à 3000 il valait 90. La logique saute aux yeux : le code, c'est tout simplement le régime moteur divisé par 33. **J'avais trouvé la formule de traduction.**
+
+J'ai répété ce petit jeu d'enquête pour toute une série de fonctions :
+
+| Ce que j'ai actionné | Ce que j'ai découvert |
+|----------------------|-----------------------|
+| L'accélérateur | Le message du régime moteur, et sa formule de conversion |
+| La vitesse du véhicule | Un autre message, où chaque cran de 40 km/h ajoute 16 au code |
+| Le bouton des phares | Un seul code gère à la fois l'éclairage **et** les clignotants, chacun sur une « moitié » du message |
+| Les rétroviseurs | Un message qui combine *quel* rétroviseur et *dans quel sens* il bouge |
+| Lève-vitres, essuie-glaces, dégivrage | Chacun sa fonction et son code dédié |
+
+Découverte marquante : un seul message transporte souvent **plusieurs informations en même temps**, rangées comme des tiroirs dans un même octet. Tout est optimisé pour économiser la place sur le réseau.
+
+---
+
+## Étape 3 — Écrire le dictionnaire
+
+Garder toutes ces traductions dans la tête n'est pas viable. J'ai créé un **dictionnaire numérique** du véhicule — un fichier au format standard de l'industrie (le *DBC*) — qui dit, pour chaque message : voici son nom, voici comment transformer le code brut en valeur lisible.
+
+Une fois ce dictionnaire chargé dans le logiciel, la magie opère : à la place du code obscur `5A`, l'écran affiche directement **« 3000 tr/min »**. Et ça marche dans les deux sens : je peux demander « roule à 130 km/h » sans avoir à calculer le code moi-même — c'est le dictionnaire qui fait la traduction inverse. C'est exactement l'outil dont se servent les ingénieurs automobiles (et les chercheurs en sécurité) au quotidien.
+
+---
+
+## Étape 4 — Prendre la parole : faire agir la voiture
+
+Jusque-là, j'écoutais et je traduisais. La dernière étape était de **parler** : écrire un petit programme en C qui, branché sur le réseau, envoie ses propres messages pour commander réellement la maquette.
+
+J'ai imaginé un scénario inspiré des aides à la conduite modernes, que j'ai appelé **« Sécurité Active »** :
+
+> *Si la voiture roule vite (plus de 110 km/h) **et** qu'il pleut fort (essuie-glaces en mode rapide), alors allume automatiquement les feux.*
+
+Mon programme écoute en permanence deux informations décodées — la vitesse et le mode des essuie-glaces — et dès que les deux conditions de danger sont réunies, il envoie tout seul l'ordre d'allumer les phares, en forgeant exactement le bon message dans la bonne langue.
 
 ```c
-void can_ids_check(uint32_t id, uint32_t timestamp_ms) {
-    Profile *p = &profiles[id];
-    uint32_t interval = timestamp_ms - p->last_ts;
-    if (abs((int)interval - p->expected_ms) > p->expected_ms / 5)
-        ids_alert(id, interval);
-    p->last_ts = timestamp_ms;
+// Le cœur de la logique : deux conditions, une action
+if (vitesse > 110 && essuieGlaceRapide) {
+    allumerLesPhares();   // le programme forge et envoie le message
 }
 ```
 
-## Résultats
+Et ça a fonctionné : la commande a été acceptée et exécutée par la maquette, comme si elle venait d'un vrai équipement du véhicule. C'est la démonstration concrète qu'un simple programme tiers peut **agir sur une voiture** dès lors qu'il connaît son langage.
 
-- 100% des injections détectées par l'IDS sur le banc de test
-- Taux de faux positifs : 0,3% sur 10 min de trafic normal
-- Latence détection : < 1 trame de délai
+---
+
+## Ce que ce projet m'a appris
+
+- **À enquêter sur un système fermé** : comprendre une technologie sans documentation, juste en l'observant méthodiquement. C'est exactement la démarche du *reverse engineering*.
+- **Que la sécurité n'est pas une option par défaut** : un système conçu pour la fiabilité peut être complètement ouvert d'un point de vue sécurité. Savoir le démontrer, c'est savoir où placer les protections.
+- **À aller de l'observation jusqu'à l'action** : écouter, comprendre, modéliser, puis reprogrammer — la chaîne complète.
+
+Et ça ouvre directement sur la suite : **comment protéger un véhicule** contre ce genre d'intrusion — détecter les faux messages, authentifier qui a le droit de parler, cloisonner les réseaux.
+
+---
+
+*Projet réalisé en binôme dans le cadre du Master Cybersécurité des Systèmes Embarqués — UBS Lorient. Outils : MuxTrace, DBEdit, Code::Blocks, langage C.*

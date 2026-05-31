@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s — Sehenonirina Elisa Randriamasinoro",
   },
   description:
-    "Étudiant en M1 Cybersécurité Systèmes Embarqués à UBS Lorient. Recherche un stage disponible immédiatement (10 semaines min., jusqu'en août) et une alternance Cybersécurité & Data Science à partir de sept. 2026 (ENSIBS Vannes). Compétences : reverse engineering, firmware, protocoles radio, STM32, ESP32, Zigbee, CAN Bus.",
+    "Étudiant en M1 Cybersécurité des Systèmes Embarqués à UBS Lorient. Je travaille sur la sécurité des protocoles sans fil embarqués (Zigbee/802.15.4), le reverse engineering de firmwares, la sécurité CAN bus et le hardening de systèmes Linux embarqués. Recherche stage dispo. imm. & alternance Cybersécurité / Data Science (sept. 2026 — ENSIBS Vannes).",
   keywords: [
     "cybersécurité systèmes embarqués",
     "stage cybersécurité",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     siteName: "Sehenonirina Elisa Randriamasinoro",
     title: "Sehenonirina Elisa Randriamasinoro — Cybersécurité Systèmes Embarqués",
     description:
-      "Étudiant en M1 Cybersécurité Systèmes Embarqués à UBS Lorient. Stage dispo. immédiatement + alternance Cybersécurité & Data Science — cycle ingénieur 4ème année ENSIBS Vannes, sept. 2026.",
+      "Étudiant en M1 Cybersécurité des Systèmes Embarqués à UBS Lorient. Sécurité protocoles sans fil (Zigbee/802.15.4), reverse engineering firmwares, CAN bus, hardening Linux embarqué. Stage dispo. imm. & alternance cybersécurité / data (sept. 2026 — ENSIBS Vannes).",
   },
 };
 

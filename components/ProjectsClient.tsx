@@ -99,16 +99,15 @@ export default function ProjectsClient({ projects }: Props) {
           Aucun projet ne correspond aux filtres.
         </div>
       ) : (
-        <div
-          className="grid gap-4"
-          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}
-        >
-          {filtered.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onTagClick={handleTagClick}
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((project, i) => (
+            <div key={project.id} className={i === 0 ? "md:col-span-2" : ""}>
+              <ProjectCard
+                project={project}
+                index={i}
+                onTagClick={handleTagClick}
+              />
+            </div>
           ))}
         </div>
       )}

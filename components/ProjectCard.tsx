@@ -10,47 +10,68 @@ import TechTag from "./TechTag";
 
 interface Props {
   project: Project;
+  index?: number;
   onTagClick?: (tag: string) => void;
 }
 
-export default function ProjectCard({ project, onTagClick }: Props) {
+export default function ProjectCard({ project, index, onTagClick }: Props) {
   const [hovered, setHovered] = useState(false);
 
   const primaryDomain = project.domains[0];
   const domainColor = DOMAIN_CONFIG[primaryDomain]?.color ?? "#2D7DD2";
-
-  const borderColor = hovered ? `${domainColor}66` : "var(--border)";
-  const boxShadow = hovered
-    ? `0 0 0 1px ${domainColor}66, 0 8px 32px -8px ${domainColor}80`
-    : "none";
+  const num = index !== undefined ? String(index + 1).padStart(2, "0") : undefined;
 
   return (
     <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative bg-surface rounded flex flex-col gap-[14px]"
+      className="relative bg-surface flex flex-col gap-[14px] overflow-hidden"
       style={{
-        padding: "22px",
-        border: `1px solid ${borderColor}`,
-        boxShadow,
-        transition: "border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1)",
+        padding: "24px",
+        paddingTop: "22px",
+        borderTop: `3px solid ${domainColor}`,
+        borderRight: "1px solid var(--border)",
+        borderBottom: "1px solid var(--border)",
+        borderLeft: "1px solid var(--border)",
+        borderRadius: "0 0 6px 6px",
+        boxShadow: hovered
+          ? "0 8px 24px -8px rgba(0,0,0,0.18)"
+          : "0 1px 3px rgba(0,0,0,0.06)",
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition: "transform 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1)",
         minHeight: "200px",
       }}
     >
+      {num && (
+        <span
+          className="absolute top-3 right-4 font-display font-bold select-none pointer-events-none"
+          style={{
+            fontSize: "5.5rem",
+            lineHeight: 1,
+            opacity: 0.055,
+            color: "var(--fg)",
+            letterSpacing: "-0.04em",
+          }}
+          aria-hidden="true"
+        >
+          {num}
+        </span>
+      )}
+
       <div className="flex gap-2 flex-wrap">
         {project.domains.map((d) => (
           <DomainBadge key={d} domain={d} size="sm" />
         ))}
       </div>
 
-      {/* Stretched link sur le titre — rend toute la card navigable au clavier */}
       <h3
         className="font-display font-bold text-fg m-0 leading-[1.2]"
         style={{ fontSize: "22px", letterSpacing: "-0.02em" }}
       >
         <Link
           href={`/projects/${project.id}`}
-          className="text-fg no-underline focus-visible:outline-none before:absolute before:inset-0 before:rounded before:content-['']"
+          className="text-fg no-underline focus-visible:outline-none before:absolute before:inset-0 before:content-['']"
+          style={{ borderRadius: "0 0 6px 6px" }}
         >
           {project.title}
         </Link>

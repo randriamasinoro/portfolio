@@ -26,7 +26,7 @@ export default function HomePage() {
       <FadeIn delay={0.1}>
         <section className="max-w-layout mx-auto px-6 py-16">
           <div className="flex justify-between items-baseline mb-8">
-            <SectionTitle>Domaines</SectionTitle>
+            <SectionTitle number="01">Domaines</SectionTitle>
             <span className="font-mono text-xs text-fg-muted">
               {Object.keys(DOMAIN_CONFIG).length} axes techniques
             </span>
@@ -58,7 +58,7 @@ export default function HomePage() {
       <FadeIn delay={0.2}>
         <section className="max-w-layout mx-auto px-6 pb-16">
           <div className="flex justify-between items-baseline mb-8">
-            <SectionTitle>Projets mis en avant</SectionTitle>
+            <SectionTitle number="02">Projets mis en avant</SectionTitle>
             <Link
               href="/projects"
               className="font-mono text-xs text-accent no-underline inline-flex items-center gap-[6px] hover:text-accent-strong transition-colors duration-200"
@@ -67,12 +67,11 @@ export default function HomePage() {
               <ArrowRightIcon />
             </Link>
           </div>
-          <div
-            className="grid gap-4"
-            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}
-          >
-            {featured.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {featured.map((project, i) => (
+              <div key={project.id} className={i === 0 ? "md:col-span-2" : ""}>
+                <ProjectCard project={project} index={i} />
+              </div>
             ))}
           </div>
         </section>
@@ -81,7 +80,7 @@ export default function HomePage() {
       {/* À propos teaser */}
       <FadeIn delay={0.3}>
         <section className="max-w-layout mx-auto px-6 pb-24">
-          <SectionTitle className="mb-6">À propos</SectionTitle>
+          <SectionTitle number="03" className="mb-6">À propos</SectionTitle>
           <div className="flex flex-col sm:flex-row gap-8 sm:gap-12 items-start sm:items-center mt-6">
             <p className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px]">
               Étudiant en M1 Cybersécurité des Systèmes Embarqués à UBS Lorient,

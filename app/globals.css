@@ -2,46 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Light mode (défaut) ─────────────────────────────────────────── */
+/* ── Light mode (crème chaud) ────────────────────────────────────── */
 :root {
-  --bg:            #F4F4F8;
+  --bg:            #F5F3EE;
   --surface:       #FFFFFF;
-  --surface-2:     #EAEAF2;
-  --surface-3:     #E0E0EC;
-  --border:        #D0D0DE;
-  --border-strong: #B8B8CC;
-  --fg:            #0D0D16;
-  --fg-2:          #3C3C52;
-  --fg-muted:      #70708A;
-  --fg-dim:        #A0A0BC;
+  --surface-2:     #EDE9DF;
+  --surface-3:     #E5E0D5;
+  --border:        #D8D3C8;
+  --border-strong: #B8B3A8;
+  --fg:            #111111;
+  --fg-2:          #444444;
+  --fg-muted:      #777777;
+  --fg-dim:        #AAAAAA;
   --accent:        #2D7DD2;
   --accent-strong: #2468BA;
 
-  --nav-bg:        rgba(244, 244, 248, 0.88);
-  --nav-menu-bg:   rgba(244, 244, 248, 0.97);
-  --dot-color:     rgba(0, 0, 0, 0.055);
-  --selection-bg:  rgba(45, 125, 210, 0.2);
+  --nav-bg:        rgba(245, 243, 238, 0.88);
+  --nav-menu-bg:   rgba(245, 243, 238, 0.97);
+  --dot-color:     rgba(0, 0, 0, 0.04);
+  --selection-bg:  rgba(45, 125, 210, 0.18);
 }
 
-/* ── Dark mode ───────────────────────────────────────────────────── */
+/* ── Dark mode (noir sobre) ──────────────────────────────────────── */
 .dark {
-  --bg:            #0A0A0F;
-  --surface:       #12121A;
-  --surface-2:     #1A1A2E;
-  --surface-3:     #20203A;
-  --border:        #1E1E2E;
-  --border-strong: #2A2A3E;
-  --fg:            #E8E8F0;
-  --fg-2:          #B0B0C0;
-  --fg-muted:      #6B7280;
-  --fg-dim:        #4B5563;
+  --bg:            #111111;
+  --surface:       #1A1A1A;
+  --surface-2:     #222222;
+  --surface-3:     #2A2A2A;
+  --border:        #2E2E2E;
+  --border-strong: #3D3D3D;
+  --fg:            #EEEBE4;
+  --fg-2:          #A8A59E;
+  --fg-muted:      #6B6862;
+  --fg-dim:        #4A4845;
   --accent:        #2D7DD2;
   --accent-strong: #4A95E0;
 
-  --nav-bg:        rgba(10, 10, 15, 0.72);
-  --nav-menu-bg:   rgba(10, 10, 15, 0.95);
-  --dot-color:     rgba(255, 255, 255, 0.045);
-  --selection-bg:  rgba(45, 125, 210, 0.35);
+  --nav-bg:        rgba(17, 17, 17, 0.72);
+  --nav-menu-bg:   rgba(17, 17, 17, 0.95);
+  --dot-color:     rgba(255, 255, 255, 0.035);
+  --selection-bg:  rgba(45, 125, 210, 0.30);
 }
 
 @layer base {

@@ -42,7 +42,7 @@ export default function Hero() {
   const displayed = useTypewriter("Elisa", 90);
 
   return (
-    <section className="dot-grid min-h-[calc(100vh-60px)] flex items-center">
+    <section className="min-h-[calc(100vh-60px)] flex items-center">
       <div className="max-w-layout mx-auto px-6 py-24 w-full">
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -73,9 +73,9 @@ export default function Hero() {
           transition={{ duration: 0.5, ease, delay: 0.6 }}
           className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px] mb-3"
         >
-          Étudiant en M1 Cybersécurité des Systèmes Embarqués — UBS Lorient.
+          Étudiant en <em className="not-italic font-semibold text-fg">M1 Cybersécurité des Systèmes Embarqués</em> — UBS Lorient.
           <br />
-          Recherche stage (dispo. imm.) &amp; alternance cybersécurité / data (sept. 2026 — ENSIBS Vannes).
+          Recherche <em className="not-italic font-semibold text-fg">stage</em> (dispo. imm.) &amp; <em className="not-italic font-semibold text-fg">alternance</em> cybersécurité / data (sept. 2026 — ENSIBS Vannes).
         </motion.p>
 
         <motion.p

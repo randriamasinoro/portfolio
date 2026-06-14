@@ -1,34 +1,7 @@
-"use client";
-
-import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import { GitHubIcon, ArrowRightIcon, ArrowUpRightIcon } from "./icons";
 
-// Initialise avec le texte complet : le HTML rendu côté serveur (et le premier
-// rendu client) contient le nom en entier — essentiel pour le SEO et l'accessibilité.
-// L'animation typewriter ne démarre qu'après le montage, côté client uniquement.
-function useTypewriter(text: string, speed = 90) {
-  const [displayed, setDisplayed] = useState(text);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplayed(text);
-      return;
-    }
-    setDisplayed("");
-    let i = 0;
-    const id = setInterval(() => {
-      i++;
-      setDisplayed(text.slice(0, i));
-      if (i >= text.length) clearInterval(id);
-    }, speed);
-    return () => clearInterval(id);
-  }, [text, speed]);
-
-  return displayed;
-}
-
-const BlinkingCursor = memo(function BlinkingCursor() {
+function BlinkingCursor() {
   return (
     <span
       className="inline-block w-[0.5ch] h-[0.9em] bg-accent align-bottom ml-2 animate-blink"
@@ -36,11 +9,9 @@ const BlinkingCursor = memo(function BlinkingCursor() {
       style={{ willChange: "opacity", transform: "translateZ(0)" }}
     />
   );
-});
+}
 
 export default function Hero() {
-  const displayed = useTypewriter("Elisa", 90);
-
   return (
     <section className="min-h-[calc(100vh-60px)] flex items-center">
       <div className="max-w-layout mx-auto px-6 py-24 w-full">
@@ -61,9 +32,9 @@ export default function Hero() {
           <span className="sr-only">
             Sehenonirina Elisa Randriamasinoro — Cybersécurité &amp; Data Science
           </span>
-          {/* Version visuelle animée */}
+          {/* Version visuelle */}
           <span aria-hidden="true">
-            {displayed}
+            Elisa
             <BlinkingCursor />
           </span>
         </h1>

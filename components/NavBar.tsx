@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
 import { GitHubIcon, MailIcon, MenuIcon, XIcon } from "./icons";
 
@@ -88,15 +87,8 @@ export default function NavBar() {
       </nav>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
-            className="fixed top-[60px] left-0 right-0 z-40 border-b border-border nav-menu-blur"
-          >
+      {open && (
+        <div className="fixed top-[60px] left-0 right-0 z-40 border-b border-border nav-menu-blur animate-fade-down">
             <div className="max-w-layout mx-auto px-4 py-4 flex flex-col gap-1">
               {NAV_ITEMS.map((item) => {
                 const active = isActive(item.href);
@@ -133,9 +125,8 @@ export default function NavBar() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </>
   );
 }

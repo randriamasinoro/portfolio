@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -9,19 +6,15 @@ interface Props {
   className?: string;
 }
 
+// Animation d'entrée en CSS pur (plus de Framer Motion) : composant serveur,
+// aucun JS hydraté, le contenu paint dès le premier rendu.
 export default function FadeIn({ children, delay = 0, className }: Props) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.5,
-        ease: "easeOut",
-        delay,
-      }}
-      className={className}
+    <div
+      className={`animate-fade-up${className ? ` ${className}` : ""}`}
+      style={delay ? { animationDelay: `${delay}s` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

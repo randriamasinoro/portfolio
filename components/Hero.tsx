@@ -2,7 +2,6 @@
 
 import { useState, useEffect, memo } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { GitHubIcon, ArrowRightIcon, ArrowUpRightIcon } from "./icons";
 
 // Initialise avec le texte complet : le HTML rendu côté serveur (et le premier
@@ -39,22 +38,15 @@ const BlinkingCursor = memo(function BlinkingCursor() {
   );
 });
 
-const ease = "easeOut";
-
 export default function Hero() {
   const displayed = useTypewriter("Elisa", 90);
 
   return (
     <section className="min-h-[calc(100vh-60px)] flex items-center">
       <div className="max-w-layout mx-auto px-6 py-24 w-full">
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease }}
-          className="font-mono text-[13px] text-accent tracking-[0.04em] mb-4"
-        >
+        <p className="font-mono text-[13px] text-accent tracking-[0.04em] mb-4 animate-fade-up">
           ~ / portfolio
-        </motion.p>
+        </p>
 
         <h1
           className="font-display font-bold text-fg mb-6"
@@ -76,35 +68,29 @@ export default function Hero() {
           </span>
         </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease, delay: 0.6 }}
-          className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px] mb-3"
+        <p
+          className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px] mb-3 animate-fade-up"
+          style={{ animationDelay: "0.1s" }}
         >
           Étudiant en <em className="not-italic font-semibold text-fg">M1 Cybersécurité des Systèmes Embarqués</em> — UBS Lorient.
           <br />
           Recherche <em className="not-italic font-semibold text-fg">stage</em> (dispo. imm.) &amp; <em className="not-italic font-semibold text-fg">alternance</em> cybersécurité / data (sept. 2026 — ENSIBS Vannes).
-        </motion.p>
+        </p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, ease, delay: 0.75 }}
-          className="font-mono text-[13px] text-fg-muted tracking-[0.04em] mb-10"
+        <p
+          className="font-mono text-[13px] text-fg-muted tracking-[0.04em] mb-10 animate-fade-up"
+          style={{ animationDelay: "0.2s" }}
         >
           Cybersécurité{" "}
           <span className="text-accent">·</span>{" "}
           Systèmes Embarqués{" "}
           <span className="text-accent">·</span>{" "}
           Data
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease, delay: 0.9 }}
-          className="flex gap-3 flex-wrap"
+        <div
+          className="flex gap-3 flex-wrap animate-fade-up"
+          style={{ animationDelay: "0.3s" }}
         >
           <Link
             href="/projects"
@@ -123,7 +109,7 @@ export default function Hero() {
             GitHub
             <ArrowUpRightIcon />
           </a>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

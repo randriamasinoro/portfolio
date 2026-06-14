@@ -32,11 +32,11 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   title: {
-    default: "Sehenonirina Elisa Randriamasinoro — Cybersécurité Systèmes Embarqués & Data Science",
-    template: "%s — Sehenonirina Elisa Randriamasinoro",
+    default: "Sehenonirina Elisa Randriamasinoro — Cybersécurité & Data",
+    template: "%s — Elisa Randriamasinoro",
   },
   description:
-    "Étudiant en M1 Cybersécurité des Systèmes Embarqués à UBS Lorient. Je travaille sur la sécurité des protocoles sans fil embarqués (Zigbee/802.15.4), le reverse engineering de firmwares, la sécurité CAN bus et le hardening de systèmes Linux embarqués. Recherche stage dispo. imm. & alternance Cybersécurité / Data Science (sept. 2026 — ENSIBS Vannes).",
+    "Étudiant M1 Cybersécurité des Systèmes Embarqués à UBS Lorient : reverse engineering firmware, Zigbee, CAN bus, data science. Stage & alternance sept. 2026.",
   keywords: [
     "cybersécurité systèmes embarqués",
     "stage cybersécurité",
@@ -60,15 +60,15 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://sinoro.fr",
     siteName: "Sehenonirina Elisa Randriamasinoro",
-    title: "Sehenonirina Elisa Randriamasinoro — Cybersécurité Systèmes Embarqués & Data Science",
+    title: "Sehenonirina Elisa Randriamasinoro — Cybersécurité & Data",
     description:
-      "Étudiant en M1 Cybersécurité des Systèmes Embarqués à UBS Lorient. Sécurité protocoles sans fil (Zigbee/802.15.4), reverse engineering firmwares, CAN bus, hardening Linux embarqué. Stage dispo. imm. & alternance cybersécurité / data (sept. 2026 — ENSIBS Vannes).",
+      "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Reverse engineering, Zigbee, CAN bus, data science. Stage & alternance 2026.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sehenonirina Elisa Randriamasinoro — Cybersécurité Systèmes Embarqués & Data Science",
+    title: "Sehenonirina Elisa Randriamasinoro — Cybersécurité & Data",
     description:
-      "Étudiant M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Reverse engineering firmware, Zigbee, CAN bus, data science. Stage & alternance sept. 2026.",
+      "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Reverse engineering, Zigbee, CAN bus, data science. Stage & alternance 2026.",
   },
   robots: {
     index: true,

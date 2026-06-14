@@ -5,8 +5,11 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { GitHubIcon, ArrowRightIcon, ArrowUpRightIcon } from "./icons";
 
+// Initialise avec le texte complet : le HTML rendu côté serveur (et le premier
+// rendu client) contient le nom en entier — essentiel pour le SEO et l'accessibilité.
+// L'animation typewriter ne démarre qu'après le montage, côté client uniquement.
 function useTypewriter(text: string, speed = 90) {
-  const [displayed, setDisplayed] = useState("");
+  const [displayed, setDisplayed] = useState(text);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -53,7 +56,7 @@ export default function Hero() {
           ~ / portfolio
         </motion.p>
 
-        <div
+        <h1
           className="font-display font-bold text-fg mb-6"
           style={{
             fontSize: "clamp(3rem, 8vw, 5.5rem)",
@@ -61,11 +64,17 @@ export default function Hero() {
             letterSpacing: "-0.03em",
             minHeight: "1.05em",
           }}
-          aria-label="Elisa"
         >
-          {displayed}
-          <BlinkingCursor />
-        </div>
+          {/* Titre sémantique complet (SEO + lecteurs d'écran) */}
+          <span className="sr-only">
+            Sehenonirina Elisa Randriamasinoro — Cybersécurité &amp; Data Science
+          </span>
+          {/* Version visuelle animée */}
+          <span aria-hidden="true">
+            {displayed}
+            <BlinkingCursor />
+          </span>
+        </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 12 }}

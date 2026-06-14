@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       type: "article",
       url: `https://sinoro.fr/projects/${id}`,
-      title: `${title} — Sehenonirina Elisa Randriamasinoro`,
+      title,
       description,
       authors: ["Sehenonirina Elisa Randriamasinoro"],
       tags,

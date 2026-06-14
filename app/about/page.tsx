@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   title: "À propos",
   description:
     "Étudiant en M1 Cybersécurité des Systèmes Embarqués à l'UBS Lorient (ENSIBS). Admis en Diplôme d'Ingénieur Cybersécurité & Data Science à Vannes. Recherche un stage disponible immédiatement jusqu'en août, minimum 10 semaines.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    type: "profile",
+    url: "https://sinoro.fr/about",
+    title: "À propos — Sehenonirina Elisa Randriamasinoro",
+    description:
+      "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Admis cycle ingénieur Cybersécurité & Data Science (ENSIBS Vannes, sept. 2026). Recherche stage & alternance.",
+  },
 };
 
 const PHOTO_FORMATS = ["jpg", "jpeg", "png", "webp", "avif"] as const;
@@ -47,7 +55,7 @@ const CONTACTS = [
   {
     href: "https://github.com/randriamasinoro",
     label: "GitHub",
-    text: "randriamasinoro-elisa",
+    text: "randriamasinoro",
     icon: <GitHubIcon />,
   },
 ] as const;

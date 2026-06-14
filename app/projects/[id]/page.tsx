@@ -8,6 +8,7 @@ import DomainBadge from "@/components/DomainBadge";
 import TechTag from "@/components/TechTag";
 import TableOfContents from "@/components/TableOfContents";
 import MDXContent from "@/components/MDXContent";
+import ProjectJsonLd from "@/components/ProjectJsonLd";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -17,9 +18,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const data = readProject(id);
   if (!data) return {};
+  const { title, description, tags, domains } = data.frontmatter;
+  const domainLabels = domains.map((d) => DOMAIN_CONFIG[d]?.label ?? d);
   return {
-    title: `${data.frontmatter.title} — Sehenonirina Elisa Randriamasinoro`,
-    description: data.frontmatter.description,
+    title,
+    description,
+    keywords: [...tags, ...domainLabels],
+    alternates: { canonical: `/projects/${id}` },
+    openGraph: {
+      type: "article",
+      url: `https://sinoro.fr/projects/${id}`,
+      title: `${title} — Sehenonirina Elisa Randriamasinoro`,
+      description,
+      authors: ["Sehenonirina Elisa Randriamasinoro"],
+      tags,
+    },
   };
 }
 
@@ -40,6 +53,8 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   return (
     <div className="max-w-layout mx-auto px-6 py-16">
+      <ProjectJsonLd project={project} />
+
       {/* Breadcrumb */}
       <Link
         href="/projects"

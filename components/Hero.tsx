@@ -105,7 +105,7 @@ export default function Hero() {
             <ArrowRightIcon />
           </Link>
           <a
-            href="https://github.com/randriamasinoro-elisa"
+            href="https://github.com/randriamasinoro"
             target="_blank"
             rel="noopener noreferrer"
             className="font-body text-sm font-medium px-[18px] py-[11px] rounded bg-transparent text-fg border border-border-strong inline-flex items-center gap-2 transition-all duration-200 hover:border-fg-muted"

@@ -57,7 +57,7 @@ export default function NavBar() {
           {/* Desktop icons + theme toggle */}
           <div className="ml-auto hidden md:flex gap-[14px] items-center text-fg-2">
             <a
-              href="https://github.com/randriamasinoro-elisa"
+              href="https://github.com/randriamasinoro"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
@@ -113,7 +113,7 @@ export default function NavBar() {
               })}
               <div className="flex gap-3 items-center px-3 pt-2 pb-1 border-t border-border mt-1">
                 <a
-                  href="https://github.com/randriamasinoro-elisa"
+                  href="https://github.com/randriamasinoro"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub"

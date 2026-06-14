@@ -13,11 +13,6 @@ const personSchema = {
       "@type": "CollegeOrUniversity",
       name: "Université Bretagne Sud (UBS)",
       url: "https://www.univ-ubs.fr/",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Lorient",
-        addressCountry: "FR",
-      },
     },
   ],
   knowsAbout: [

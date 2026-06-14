@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { readProject, readProjects } from "@/lib/projects";
+import { readProject, readProjects, getRelatedProjects } from "@/lib/projects";
 import { extractToc } from "@/lib/toc";
 import { DOMAIN_CONFIG } from "@/types/project";
 import DomainBadge from "@/components/DomainBadge";
@@ -9,6 +9,7 @@ import TechTag from "@/components/TechTag";
 import TableOfContents from "@/components/TableOfContents";
 import MDXContent from "@/components/MDXContent";
 import ProjectJsonLd from "@/components/ProjectJsonLd";
+import ProjectCard from "@/components/ProjectCard";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -50,6 +51,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   const toc = extractToc(content);
   const primaryDomain = project.domains[0];
   const domainColor = DOMAIN_CONFIG[primaryDomain]?.color ?? "#2D7DD2";
+  const related = getRelatedProjects(id);
 
   return (
     <div className="max-w-layout mx-auto px-6 py-16">
@@ -85,6 +87,18 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <p className="font-body text-[18px] leading-[1.55] text-fg-2 max-w-[720px] mb-6">
           {project.description}
+        </p>
+
+        {/* Signature auteur — E-E-A-T + maillage interne vers /about */}
+        <p className="font-body text-sm text-fg-muted mb-5">
+          Par{" "}
+          <Link
+            href="/about"
+            className="text-fg font-medium hover:text-accent transition-colors duration-200"
+          >
+            Sehenonirina Elisa Randriamasinoro
+          </Link>
+          , M1 Cybersécurité des Systèmes Embarqués — UBS Lorient
         </p>
 
         <div className="flex gap-[14px] flex-wrap items-center mb-5">
@@ -126,6 +140,31 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <TableOfContents items={toc} />
       </div>
+
+      {/* Projets similaires — maillage interne + clusters thématiques */}
+      {related.length > 0 && (
+        <section className="mt-20 pt-10 border-t border-border">
+          <div className="flex justify-between items-baseline mb-8">
+            <h2
+              className="font-display font-bold text-fg m-0"
+              style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", letterSpacing: "-0.02em" }}
+            >
+              Projets similaires
+            </h2>
+            <Link
+              href="/projects"
+              className="font-mono text-xs text-accent no-underline hover:text-accent-strong transition-colors duration-200"
+            >
+              Tous les projets
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {related.map((p, i) => (
+              <ProjectCard key={p.id} project={p} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

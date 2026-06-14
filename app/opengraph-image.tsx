@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import fs from "fs";
+import path from "path";
 
 export const runtime = "nodejs";
 export const alt =
@@ -6,22 +8,14 @@ export const alt =
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-async function loadSyne(): Promise<ArrayBuffer | null> {
-  try {
-    const css = await fetch(
-      "https://fonts.googleapis.com/css2?family=Syne:wght@700&display=swap",
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    ).then((r) => r.text());
-    const url = css.match(/src:\s*url\(([^)]+)\)\s*format\('(?:woff2|truetype)'\)/)?.[1];
-    if (!url) return null;
-    return await fetch(url).then((r) => r.arrayBuffer());
-  } catch {
-    return null;
-  }
+function loadFont(): ArrayBuffer {
+  const fontPath = path.join(process.cwd(), "public/fonts/Syne-Bold.ttf");
+  const buffer = fs.readFileSync(fontPath);
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
 }
 
 export default async function Image() {
-  const syne = await loadSyne();
+  const syne = loadFont();
 
   return new ImageResponse(
     (
@@ -34,7 +28,7 @@ export default async function Image() {
           justifyContent: "space-between",
           background: "#111111",
           padding: "72px",
-          fontFamily: syne ? "Syne" : "sans-serif",
+          fontFamily: "Syne",
         }}
       >
         {/* barre accent en haut */}
@@ -119,9 +113,7 @@ export default async function Image() {
     ),
     {
       ...size,
-      fonts: syne
-        ? [{ name: "Syne", data: syne, style: "normal", weight: 700 }]
-        : [],
+      fonts: [{ name: "Syne", data: syne, style: "normal", weight: 700 }],
     }
   );
 }

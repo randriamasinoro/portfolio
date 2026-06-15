@@ -1,13 +1,10 @@
 name: Deploy
-
 on:
   push:
     branches: [main]
-
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   IMAGE_NAME: ghcr.io/randriamasinoro/portfolio
-
 jobs:
   security:
     name: Security scan
@@ -15,19 +12,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: npm audit
         run: npm audit --omit=dev --audit-level=critical
-
       - name: Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -37,7 +30,6 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           format: table
-
   build:
     name: Build & Push Docker image
     needs: security
@@ -45,24 +37,19 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
       - name: Login to ghcr.io
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
@@ -70,23 +57,17 @@ jobs:
           push: true
           platforms: linux/arm64
           tags: ${{ env.IMAGE_NAME }}:latest
-
   deploy:
     name: Deploy to VPS
     needs: build
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -e
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            cd ~/docker/portfolio
-            docker compose pull
-            docker compose up -d
-            docker image prune -f
+      - name: Login to GHCR
+        run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u randriamasinoro --password-stdin
+      - name: Deploy
+        run: |
+          set -e
+          cd ~/docker/portfolio
+          docker compose pull
+          docker compose up -d
+          docker image prune -f

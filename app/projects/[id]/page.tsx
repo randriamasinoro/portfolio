@@ -102,16 +102,18 @@ export default async function ProjectDetailPage({ params }: Props) {
         </p>
 
         <div className="flex gap-[14px] flex-wrap items-center mb-5">
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 font-body text-sm font-medium px-[14px] py-[9px] rounded bg-surface text-fg border border-border-strong no-underline transition-colors duration-200 hover:border-fg-muted"
-          >
-            <GitHubIcon />
-            Code source
-            <ArrowUpRightIcon />
-          </a>
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 font-body text-sm font-medium px-[14px] py-[9px] rounded bg-surface text-fg border border-border-strong no-underline transition-colors duration-200 hover:border-fg-muted"
+            >
+              <GitHubIcon />
+              Code source
+              <ArrowUpRightIcon />
+            </a>
+          )}
           <span className="font-mono text-xs text-fg-muted inline-flex items-center gap-4">
             <span>{project.date}</span>
             <span

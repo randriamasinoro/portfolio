@@ -7,7 +7,7 @@ export interface Project {
   domains: Domain[];
   tags: string[];
   date: string;
-  github: string;
+  github?: string;
   demo?: string;
   media?: string[];
   featured?: boolean;

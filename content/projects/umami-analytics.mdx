@@ -1,0 +1,232 @@
+---
+id: umami-analytics
+title: Umami — Analytics self-hosted, dashboard VPN-only
+description: Web analytics sans cookie auto-hébergé sur VPS ARM64, avec une architecture réseau qui sépare la collecte publique du dashboard, ce dernier étant accessible uniquement via VPN WireGuard.
+domains:
+  - devsecops
+  - cybersecurity
+tags:
+  - Umami
+  - Docker
+  - Traefik
+  - WireGuard
+  - dnsmasq
+  - PostgreSQL
+  - Let's Encrypt
+  - ARM64
+  - Next.js
+  - RGPD
+date: "2026"
+github: https://github.com/randriamasinoro/portfolio
+media:
+  - /images/umami-analytics/overview.png
+  - /images/umami-analytics/realtime.png
+featured: true
+---
+
+## Contexte
+
+Je voulais savoir qui visite mon portfolio — sans déléguer ces données à Google Analytics, sans cookie, et sans bandeau de consentement. La réponse : **Umami**, un outil de web analytics open-source, que j'ai auto-hébergé sur mon VPS.
+
+Mais l'analytics n'était que la partie visible. Le vrai sujet, c'est l'**architecture réseau** : comment exposer la collecte de statistiques à tout Internet (sinon on ne mesure rien), tout en gardant le **tableau de bord d'administration accessible uniquement depuis mon VPN** ? C'est ce double impératif qui rend le projet intéressant.
+
+---
+
+## Objectifs
+
+- Héberger une solution d'analytics **respectueuse de la vie privée** (sans cookie, sans IP stockée, RGPD-friendly par conception)
+- **Posséder ses données** : tout reste sur mon serveur, rien chez un tiers
+- Concevoir un **routage réseau scindé** : collecte publique d'un côté, dashboard privé de l'autre
+- Verrouiller l'administration derrière le **VPN WireGuard** existant
+- Le tout en **ARM64**, intégré à mon infra Docker + Traefik déjà en place
+
+---
+
+## Stack technique
+
+| Couche | Choix | Raison |
+|--------|-------|--------|
+| Analytics | Umami (image `postgresql`) | Open-source, léger, sans cookie |
+| Base de données | PostgreSQL 16 Alpine | Officielle, multi-arch ARM64 |
+| Reverse proxy | Traefik v2.11 | Déjà en place, routing par labels Docker |
+| TLS | Let's Encrypt (certresolver Traefik) | Certificat automatisé |
+| VPN | WireGuard | Tunnel existant, peers PC + mobiles |
+| DNS interne | dnsmasq (Alpine, buildé localement) | Split-horizon DNS pour les clients VPN |
+| Infra | Oracle Cloud ARM64 (Ampere) | VPS personnel, Free Tier |
+| Intégration | Next.js 14 (composant `<Analytics>`) | Traceur injecté dans le portfolio |
+
+---
+
+## L'idée clé : un service, deux visages
+
+Umami fait **deux choses** aux besoins réseau opposés :
+
+| Partie | Qui s'en sert | Exposition requise |
+|---|---|---|
+| **Collecte** (`/script.js` + `/api/send`) | le navigateur de **chaque visiteur** | Internet public |
+| **Dashboard** (login, stats) | **moi seul** | privé — VPN uniquement |
+
+<Callout type="tip">
+  Le piège : c'est le navigateur du visiteur qui envoie les événements. Si Umami est *uniquement* sur le VPN, plus aucun visiteur ne peut transmettre ses statistiques — on ne mesurerait que soi-même. La collecte **doit** rester publique ; seul le dashboard peut être verrouillé.
+</Callout>
+
+---
+
+## Architecture réseau
+
+```
+                          Internet                         VPN WireGuard (10.8.0.0/24)
+   Visiteur lambda  ─────────────┐                         ┌───────── Mon PC / téléphone
+                                 ▼                         ▼
+                          ┌──────────────────────────────────────┐
+                          │              Traefik v2.11            │
+                          │                                       │
+   router umami-public ──▶│  Host + (/script.js | /api/send)      │  priority 100  → public
+   router umami-private ─▶│  Host (tout le reste)                 │  priority 1    → ipwhitelist 10.8.0.0/24
+                          └───────────────────┬───────────────────┘
+                                              ▼
+                                   ┌──────────────────┐
+                                   │   umami  (:3000)  │──┐
+                                   └──────────────────┘  │ réseau interne (jamais exposé)
+                                   ┌──────────────────┐  │
+                                   │ umami-db (Postgres)│◀─┘
+                                   └──────────────────┘
+```
+
+### Le routage scindé (Traefik)
+
+Deux routers sur le **même domaine**, départagés par leur priorité :
+
+- **`umami-public`** (`priority=100`) — ne matche que `Path(/script.js)` et `PathPrefix(/api/send)`. Aucun filtre : tout le monde peut charger le traceur et envoyer des événements.
+- **`umami-private`** (`priority=1`) — attrape tout le reste (login, dashboard, API admin) et applique un middleware **`ipwhitelist` = `10.8.0.0/24`**. Hors VPN → **403**.
+
+```yaml
+# Router public : collecte uniquement
+- "traefik.http.routers.umami-public.rule=Host(`analytics.sinoro.fr`) && (Path(`/script.js`) || PathPrefix(`/api/send`))"
+- "traefik.http.routers.umami-public.priority=100"
+# Router privé : dashboard réservé au VPN
+- "traefik.http.routers.umami-private.rule=Host(`analytics.sinoro.fr`)"
+- "traefik.http.routers.umami-private.priority=1"
+- "traefik.http.routers.umami-private.middlewares=umami-vpn@docker"
+- "traefik.http.middlewares.umami-vpn.ipwhitelist.sourcerange=10.8.0.0/24,127.0.0.1/32"
+```
+
+Vérification en conditions réelles, depuis Internet (hors VPN) :
+
+| Endpoint | Réponse | Attendu |
+|---|---|:---:|
+| `/script.js` | `200` (application/javascript) | ✅ collecte ouverte |
+| `/api/send` | `405` en GET (POST OK) | ✅ ingestion joignable |
+| `/` (dashboard) | `403` | ✅ bloqué hors VPN |
+
+---
+
+## Le piège du hairpin NAT
+
+Premier obstacle inattendu : connecté au VPN, j'avais **quand même un 403** sur le dashboard.
+
+La cause : j'accédais à `analytics.sinoro.fr` = l'**IP publique** du serveur, depuis un client qui sort *par ce même serveur*. Le paquet fait demi-tour dans la machine (**hairpin NAT**), et le `docker-proxy` réécrit l'IP source en celle de la passerelle Docker (`172.x.0.1`) — qui n'est pas dans la whitelist.
+
+**Solution** : viser l'IP **interne** du serveur dans le tunnel (`10.8.0.1`) au lieu de son IP publique. Plus de hairpin, l'IP source reste `10.8.0.x`, et le certificat Let's Encrypt reste valide car le `Host` ne change pas.
+
+---
+
+## Split-horizon DNS pour les clients mobiles
+
+Sur PC, un `/etc/hosts` suffisait. Mais sur **iPhone/Android**, pas de `/etc/hosts`. Il fallait une solution qui marche sur tous les appareils.
+
+J'ai monté un **dnsmasq** dans un conteneur, qui n'écoute **que sur l'IP du VPN** (`10.8.0.1:53`, jamais sur Internet — pas de DNS open resolver) et fait du *split-horizon* :
+
+```
+no-resolv
+server=1.1.1.1                              # tout le reste → forward normal
+server=9.9.9.9
+address=/analytics.sinoro.fr/10.8.0.1       # seule exception → IP interne
+```
+
+Chaque client WireGuard pointe sur `DNS = 10.8.0.1`. Résultat :
+
+- **VPN connecté** → `analytics.sinoro.fr` résout vers `10.8.0.1` → dashboard accessible (PC **et** mobiles).
+- **VPN déconnecté** → DNS normal → seule la collecte répond, dashboard en 403.
+- Tout le reste du trafic DNS (`google.com`, etc.) est transféré normalement vers `1.1.1.1`.
+
+![Dashboard Umami — vue d'ensemble du trafic du portfolio](/images/umami-analytics/overview.png)
+
+---
+
+## Intégration dans le portfolio (Next.js)
+
+Le traceur est injecté via un composant dédié `<Analytics>`, rendu dans le layout racine :
+
+```tsx
+import Script from "next/script";
+
+const UMAMI_WEBSITE_ID = "f18f2728-…";
+
+export default function Analytics() {
+  return (
+    <Script
+      src="https://analytics.sinoro.fr/script.js"
+      data-website-id={UMAMI_WEBSITE_ID}
+      data-domains="sinoro.fr"     // pas de pollution depuis localhost
+      strategy="afterInteractive"
+    />
+  );
+}
+```
+
+<Callout type="warning">
+  **Leçon Next.js** : j'avais d'abord lu le Website ID depuis une variable d'environnement *runtime*. Erreur — la page d'accueil est **générée statiquement au build**, où la variable n'existe pas : le `null` se retrouvait figé dans le HTML. Le Website ID étant **public** (visible dans le HTML de chaque visiteur), le mettre en clair dans le composant est la bonne approche : il est présent dès le build.
+</Callout>
+
+![Vue temps réel des visiteurs actifs](/images/umami-analytics/realtime.png)
+
+---
+
+## Choix de sécurité
+
+- **Base de données jamais exposée** : PostgreSQL est sur un réseau Docker `internal`, inaccessible depuis Traefik comme depuis Internet.
+- **Dashboard VPN-only** : filtrage `ipwhitelist` au niveau du reverse proxy, pas seulement un login.
+- **DNS lié à l'interface VPN** : `ports: "10.8.0.1:53:53"` — jamais sur `0.0.0.0`, donc pas de résolveur ouvert exploitable.
+- **Secrets hors du code** : `POSTGRES_PASSWORD` et `APP_SECRET` générés sur le serveur (`openssl rand`), stockés dans un `.env` non versionné.
+- **Pas de privilège superflu** : conteneurs sans capabilities additionnelles, images officielles/minimalistes.
+
+---
+
+## Confidentialité (≠ Google Analytics)
+
+| Umami collecte | Umami **ne** fait **pas** |
+|---|---|
+| Page vue, page précédente, titre | ❌ pas de cookie |
+| Langue, résolution écran | ❌ pas d'IP stockée |
+| Pays/navigateur (déduits puis IP jetée) | ❌ aucune donnée personnelle |
+| ID de site (public) | ❌ pas de pistage cross-site |
+
+Le « visiteur unique » repose sur un hash quotidien (IP + user-agent + sel), non réversible. D'où l'absence de bandeau cookie obligatoire.
+
+---
+
+## Limites
+
+- **Nœud unique** : Umami et sa base tournent sur un seul VPS, pas de haute disponibilité.
+- **Dashboard dépendant du VPN** : si WireGuard ou dnsmasq tombe, plus d'accès admin (la collecte, elle, continue).
+- **Sauvegarde** : le volume PostgreSQL doit être sauvegardé pour ne pas perdre l'historique.
+
+---
+
+## Évolutions envisagées
+
+Ce service est le **premier bloc** d'un home lab d'observabilité plus large :
+
+- **Grafana + Prometheus** : métriques infra (CPU, RAM, conteneurs) avec Grafana comme vue unique, branché aussi sur la base Umami.
+- **Loki** : centralisation des logs Nginx/Docker.
+- **Wazuh (SIEM)** : détection d'intrusion sur les hôtes du home lab.
+- **Sauvegarde automatisée** du volume PostgreSQL.
+
+---
+
+## Ce que ce projet m'a appris
+
+L'analytics en lui-même est trivial à déployer. La valeur était ailleurs : raisonner sur **où placer une frontière de confiance**. Exposer juste ce qu'il faut (`/script.js`, `/api/send`), verrouiller le reste, et le faire au bon niveau — le **reverse proxy**, pas l'application.
+
+Les deux obstacles concrets — le **hairpin NAT** qui réécrivait mon IP source, et le **rendu statique** de Next.js qui ignorait ma variable d'environnement — sont exactement le genre de détails qu'on ne comprend qu'en les rencontrant. Chacun a forcé à descendre d'une couche : du routage applicatif vers le NAT, puis du composant React vers le cycle de build.

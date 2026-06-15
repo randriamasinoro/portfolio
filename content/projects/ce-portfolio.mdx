@@ -1,0 +1,162 @@
+---
+id: ce-portfolio
+title: Ce portfolio — architecture data-driven & déploiement continu
+description: Le site que vous consultez — un portfolio Next.js 14 piloté par des fichiers MDX, déployé en continu sur VPS ARM64 via un pipeline sécurisé, et optimisé pour la performance et le SEO.
+domains:
+  - devsecops
+tags:
+  - Next.js
+  - TypeScript
+  - Tailwind
+  - MDX
+  - Docker
+  - Traefik
+  - GitHub Actions
+  - ARM64
+  - SEO
+  - Trivy
+date: "2026"
+github: https://github.com/randriamasinoro/portfolio
+demo: https://sinoro.fr
+featured: true
+---
+
+## Contexte
+
+Ce portfolio est à la fois une **vitrine** pour des recruteurs et un **outil personnel** que je fais évoluer. Plutôt que de coder chaque projet en dur, j'ai conçu le site comme une petite plateforme : le contenu est séparé du code, la mise en ligne est automatique, et chaque détail (performance, accessibilité, SEO) est traité comme une exigence, pas une option.
+
+Le projet que vous lisez en ce moment est lui-même décrit par un fichier MDX — c'est sa propre démonstration.
+
+---
+
+## Objectifs
+
+- Une architecture **data-driven** : ajouter un projet = écrire un fichier, pas modifier du code
+- Un **déploiement continu** avec des contrôles de sécurité bloquants
+- Une **performance** mesurée et optimisée (Lighthouse > 90)
+- Un **SEO** soigné, jusqu'à la donnée structurée et l'identité numérique
+- Le tout cohérent avec mon infra ARM64 existante (Docker + Traefik)
+
+---
+
+## Stack technique
+
+| Couche | Choix | Raison |
+|--------|-------|--------|
+| Framework | Next.js 14 (App Router) | Rendu statique + Server Components |
+| Langage | TypeScript strict | Pas de `any`, typage des données projets |
+| Style | Tailwind CSS | Design system par tokens, zéro CSS mort |
+| Contenu | MDX (`next-mdx-remote`) | Articles riches : code, tableaux, callouts |
+| Conteneur | Docker `linux/arm64` | Aligné sur le VPS Ampere |
+| Reverse proxy | Traefik v2.11 | Routing par labels + TLS Let's Encrypt |
+| CI/CD | GitHub Actions | Pipeline scan → build → deploy |
+| Infra | Oracle Cloud ARM64 | VPS personnel |
+
+---
+
+## Architecture data-driven
+
+Le principe central : **aucune donnée projet n'est codée en dur**. Chaque projet est un fichier MDX dans `content/projects/`, avec un frontmatter typé :
+
+```yaml
+id: mon-projet
+title: …
+domains: [cybersecurity, devsecops]
+tags: [Docker, …]
+```
+
+Au build, une fonction `readProjects()` lit ces fichiers, valide le frontmatter contre le type `Project`, et génère :
+
+- la **liste** filtrable sur `/projects` ;
+- une **page détail** par projet (`/projects/[id]`) via `generateStaticParams` ;
+- les entrées du **sitemap**.
+
+<Callout type="tip">
+  Conséquence concrète : ajouter ce projet n'a demandé **aucune ligne de code** — juste un fichier MDX et un `git push`. Le pipeline a fait le reste. C'est exactement la propriété qu'on attend d'une architecture évolutive.
+</Callout>
+
+---
+
+## Pipeline CI/CD
+
+Chaque `push` sur `main` déclenche un workflow GitHub Actions en trois étages, avec des **gates de sécurité bloquants** :
+
+```
+git push
+   │
+   ▼
+1. Security  ── npm audit (critical) ── Trivy (CRITICAL, exit on fail)
+   │                                         │ tout passe
+   ▼                                         ▼
+2. Build     ── Docker Buildx ── image linux/arm64 ── push ghcr.io
+   │
+   ▼
+3. Deploy    ── SSH VPS ── docker compose pull && up -d ── prune
+```
+
+- **Étage 1** échoue → rien n'est construit ni déployé. Une CVE critique ou une dépendance vulnérable bloque la chaîne.
+- **Étage 2** compile une image ARM64 (via QEMU sur runner x86) poussée sur le registre.
+- **Étage 3** met à jour le conteneur derrière Traefik, sans interruption visible.
+
+---
+
+## Performance
+
+La performance a été traitée comme un objectif chiffré, pas une impression. Le principal gain est venu d'une décision contre-intuitive : **retirer Framer Motion**.
+
+| Action | Effet mesuré |
+|---|---|
+| Animations JS → CSS pur | LCP 2.7s → 2.3s, TBT −76 % |
+| Suppression de Framer Motion (lib JS) | LCP 2.3s → 2.2s, Performance **99** |
+| Nom du hero rendu en SSR (statique) | Contenu critique présent dès le HTML |
+| Polices `next/font` (self-host + swap) | Pas de FOIT, pas de requête tierce |
+
+<Callout type="tip">
+  Une librairie d'animation populaire n'est pas gratuite : son JavaScript repousse l'interactivité. Réécrire les quelques animations en CSS a coûté un peu de travail et rapporté un site nettement plus rapide.
+</Callout>
+
+---
+
+## SEO & identité numérique
+
+Au-delà des balises `title`/`description`, j'ai poussé jusqu'aux signaux que Google utilise pour construire une **entité** :
+
+- **Donnée structurée JSON-LD** : un schéma `Person` (formation, compétences, `sameAs` vers GitHub/LinkedIn) et `WebSite`, pour lier mon nom à mes profils.
+- **Maillage interne** : projets liés entre eux (ce projet pointe vers d'autres), bon pour le crawl et l'utilisateur.
+- **Signature auteur E-E-A-T** sur chaque projet (qui écrit, son cursus).
+- **`sitemap.xml`** généré automatiquement + **`llms.txt`** pour les assistants IA.
+- **Titres et descriptions** courts et ciblés par page.
+
+---
+
+## Accessibilité & design system
+
+- **Dark mode** soigné, palette définie par tokens Tailwind (couleur par domaine).
+- `aria-label` sur tous les boutons-icônes, structure de titres cohérente.
+- Typographie technique : Syne (titres), IBM Plex Sans (corps), JetBrains Mono (code/tags).
+- Composants réutilisables : `ProjectCard`, `DomainBadge`, `TechTag`, `Callout`, `CodeBlock`…
+
+---
+
+## Limites
+
+- **Nœud unique** : un seul VPS, pas de haute disponibilité.
+- **Contenu en français uniquement** : pas d'i18n pour l'instant.
+- **Pas de CMS** : l'édition passe par Git (choix assumé, mais moins accessible qu'un back-office).
+
+---
+
+## Évolutions envisagées
+
+- **Analytics** : intégration d'un compteur de vues par projet (déjà branché sur mon [Umami auto-hébergé](/projects/umami-analytics)).
+- **Recherche** plein-texte côté client sur les projets.
+- **Internationalisation** (FR/EN) via les routes App Router.
+- **Mode clair** complet en complément du dark mode.
+
+---
+
+## Ce que ce projet m'a appris
+
+Construire un portfolio « qui marche » est facile ; construire une **plateforme** qui reste simple à faire évoluer demande des choix d'architecture dès le départ. Séparer le contenu (MDX) du code a transformé chaque ajout de projet en une tâche d'écriture, pas de développement.
+
+L'autre enseignement est venu de la mesure : sans Lighthouse, j'aurais gardé une librairie d'animation « parce que c'est pratique ». Les chiffres ont tranché — et m'ont rappelé que la meilleure dépendance est souvent celle qu'on retire.

@@ -112,15 +112,17 @@ export default function ProjectCard({ project, index, onTagClick }: Props) {
         <span className="font-mono text-[11px] text-fg-muted">
           {project.date}
         </span>
-        <a
-          href={project.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Code source de ${project.title} sur GitHub`}
-          className="text-fg-muted hover:text-fg transition-colors duration-200 inline-flex"
-        >
-          <GitHubIcon size={15} />
-        </a>
+        {project.github && (
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Code source de ${project.title} sur GitHub`}
+            className="text-fg-muted hover:text-fg transition-colors duration-200 inline-flex"
+          >
+            <GitHubIcon size={15} />
+          </a>
+        )}
       </div>
     </article>
   );

@@ -1,0 +1,155 @@
+---
+id: wireguard-vpn
+title: VPN WireGuard — accès distant chiffré & frontière de confiance
+description: Un VPN WireGuard auto-hébergé sur VPS ARM64 qui transforme un serveur isolé en réseau privé multi-appareils, et sert de frontière de confiance pour exposer des services d'administration en interne uniquement.
+domains:
+  - cybersecurity
+  - devsecops
+tags:
+  - WireGuard
+  - VPN
+  - Linux
+  - iptables
+  - NAT
+  - Oracle Cloud
+  - ARM64
+  - dnsmasq
+date: "2026"
+featured: true
+---
+
+## Contexte
+
+Au départ, un simple besoin : accéder à mes services à distance sans les exposer à Internet, et chiffrer mon trafic sur les réseaux non fiables (Wi-Fi public, 4G). J'ai choisi **WireGuard** — moderne, rapide, au code minimal (~4 000 lignes contre ~600 000 pour OpenVPN), donc à faible surface d'attaque.
+
+Mais le projet a pris une autre dimension quand le VPN est devenu une **frontière de confiance** : la brique qui me permet d'exposer des dashboards d'administration *à moi seul*, sans jamais les ouvrir au public. Le VPN n'est plus un tunnel — c'est le périmètre de mon home lab.
+
+---
+
+## Objectifs
+
+- Monter un VPN **auto-hébergé** sur mon VPS, sans service tiers
+- Connecter plusieurs appareils : **PC Linux + smartphones** (iOS, Android)
+- Comprendre en profondeur le **routage et le NAT** sous Linux (pas juste copier une config)
+- Utiliser le VPN comme **mécanisme de contrôle d'accès** à des services internes
+- Gestion des clés **sans compromis** : aucune clé privée ne quitte son appareil
+
+---
+
+## Architecture
+
+```
+        Appareils distants                         VPS (réseau privé 10.8.0.0/24)
+   ┌───────────────────────┐                       ┌──────────────────────────────┐
+   │  PC Linux  10.8.0.2    │═══ tunnel chiffré ═══▶│  wg0  10.8.0.1                │
+   │  iPhone    10.8.0.3    │     (UDP)             │   │                          │
+   │  Android   10.8.0.4    │                       │   ├─ NAT (MASQUERADE) ─▶ Internet
+   └───────────────────────┘                       │   └─ services internes :     │
+                                                    │       dashboards admin VPN-only
+                                                    └──────────────────────────────┘
+```
+
+- **Serveur** : interface `wg0` sur `10.8.0.1/24`, écoute sur un port UDP dédié.
+- **Peers** : chaque appareil a son IP fixe dans le sous-réseau et son couple de clés propre.
+- **Sortie Internet** : le trafic des clients est NAT-é vers l'interface publique du serveur.
+
+---
+
+## Le cœur du sujet : routage & NAT
+
+C'est là que le projet devient formateur. Faire transiter le trafic d'un client vers Internet *via* le serveur demande de comprendre trois mécanismes Linux.
+
+### 1. Le forwarding IP
+
+Le noyau doit accepter de **router** des paquets qui ne lui sont pas destinés (`net.ipv4.ip_forward=1`). Sans ça, les paquets des clients meurent à l'entrée du serveur.
+
+### 2. Le NAT (MASQUERADE)
+
+Les clients ont des IP privées (`10.8.0.x`), inroutables sur Internet. À la sortie, `iptables` réécrit leur adresse source en celle du serveur (**MASQUERADE**), puis ré-attribue les réponses au bon client :
+
+```bash
+# Sortie des clients VPN masquée derrière l'IP publique du serveur
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o <iface_publique> -j MASQUERADE
+# Autoriser le forwarding dans les deux sens
+iptables -A FORWARD -i wg0 -o <iface_publique> -j ACCEPT
+iptables -A FORWARD -i <iface_publique> -o wg0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+```
+
+Ces règles sont appliquées automatiquement à la montée du tunnel (`PostUp`) et nettoyées à la descente (`PostDown`).
+
+### 3. `AllowedIPs` — le réglage le plus mal compris
+
+Côté client, `AllowedIPs` n'est **pas** une liste d'autorisations : c'est une **table de routage**. Il dit « quelles destinations envoyer dans le tunnel ». D'où deux modes :
+
+| Mode | `AllowedIPs` | Effet |
+|---|---|---|
+| **Tunnel complet** | `0.0.0.0/0` | **Tout** le trafic passe par le VPN (vie privée maximale) |
+| **Split tunnel** | `10.8.0.0/24` | Seul le réseau privé passe par le VPN, le reste en direct |
+
+<Callout type="tip">
+  Comprendre ça résout 90 % des « pourquoi je n'ai plus Internet » ou « pourquoi je n'accède pas à mon service interne ». Le choix du mode dépend de l'usage : confidentialité totale (full) vs simple accès au réseau privé (split).
+</Callout>
+
+---
+
+## Le VPN comme frontière de confiance
+
+L'usage le plus intéressant : un service exposé **uniquement** aux IP du VPN. Mon reverse proxy n'autorise le dashboard d'administration que pour le sous-réseau `10.8.0.0/24` ; hors VPN, c'est un `403`.
+
+C'est exactement le mécanisme qui protège l'interface de mon analytics auto-hébergé — voir le projet [Umami — Analytics self-hosted](/projects/umami-analytics), dont le dashboard est verrouillé derrière ce VPN, avec un DNS interne (dnsmasq) pour que la résolution fonctionne aussi sur mobile.
+
+```
+                    ┌── /script.js, /api/send ──▶ public (collecte)
+   analytics.*  ───►│
+   (reverse proxy)  └── dashboard ──▶ ipwhitelist 10.8.0.0/24 ──▶ VPN uniquement
+```
+
+Le VPN devient ainsi une **couche d'authentification réseau** : avant même d'arriver au login applicatif, il faut déjà être *dans* le réseau privé.
+
+---
+
+## Gestion des clés
+
+WireGuard repose sur de la cryptographie à clé publique (Curve25519). Le principe que je me suis imposé :
+
+- Chaque appareil **génère lui-même** sa paire de clés ; la **clé privée ne quitte jamais l'appareil**.
+- Le serveur ne connaît que les **clés publiques** des peers (dans sa config).
+- Un appareil compromis ou perdu = on retire son bloc `[Peer]` côté serveur, sans impacter les autres.
+
+<Callout type="warning">
+  Toutes les clés de ce projet sont rédigées dans cette page. Publier une clé privée — même de démonstration — est une faute : elle suffit à usurper un peer. En cas d'exposition accidentelle, la seule réponse correcte est la **rotation** (régénérer la paire et mettre à jour la config).
+</Callout>
+
+---
+
+## Choix de sécurité
+
+- **Faible surface d'attaque** : WireGuard expose un seul port UDP qui **ne répond pas** aux paquets non authentifiés (silencieux face aux scans — pas de bannière, pas de handshake sans clé valide).
+- **Pare-feu** : seul le port WireGuard est ouvert ; les services internes ne sont jamais publiés directement.
+- **IP fixes par peer** : indispensable pour appliquer des règles de filtrage fiables (ex. l'`ipwhitelist` du reverse proxy).
+- **Cryptographie moderne** uniquement : pas de suite d'algorithmes négociable (donc pas de downgrade).
+
+---
+
+## Limites
+
+- **Nœud unique** : si le VPS tombe, plus de VPN ni d'accès aux services internes.
+- **Dépendance pour l'admin** : verrouiller un dashboard derrière le VPN signifie que sa disponibilité dépend du tunnel.
+- **Distribution des configs** : ajouter un peer reste manuel (génération de clés + QR code).
+
+---
+
+## Évolutions envisagées
+
+- **Interface de gestion** (type `wg-easy`) pour ajouter/révoquer des peers sans éditer la config à la main.
+- **Kill switch** côté clients (bloquer tout trafic si le tunnel tombe, en mode full tunnel).
+- **Monitoring** des handshakes et du trafic par peer, intégré au futur Grafana du home lab.
+- **Rotation périodique** des clés documentée comme procédure.
+
+---
+
+## Ce que ce projet m'a appris
+
+WireGuard s'installe en dix minutes ; le comprendre prend plus longtemps — et c'est tout l'intérêt. Le vrai contenu n'est pas l'outil, mais ce qu'il y a **autour** : le forwarding IP, le NAT `MASQUERADE`, la sémantique exacte d'`AllowedIPs`. Ce sont des notions réseau fondamentales qu'on ne s'approprie vraiment qu'en débuggant un cas concret (« pourquoi ce client n'a plus de DNS ? »).
+
+Surtout, le projet a changé ma façon de voir un VPN : pas un simple tunnel pour « être anonyme », mais une **primitive d'architecture** — une frontière de confiance sur laquelle on peut bâtir un contrôle d'accès réseau pour tout un home lab.

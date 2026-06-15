@@ -4,6 +4,7 @@ import "./globals.css"
 import NavBar from "@/components/NavBar";
 import ThemeProvider from "@/components/ThemeProvider";
 import JsonLd from "@/components/JsonLd";
+import Analytics from "@/components/Analytics";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -102,6 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       >
         <JsonLd />
+        <Analytics />
         <ThemeProvider>
           <NavBar />
           <main className="pt-[60px]">{children}</main>

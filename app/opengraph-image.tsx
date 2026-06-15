@@ -4,7 +4,7 @@ import path from "path";
 
 export const runtime = "nodejs";
 export const alt =
-  "Sehenonirina Elisa Randriamasinoro — Cybersécurité des Systèmes Embarqués & Data Science";
+  "Sehenonirina Elisa Randriamasinoro, Cybersécurité des Systèmes Embarqués & Data Science";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -79,7 +79,7 @@ export default async function Image() {
               maxWidth: 900,
             }}
           >
-            M1 Cybersécurité des Systèmes Embarqués — UBS Lorient
+            M1 Cybersécurité des Systèmes Embarqués, UBS Lorient
           </div>
         </div>
 

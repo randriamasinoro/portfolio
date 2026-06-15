@@ -1,6 +1,6 @@
 ---
 id: rover-stm32
-title: Rover STM32 — Pilotage bas niveau
+title: Rover STM32, Pilotage bas niveau
 description: Rover mobile piloté par STM32F4. Contrôle moteurs via PWM, capteurs ultrasons pour évitement d'obstacles, communication UART vers Raspberry Pi.
 domains:
   - embedded
@@ -23,12 +23,12 @@ Projet de contrôle bas niveau d'un rover mobile sur STM32F446RE. L'objectif ét
 
 Le firmware est découpé en trois tâches FreeRTOS :
 
-- Tâche `motor_ctrl` — génération PWM sur TIM1/TIM2 pour les ponts en H
-- Tâche `sensor_poll` — mesure distance HC-SR04 par capture IC
-- Tâche `comm_rx` — réception des commandes UART depuis le Raspberry Pi
+- Tâche `motor_ctrl`, génération PWM sur TIM1/TIM2 pour les ponts en H
+- Tâche `sensor_poll`, mesure distance HC-SR04 par capture IC
+- Tâche `comm_rx`, réception des commandes UART depuis le Raspberry Pi
 
 <Callout type="info">
-  Les tâches partagent une file de messages FreeRTOS — pas de mutex, pas de conflit d'accès aux périphériques.
+  Les tâches partagent une file de messages FreeRTOS, pas de mutex, pas de conflit d'accès aux périphériques.
 </Callout>
 
 ## Implémentation

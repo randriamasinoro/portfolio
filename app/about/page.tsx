@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "profile",
     url: "https://sinoro.fr/about",
-    title: "À propos — Sehenonirina Elisa Randriamasinoro",
+    title: "À propos, Sehenonirina Elisa Randriamasinoro",
     description:
       "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Admis cycle ingénieur Cybersécurité & Data Science (ENSIBS Vannes, sept. 2026). Recherche stage & alternance.",
   },
@@ -95,12 +95,12 @@ export default function AboutPage() {
               </p>
               <ul className="font-body text-base leading-[1.7] text-fg-2 mb-4 pl-5 list-disc space-y-1">
                 <li>
-                  un <strong className="text-fg font-semibold">stage en cybersécurité embarquée</strong>{" "}
+                  un stage en cybersécurité embarquée{" "}
                   (disponible immédiatement, durée minimale de 10 semaines,
                   jusqu&apos;à août 2026) ;
                 </li>
                 <li>
-                  une <strong className="text-fg font-semibold">alternance en cybersécurité &amp; data science</strong>{" "}
+                  une alternance en cybersécurité &amp; data science{" "}
                   à partir de septembre 2026, au rythme 1 mois école / 1 mois
                   entreprise.
                 </li>

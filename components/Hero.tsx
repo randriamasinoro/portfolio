@@ -30,7 +30,7 @@ export default function Hero() {
         >
           {/* Titre sémantique complet (SEO + lecteurs d'écran) */}
           <span className="sr-only">
-            Sehenonirina Elisa Randriamasinoro — Cybersécurité &amp; Data Science
+            Sehenonirina Elisa Randriamasinoro, Cybersécurité &amp; Data Science
           </span>
           {/* Version visuelle */}
           <span aria-hidden="true">
@@ -43,9 +43,9 @@ export default function Hero() {
           className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px] mb-3 animate-fade-up"
           style={{ animationDelay: "0.1s" }}
         >
-          Étudiant en <em className="not-italic font-semibold text-fg">M1 Cybersécurité des Systèmes Embarqués</em> — UBS Lorient.
+          Étudiant en M1 Cybersécurité des Systèmes Embarqués, UBS Lorient.
           <br />
-          Recherche <em className="not-italic font-semibold text-fg">stage</em> (dispo. imm.) &amp; <em className="not-italic font-semibold text-fg">alternance</em> cybersécurité / data (sept. 2026 — ENSIBS Vannes).
+          Recherche stage (dispo. imm.) &amp; alternance cybersécurité / data (sept. 2026, ENSIBS Vannes).
         </p>
 
         <p

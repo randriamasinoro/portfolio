@@ -1,6 +1,6 @@
 ---
 id: reverse-engineering
-title: Reverse Engineering — Firmware embarqué
+title: Reverse Engineering, Firmware embarqué
 description: Analyse statique et dynamique d'un firmware ARM Cortex-M extrait par JTAG. Identification de la surface d'attaque et reconstruction du flux de contrôle.
 domains:
   - cybersecurity
@@ -29,7 +29,7 @@ openocd -f interface/jlink.cfg -f target/stm32f1x.cfg \
 ```
 
 <Callout type="warning">
-  Vérifier que le Read Protection Level est à 0 avant le dump — RDP1 bloque la lecture JTAG mais laisse le debug fonctionnel.
+  Vérifier que le Read Protection Level est à 0 avant le dump, RDP1 bloque la lecture JTAG mais laisse le debug fonctionnel.
 </Callout>
 
 ## Analyse statique avec Ghidra

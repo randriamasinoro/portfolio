@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://sinoro.fr/projects",
-    title: "Projets techniques — Sehenonirina Elisa Randriamasinoro",
+    title: "Projets techniques, Sehenonirina Elisa Randriamasinoro",
     description:
       "Projets cybersécurité embarquée, reverse engineering firmware, protocoles radio (Zigbee, CAN Bus), IoT, data science et DevSecOps.",
   },

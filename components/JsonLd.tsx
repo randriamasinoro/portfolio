@@ -42,7 +42,7 @@ const personSchema = {
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Portfolio — Sehenonirina Elisa Randriamasinoro",
+  name: "Portfolio, Sehenonirina Elisa Randriamasinoro",
   url: "https://sinoro.fr",
   inLanguage: "fr-FR",
   author: { "@type": "Person", name: "Sehenonirina Elisa Randriamasinoro" },

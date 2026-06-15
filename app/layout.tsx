@@ -33,8 +33,8 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   title: {
-    default: "Sehenonirina Elisa Randriamasinoro — Cybersécurité & Data",
-    template: "%s — Elisa Randriamasinoro",
+    default: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
+    template: "%s, Elisa Randriamasinoro",
   },
   description:
     "Étudiant M1 Cybersécurité des Systèmes Embarqués à UBS Lorient : reverse engineering firmware, Zigbee, CAN bus, data science. Stage & alternance sept. 2026.",
@@ -61,13 +61,13 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://sinoro.fr",
     siteName: "Sehenonirina Elisa Randriamasinoro",
-    title: "Sehenonirina Elisa Randriamasinoro — Cybersécurité & Data",
+    title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
     description:
       "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Reverse engineering, Zigbee, CAN bus, data science. Stage & alternance 2026.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sehenonirina Elisa Randriamasinoro — Cybersécurité & Data",
+    title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
     description:
       "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Reverse engineering, Zigbee, CAN bus, data science. Stage & alternance 2026.",
   },

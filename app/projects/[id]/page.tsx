@@ -89,7 +89,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {project.description}
         </p>
 
-        {/* Signature auteur — E-E-A-T + maillage interne vers /about */}
+        {/* Signature auteur, E-E-A-T + maillage interne vers /about */}
         <p className="font-body text-sm text-fg-muted mb-5">
           Par{" "}
           <Link
@@ -98,7 +98,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           >
             Sehenonirina Elisa Randriamasinoro
           </Link>
-          , M1 Cybersécurité des Systèmes Embarqués — UBS Lorient
+          , M1 Cybersécurité des Systèmes Embarqués, UBS Lorient
         </p>
 
         <div className="flex gap-[14px] flex-wrap items-center mb-5">
@@ -143,7 +143,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <TableOfContents items={toc} />
       </div>
 
-      {/* Projets similaires — maillage interne + clusters thématiques */}
+      {/* Projets similaires, maillage interne + clusters thématiques */}
       {related.length > 0 && (
         <section className="mt-20 pt-10 border-t border-border">
           <div className="flex justify-between items-baseline mb-8">

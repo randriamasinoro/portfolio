@@ -1,7 +1,7 @@
 ---
 id: classification-graines
 title: Triage automatique de haricots par CNN embarqué
-description: Système de classification binaire de haricots blancs (bonne/mauvaise graine) en temps réel via un CNN Keras déployé sur ESP32-CAM. Projet de fin d'études L2 Génie Industriel — IST Antananarivo.
+description: Système de classification binaire de haricots blancs (bonne/mauvaise graine) en temps réel via un CNN Keras déployé sur ESP32-CAM. Projet de fin d'études L2 Génie Industriel, IST Antananarivo.
 domains:
   - data-science
   - embedded
@@ -32,13 +32,13 @@ Objectif : concevoir une machine compacte et économique pour trier automatiquem
 |--------|--------|
 | Mauvaise graine | 209 |
 | Bonne graine | 131 |
-| **Total** | **340** |
+| Total | 340 |
 
-Split : **60% entraînement / 30% validation / 10% test**. Les images sont redimensionnées à 224×224 pixels avant entraînement.
+Split : 60% entraînement / 30% validation / 10% test. Les images sont redimensionnées à 224×224 pixels avant entraînement.
 
 ## Architecture du modèle CNN
 
-Réseau convolutif binaire avec extracteur de caractéristiques (blocs Conv2D + MaxPooling) suivi d'un classifieur dense. Sortie : 1 neurone sigmoïde (classification binaire). **31 561 441 paramètres entraînables.**
+Réseau convolutif binaire avec extracteur de caractéristiques (blocs Conv2D + MaxPooling) suivi d'un classifieur dense. Sortie : 1 neurone sigmoïde (classification binaire). 31 561 441 paramètres entraînables.
 
 ```python
 model = Sequential([
@@ -88,13 +88,13 @@ model.compile(
 <ImageFigure
   src="/images/classification/loss.jpeg"
   alt="Courbes loss et val_loss sur 10 époques"
-  caption="Courbes loss / val_loss — convergence jusqu'à l'époque 6, légère divergence ensuite"
+  caption="Courbes loss / val_loss, convergence jusqu'à l'époque 6, légère divergence ensuite"
   size="md"
 />
 
 ## Résultats
 
-**98% d'accuracy sur le jeu de test** (34 images non vues pendant l'entraînement). Le modèle est sauvegardé sous `image_model.h5` et rechargé par le script d'inférence Python qui pilote la bascule via HTTP.
+98% d'accuracy sur le jeu de test (34 images non vues pendant l'entraînement). Le modèle est sauvegardé sous `image_model.h5` et rechargé par le script d'inférence Python qui pilote la bascule via HTTP.
 
 ```python
 model = load_model('image_model.h5')
@@ -107,7 +107,7 @@ direction = 'droite' if pred > 0.5 else 'gauche'  # seuil 0.5 — version foncti
 requests.get(f'http://192.168.1.100/servo?dir={direction}')
 ```
 
-Seuil de décision fixé à 0.5 — frontière naturelle de la fonction sigmoid pour une classification binaire. Valeur choisie pour cette première version fonctionnelle.
+Seuil de décision fixé à 0.5, frontière naturelle de la fonction sigmoid pour une classification binaire. Valeur choisie pour cette première version fonctionnelle.
 
 ## Pipeline système
 
@@ -138,32 +138,32 @@ Servomoteur SG90
 
 ## Limites
 
-- **Dataset limité** — 340 images au total, jeu de test de seulement 34 images. La valeur de 98% d'accuracy est statistiquement fragile sur un si petit échantillon de test.
-- **Conditions contrôlées** — luminosité fixe, angle fixe, même appareil. La robustesse du modèle en conditions réelles (variations d'éclairage, position des graines) n'a pas été testée.
-- **Modèle surdimensionné** — 31 561 441 paramètres pour une classification binaire simple. Un modèle beaucoup plus léger serait suffisant et plus adapté à un contexte embarqué.
-- **Métriques basiques** — seule l'accuracy a été mesurée. Matrice de confusion, F1-score et courbe ROC n'ont pas été calculés dans le cadre de ce projet L2.
+- Dataset limité, 340 images au total, jeu de test de seulement 34 images. La valeur de 98% d'accuracy est statistiquement fragile sur un si petit échantillon de test.
+- Conditions contrôlées, luminosité fixe, angle fixe, même appareil. La robustesse du modèle en conditions réelles (variations d'éclairage, position des graines) n'a pas été testée.
+- Modèle surdimensionné, 31 561 441 paramètres pour une classification binaire simple. Un modèle beaucoup plus léger serait suffisant et plus adapté à un contexte embarqué.
+- Métriques basiques, seule l'accuracy a été mesurée. Matrice de confusion, F1-score et courbe ROC n'ont pas été calculés dans le cadre de ce projet L2.
 
 ## Perspectives
 
-- **Data augmentation** — rotations, variations de luminosité, flips pour enrichir le dataset sans nouvelles captures
-- **Transfer learning** — remplacer le CNN custom par MobileNetV2, 10× plus léger et plus robuste sur petits datasets
-- **Edge AI** — déployer le modèle directement sur l'ESP32 via TensorFlow Lite pour éliminer la dépendance à l'ordinateur
-- **Métriques complètes** — calculer la matrice de confusion, précision et rappel par classe pour mieux évaluer les erreurs réelles du modèle
+- Data augmentation, rotations, variations de luminosité, flips pour enrichir le dataset sans nouvelles captures
+- Transfer learning, remplacer le CNN custom par MobileNetV2, 10× plus léger et plus robuste sur petits datasets
+- Edge AI, déployer le modèle directement sur l'ESP32 via TensorFlow Lite pour éliminer la dépendance à l'ordinateur
+- Métriques complètes, calculer la matrice de confusion, précision et rappel par classe pour mieux évaluer les erreurs réelles du modèle
 
 ## Système embarqué et mécanique
 
 Un cylindre + disque perforé alimente les haricots un par un sur un plateau d'acquisition. L'ESP32-CAM capture la photo, l'ordinateur fait l'inférence CNN, puis commande le servomoteur SG90 qui bascule à droite (bonne graine) ou à gauche (mauvaise graine).
 
-L'ESP32-CAM est programmée en C++ et configurée en **point d'accès WiFi**
+L'ESP32-CAM est programmée en C++ et configurée en point d'accès WiFi
 agissant comme serveur HTTP. L'ordinateur Python se connecte comme client.
 
-**Communication :**
-- `GET /capture.jpg` — ESP32-CAM déclenche la rotation du disque,
+Communication :
+- `GET /capture.jpg`, ESP32-CAM déclenche la rotation du disque,
   capture l'image et la retourne au PC
-- `POST /prediction` — PC envoie la décision CNN (0 ou 1),
+- `POST /prediction`, PC envoie la décision CNN (0 ou 1),
   ESP32-CAM commande le servomoteur en conséquence
 
-**Composants partie opérative :**
+Composants partie opérative :
 
 | Composant | Rôle |
 |---|---|
@@ -175,19 +175,19 @@ agissant comme serveur HTTP. L'ordinateur Python se connecte comme client.
   <ImageFigure
     src="/images/classification/vue-eclatee-nomenclature.png"
     alt="Vue éclatée du système"
-    caption="Vue éclatée — nomenclature des 9 pièces du mécanisme d'alimentation"
+    caption="Vue éclatée, nomenclature des 9 pièces du mécanisme d'alimentation"
     size="xs"
   />
   <ImageFigure
     src="/images/classification/vue-assemblee.png"
     alt="Vue assemblée du système"
-    caption="Vue assemblée — cylindre et disque perforé montés"
+    caption="Vue assemblée, cylindre et disque perforé montés"
     size="xs"
   />
   <ImageFigure
     src="/images/classification/systeme-complet.png"
     alt="Système complet avec ESP32-CAM et servomoteur"
-    caption="Système complet — ESP32-CAM et servomoteur SG90 intégrés"
+    caption="Système complet, ESP32-CAM et servomoteur SG90 intégrés"
     size="xs"
   />
 </div>

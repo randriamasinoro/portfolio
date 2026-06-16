@@ -63,7 +63,11 @@ Ce n'est pas spectaculaire en isolation, mais voir ces événements corrélés d
 
 ## La vue SCA
 
-Le module SCA lance des vérifications automatiques contre le CIS Ubuntu 24.04 LTS Benchmark. La capture ci-dessus montre le résultat sur mon serveur : 118 passed, 119 failed, score de 49 %.
+Le module SCA lance des vérifications automatiques contre le CIS Ubuntu 24.04 LTS Benchmark.
+
+![Résultat SCA Wazuh — CIS Ubuntu 24.04 LTS Benchmark sur mon VPS](/images/wazuh/wazuhassesment.png)
+
+La capture montre le résultat sur mon serveur : 118 passed, 119 failed, score de 49 %.
 
 Ce chiffre n'est pas une alerte en soi. Le Benchmark CIS est exigeant par construction, et beaucoup de contrôles concernent des configurations qui n'ont pas de sens pour tous les contextes. Ce qui est utile, c'est de lire *pourquoi* un contrôle échoue et décider si ça compte pour ton cas précis.
 

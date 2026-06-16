@@ -1,0 +1,125 @@
+---
+id: wazuh
+title: Wazuh SIEM/XDR, audit de conformité CIS sur VPS
+description: Déploiement de Wazuh sur VPS ARM64 pour surveiller la posture de sécurité d'un serveur Ubuntu 24.04. Audit CIS Benchmark via SCA, analyse des alertes et hardening progressif.
+domains:
+  - cybersecurity
+  - devsecops
+tags:
+  - Wazuh
+  - SIEM
+  - XDR
+  - SCA
+  - CIS Benchmark
+  - Docker
+  - Ubuntu
+  - Linux
+  - Hardening
+  - Oracle Cloud
+  - ARM64
+date: "2026"
+github: https://github.com/randriamasinoro/portfolio
+media:
+  - /images/wazuh/wazuhassesment.png
+featured: true
+---
+
+## Contexte
+
+Mon VPS Oracle Cloud ARM64 tourne depuis des mois. Je sais qu'il est "raisonnablement sécurisé" — mais sans mesure, ça reste une impression. J'ai déployé Wazuh pour avoir une vision objective : combien de règles CIS mon serveur respecte vraiment, et où sont les failles.
+
+Wazuh est un SIEM/XDR open-source qui combine la collecte de logs, la détection d'intrusion (HIDS), et l'audit de conformité (SCA). L'objectif ici : pas juste installer l'outil, mais comprendre ce qu'il mesure et agir sur les résultats.
+
+---
+
+## Architecture du déploiement
+
+```
+VPS Oracle Cloud (ARM64 — Ubuntu 24.04)
+│
+├── Wazuh Manager        ← moteur de détection, corrélation des alertes
+├── Wazuh Indexer        ← stockage des événements (OpenSearch)
+└── Wazuh Dashboard      ← interface web (accès VPN-only via WireGuard)
+
+Agent Wazuh (installé sur le même serveur)
+ └── SCA Module          ← audit CIS Benchmark à la demande
+```
+
+Le dashboard est exposé uniquement derrière le VPN WireGuard — inaccessible depuis Internet. Un accès direct `/` sur le port Wazuh sans être connecté au VPN retourne une connexion refusée.
+
+---
+
+## Security Configuration Assessment (SCA)
+
+La SCA est le module d'audit de conformité de Wazuh. Elle exécute des milliers de vérifications contre un référentiel de bonnes pratiques — ici le **CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0**.
+
+### Résultats initiaux
+
+| Statut | Nombre |
+|---|---|
+| Passed | 118 |
+| Failed | 119 |
+| Not applicable | 42 |
+| **Score** | **49 %** |
+
+Un score de 49 % sur un serveur qu'on pensait "bien configuré" — c'est exactement pour ça qu'on fait des audits.
+
+### Exemples de contrôles échoués
+
+```
+35001 — Ensure mounting of cramfs filesystems is disabled
+35002 — Ensure mounting of freevxfs filesystems is disabled
+35003 — Ensure hfsplus kernel module is not available
+35004 — Ensure jffs2 kernel module is not available
+35006 — Ensure udf kernel module is not available
+35007 — Ensure sctp kernel module is not available
+35008 — Ensure tipc kernel module is not available
+```
+
+La majorité des échecs initiaux concernent des modules noyau inutilisés mais non désactivés, et des paramètres sysctl non conformes.
+
+---
+
+## Actions de hardening
+
+### Désactivation des modules noyau inutiles
+
+Les systèmes de fichiers exotiques (`cramfs`, `freevxfs`, `hfsplus`, `jffs2`, `udf`) et les protocoles réseau non utilisés (`sctp`, `tipc`, `dccp`) représentent une surface d'attaque sans aucune utilité sur un serveur cloud.
+
+```bash
+# /etc/modprobe.d/cis-hardening.conf
+install cramfs /bin/false
+install freevxfs /bin/false
+install hfsplus /bin/false
+install jffs2 /bin/false
+install udf /bin/false
+install sctp /bin/false
+install tipc /bin/false
+install dccp /bin/false
+```
+
+### Paramètres sysctl
+
+```bash
+# /etc/sysctl.d/99-cis.conf
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+kernel.randomize_va_space = 2
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+```
+
+### Résultat après hardening
+
+Après chaque série de corrections, on relance la SCA depuis le dashboard Wazuh (`Refresh`) et le score progresse. Les contrôles `35001` à `35008` passent au vert.
+
+---
+
+## Ce que j'ai appris
+
+Le CIS Benchmark ne cherche pas la perfection théorique — il cible les risques réels avec un rapport effort/impact élevé. Désactiver un module noyau prend 30 secondes, mais supprime un vecteur d'attaque documenté. 
+
+L'intérêt de Wazuh par rapport à une checklist manuelle : les vérifications sont rejouables, automatisées, et les résultats sont stockés avec un horodatage. Si quelqu'un modifie la configuration du serveur, le prochain audit SCA le détectera immédiatement.

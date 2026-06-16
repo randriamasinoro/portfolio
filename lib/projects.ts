@@ -18,6 +18,7 @@ export function readProjects(): Project[] {
       const { data } = matter(raw);
       return data as Project;
     })
+    .filter((p) => !p.draft)
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 

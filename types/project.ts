@@ -11,6 +11,7 @@ export interface Project {
   demo?: string;
   media?: string[];
   featured?: boolean;
+  draft?: boolean;
 }
 
 export const DOMAIN_CONFIG: Record<

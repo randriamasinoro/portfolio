@@ -156,7 +156,21 @@ function buildComponents(domainColor: string) {
     },
     img({ src, alt }: { src?: string; alt?: string }) {
       if (!src) return null;
-      return <ImageFigure src={src} alt={alt ?? ""} />;
+      return (
+        <figure className="my-6">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt ?? ""}
+            className="w-full rounded-sm border border-border"
+          />
+          {alt && (
+            <figcaption className="font-mono text-xs text-fg-muted text-center mt-2 leading-snug">
+              {alt}
+            </figcaption>
+          )}
+        </figure>
+      );
     },
     Callout,
     ImageFigure,

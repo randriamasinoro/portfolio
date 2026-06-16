@@ -1,7 +1,7 @@
 ---
 id: wazuh
-title: Wazuh SIEM/XDR, audit de conformité CIS sur VPS
-description: Déploiement de Wazuh sur VPS ARM64 pour surveiller la posture de sécurité d'un serveur Ubuntu 24.04. Audit CIS Benchmark via SCA, analyse des alertes et hardening progressif.
+title: Wazuh SIEM/XDR, surveillance de sécurité sur VPS personnel
+description: Déploiement de Wazuh sur VPS ARM64 pour comprendre comment fonctionne un SIEM/XDR en conditions réelles. Collecte de logs, détection d'intrusion et premier regard sur l'audit de conformité.
 domains:
   - cybersecurity
   - devsecops
@@ -10,11 +10,9 @@ tags:
   - SIEM
   - XDR
   - SCA
-  - CIS Benchmark
   - Docker
   - Ubuntu
   - Linux
-  - Hardening
   - Oracle Cloud
   - ARM64
 date: "2026"
@@ -26,100 +24,53 @@ featured: true
 
 ## Contexte
 
-Mon VPS Oracle Cloud ARM64 tourne depuis des mois. Je sais qu'il est "raisonnablement sécurisé" — mais sans mesure, ça reste une impression. J'ai déployé Wazuh pour avoir une vision objective : combien de règles CIS mon serveur respecte vraiment, et où sont les failles.
+Wazuh est revenu souvent dans mes lectures sur la détection d'intrusion et la supervision de sécurité. Plutôt que de le lire en théorie, j'ai voulu le faire tourner sur quelque chose de réel : mon VPS ARM64, qui héberge déjà mon portfolio, mon VPN WireGuard et quelques services.
 
-Wazuh est un SIEM/XDR open-source qui combine la collecte de logs, la détection d'intrusion (HIDS), et l'audit de conformité (SCA). L'objectif ici : pas juste installer l'outil, mais comprendre ce qu'il mesure et agir sur les résultats.
+L'idée n'était pas de produire un rapport d'audit parfait, mais de comprendre ce qu'un SIEM voit quand il surveille un système en production.
 
 ---
 
-## Architecture du déploiement
+## Architecture
 
 ```
 VPS Oracle Cloud (ARM64 — Ubuntu 24.04)
 │
-├── Wazuh Manager        ← moteur de détection, corrélation des alertes
+├── Wazuh Manager        ← corrélation des alertes, règles de détection
 ├── Wazuh Indexer        ← stockage des événements (OpenSearch)
-└── Wazuh Dashboard      ← interface web (accès VPN-only via WireGuard)
+└── Wazuh Dashboard      ← interface web (VPN-only via WireGuard)
 
-Agent Wazuh (installé sur le même serveur)
- └── SCA Module          ← audit CIS Benchmark à la demande
+Agent Wazuh
+ ├── collecte de logs système, auth, Docker
+ └── SCA Module          ← vérifications de conformité CIS
 ```
 
-Le dashboard est exposé uniquement derrière le VPN WireGuard — inaccessible depuis Internet. Un accès direct `/` sur le port Wazuh sans être connecté au VPN retourne une connexion refusée.
+Le dashboard n'est pas exposé sur Internet — accessible uniquement depuis le VPN WireGuard. C'est cohérent avec l'approche du reste du homelab.
 
 ---
 
-## Security Configuration Assessment (SCA)
+## Ce que Wazuh remonte
 
-La SCA est le module d'audit de conformité de Wazuh. Elle exécute des milliers de vérifications contre un référentiel de bonnes pratiques — ici le **CIS Ubuntu Linux 24.04 LTS Benchmark v1.0.0**.
+Une fois l'agent actif, le dashboard devient intéressant rapidement. Quelques exemples concrets sur mon serveur :
 
-### Résultats initiaux
+- Tentatives de connexion SSH sur des ports non standard détectées et classifiées
+- Alertes sur des modifications de fichiers système (`/etc/passwd`, `/etc/shadow`)
+- Activité Docker : création et destruction de conteneurs tracée en temps réel
+- Authentifications réussies et échouées avec géolocalisation des IPs sources
 
-| Statut | Nombre |
-|---|---|
-| Passed | 118 |
-| Failed | 119 |
-| Not applicable | 42 |
-| **Score** | **49 %** |
-
-Un score de 49 % sur un serveur qu'on pensait "bien configuré" — c'est exactement pour ça qu'on fait des audits.
-
-### Exemples de contrôles échoués
-
-```
-35001 — Ensure mounting of cramfs filesystems is disabled
-35002 — Ensure mounting of freevxfs filesystems is disabled
-35003 — Ensure hfsplus kernel module is not available
-35004 — Ensure jffs2 kernel module is not available
-35006 — Ensure udf kernel module is not available
-35007 — Ensure sctp kernel module is not available
-35008 — Ensure tipc kernel module is not available
-```
-
-La majorité des échecs initiaux concernent des modules noyau inutilisés mais non désactivés, et des paramètres sysctl non conformes.
+Ce n'est pas spectaculaire en isolation, mais voir ces événements corrélés dans un seul endroit change la façon dont on lit un système.
 
 ---
 
-## Actions de hardening
+## La vue SCA
 
-### Désactivation des modules noyau inutiles
+Le module SCA lance des vérifications automatiques contre le CIS Ubuntu 24.04 LTS Benchmark. La capture ci-dessus montre le résultat sur mon serveur : 118 passed, 119 failed, score de 49 %.
 
-Les systèmes de fichiers exotiques (`cramfs`, `freevxfs`, `hfsplus`, `jffs2`, `udf`) et les protocoles réseau non utilisés (`sctp`, `tipc`, `dccp`) représentent une surface d'attaque sans aucune utilité sur un serveur cloud.
+Ce chiffre n'est pas une alerte en soi. Le Benchmark CIS est exigeant par construction, et beaucoup de contrôles concernent des configurations qui n'ont pas de sens pour tous les contextes. Ce qui est utile, c'est de lire *pourquoi* un contrôle échoue et décider si ça compte pour ton cas précis.
 
-```bash
-# /etc/modprobe.d/cis-hardening.conf
-install cramfs /bin/false
-install freevxfs /bin/false
-install hfsplus /bin/false
-install jffs2 /bin/false
-install udf /bin/false
-install sctp /bin/false
-install tipc /bin/false
-install dccp /bin/false
-```
-
-### Paramètres sysctl
-
-```bash
-# /etc/sysctl.d/99-cis.conf
-net.ipv4.conf.all.send_redirects = 0
-net.ipv4.conf.default.send_redirects = 0
-net.ipv4.conf.all.accept_redirects = 0
-net.ipv4.conf.default.accept_redirects = 0
-net.ipv6.conf.all.accept_redirects = 0
-kernel.randomize_va_space = 2
-fs.protected_hardlinks = 1
-fs.protected_symlinks = 1
-```
-
-### Résultat après hardening
-
-Après chaque série de corrections, on relance la SCA depuis le dashboard Wazuh (`Refresh`) et le score progresse. Les contrôles `35001` à `35008` passent au vert.
+C'est ce travail de lecture et de priorisation qui m'intéresse, pas la course au 100 %.
 
 ---
 
-## Ce que j'ai appris
+## Ce que j'en retiens
 
-Le CIS Benchmark ne cherche pas la perfection théorique — il cible les risques réels avec un rapport effort/impact élevé. Désactiver un module noyau prend 30 secondes, mais supprime un vecteur d'attaque documenté. 
-
-L'intérêt de Wazuh par rapport à une checklist manuelle : les vérifications sont rejouables, automatisées, et les résultats sont stockés avec un horodatage. Si quelqu'un modifie la configuration du serveur, le prochain audit SCA le détectera immédiatement.
+Déployer un SIEM sur son propre infra oblige à prendre des décisions concrètes : qu'est-ce qu'on surveille, à quel niveau de bruit on tolère, qu'est-ce qu'on considère comme une vraie alerte. Ce sont exactement les questions qu'on se pose en SOC ou en réponse à incident, juste à plus petite échelle.

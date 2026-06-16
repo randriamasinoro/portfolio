@@ -154,6 +154,10 @@ function buildComponents(domainColor: string) {
         </td>
       );
     },
+    img({ src, alt }: { src?: string; alt?: string }) {
+      if (!src) return null;
+      return <ImageFigure src={src} alt={alt ?? ""} />;
+    },
     Callout,
     ImageFigure,
   };

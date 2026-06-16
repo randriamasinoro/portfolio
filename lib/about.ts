@@ -32,7 +32,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
 
 export const TIMELINE: TimelineItem[] = [
   {
-    year: "2026–29",
+    year: "2026–28",
     title: "4ème année — Cycle ingénieur Cybersécurité & Data Science",
     org: "ENSIBS — Vannes (admis)",
   },

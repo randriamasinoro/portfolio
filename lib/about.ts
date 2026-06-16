@@ -22,11 +22,11 @@ export const SKILL_GROUPS: SkillGroup[] = [
   },
   {
     domain: "data-science",
-    skills: ["Python", "scikit-learn", "Kafka", "Pandas", "Grafana"],
+    skills: ["Python", "scikit-learn", "Pandas", "Grafana"],
   },
   {
     domain: "devsecops",
-    skills: ["GitHub Actions", "Ansible", "Docker", "Trivy", "CycloneDX SBOM"],
+    skills: ["GitHub Actions", "Docker", "Trivy", "CycloneDX SBOM"],
   },
 ];
 

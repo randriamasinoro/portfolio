@@ -20,3 +20,9 @@ de **Sehenonirina Elisa Randriamasinoro**.
    dev/local
    dev/deploy
    dev/extend
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Référencement
+
+   seo

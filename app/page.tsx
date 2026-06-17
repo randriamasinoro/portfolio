@@ -83,10 +83,11 @@ export default function HomePage() {
           <SectionTitle number="03" className="mb-6">À propos</SectionTitle>
           <div className="flex flex-col sm:flex-row gap-8 sm:gap-12 items-start sm:items-center mt-6">
             <p className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px]">
-              Étudiant en M1 Cybersécurité des Systèmes Embarqués à UBS Lorient,
-              je travaille sur la sécurité des protocoles sans fil embarqués
-              (Zigbee/802.15.4), le reverse engineering de firmwares, la sécurité
-              CAN bus et le hardening de systèmes Linux embarqués.
+                Étudiant en M1 Cybersécurité des Systèmes Embarqués à UBS
+                Lorient, je travaille à la croisée de la cybersécurité, du
+                DevSecOps et de la data science. J&apos;aime autant durcir et
+                superviser une infrastructure que comprendre comment un système
+                fonctionne en profondeur, du réseau jusqu&apos;au firmware.
             </p>
             <Link
               href="/about"

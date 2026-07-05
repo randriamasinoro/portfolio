@@ -45,7 +45,7 @@ export default function Hero() {
         >
           Étudiant en M1 Cybersécurité des Systèmes Embarqués, UBS Lorient.
           <br />
-          Recherche stage (dispo. imm.) &amp; alternance cybersécurité / data (sept. 2026, ENSIBS Vannes).
+          Recherche alternance cybersécurité / data (sept. 2026, ENSIBS Vannes).
         </p>
 
         <p

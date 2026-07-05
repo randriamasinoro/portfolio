@@ -94,11 +94,11 @@ export default function AboutPage() {
                 Je recherche actuellement :
               </p>
               <ul className="font-body text-base leading-[1.7] text-fg-2 mb-4 pl-5 list-disc space-y-1">
-                <li>
+               { /*<li>
                   un stage en cybersécurité embarquée{" "}
                   (disponible immédiatement, durée minimale de 10 semaines,
                   jusqu&apos;à août 2026) ;
-                </li>
+                </li>*/}
                 <li>
                   une alternance en cybersécurité &amp; data science{" "}
                   à partir de septembre 2026, au rythme 1 mois école / 1 mois
@@ -111,11 +111,11 @@ export default function AboutPage() {
 
               {/* Badges disponibilité */}
               <div className="mt-5 flex flex-col gap-2">
-                <div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.04em] px-3 py-[6px] rounded-full border w-fit"
+                {/*<div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.04em] px-3 py-[6px] rounded-full border w-fit"
                   style={{ color: "#22C55E", borderColor: "rgba(34,197,94,0.4)", background: "rgba(34,197,94,0.08)" }}>
                   <span className="w-[6px] h-[6px] rounded-full bg-current animate-pulse inline-block" aria-hidden="true" />
                   Stage · disponible immédiatement · 10 sem. min. · jusqu&apos;en août
-                </div>
+                </div>*/}
                 <div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.04em] px-3 py-[6px] rounded-full border w-fit"
                   style={{ color: "#A855F7", borderColor: "rgba(168,85,247,0.4)", background: "rgba(168,85,247,0.08)" }}>
                   <span className="w-[6px] h-[6px] rounded-full bg-current inline-block" aria-hidden="true" />

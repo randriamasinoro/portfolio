@@ -8,6 +8,9 @@ export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // Garde d'hydratation next-themes : le thème n'est connu qu'après montage
+  // client. Le setState au montage est volontaire ici.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   // Placeholder pour éviter le CLS avant hydratation

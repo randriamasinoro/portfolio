@@ -1,6 +1,6 @@
 cat > ~/portfolio/CLAUDE.md << 'EOF'
 # Portfolio Elisa — Instructions projet
-mai 2026 — Sprint 1 EN COURS
+Sprints 1 → 6 terminés. Site en ligne. Phase d'amélioration continue.
 
 ## Référence design visuelle
 URL : https://api.anthropic.com/v1/design/h/pHdmt2gvWCht4YNZavHfVw?open_file=ui_kits%2Fportfolio%2Findex.html
@@ -12,7 +12,7 @@ Site portfolio technique data-driven, modulaire et évolutif.
 Double usage : vitrine recruteurs (alternance ENSIBS sept. 2026) + outil personnel.
 
 ## Stack
-- Framework  : Next.js 14 App Router
+- Framework  : Next.js 16 App Router (React 19)
 - Style      : Tailwind CSS uniquement (pas de CSS custom sauf exception justifiée)
 - Contenu    : MDX — fichiers dans /content/projects/
 - Typage     : TypeScript strict, pas de any
@@ -49,17 +49,32 @@ reverse-engineering    → [cybersecurity]
 cryptographie          → [cybersecurity]
 can-bus                → [embedded, cybersecurity]
 
-## Design system (dark mode uniquement)
+## Design system (light + dark, defaultTheme dark)
 
-### Palette couleurs
-Fond principal   : #0A0A0F
-Surface cards    : #12121A
-Bordures         : #1E1E2E
-Texte principal  : #E8E8F0
-Texte secondaire : #6B7280
-Accent global    : #2D7DD2
+Le thème est piloté par next-themes (darkMode: "class").
+Toutes les couleurs sont des variables CSS définies dans app/globals.css :
+:root pour le mode clair, .dark pour le mode sombre.
+Ne jamais hardcoder une couleur hex dans un composant pour le fond, la surface,
+les bordures ou le texte — utiliser les tokens Tailwind (bg-bg, bg-surface,
+text-fg, border-border, etc.) qui pointent vers ces variables.
 
-Couleurs domaines :
+### Palette — mode sombre (.dark)
+Fond principal   : #111111  (--bg)
+Surface cards    : #1A1A1A  (--surface)
+Bordures         : #2E2E2E  (--border) / #3D3D3D (--border-strong)
+Texte principal  : #EEEBE4  (--fg)
+Texte secondaire : #A8A59E  (--fg-2) / #6B6862 (--fg-muted)
+Accent global    : #2D7DD2  (--accent)
+
+### Palette — mode clair (:root), crème chaud
+Fond principal   : #F5F3EE  (--bg)
+Surface cards    : #FFFFFF  (--surface)
+Bordures         : #D8D3C8  (--border) / #B8B3A8 (--border-strong)
+Texte principal  : #111111  (--fg)
+Texte secondaire : #444444  (--fg-2) / #777777 (--fg-muted)
+Accent global    : #2D7DD2  (--accent)
+
+Couleurs domaines (identiques dans les deux thèmes) :
   data-science  : #3B82F6
   cybersecurity : #EF4444
   embedded      : #22C55E
@@ -83,9 +98,10 @@ Principes généraux :
 
 ### Effets visuels
   - Grille de points subtile en background (style circuit imprimé)
-  - Glow léger sur les cards au hover (couleur = couleur du domaine)
+  - Cards au hover : légère élévation (translateY -2px) + ombre portée douce
+  - Card : bordure haute 3px couleur du domaine, autres bords 1px var(--border)
   - Badge tags style monospace avec bordure colorée
-  - Bordures cards : 1px solid #1E1E2E, radius max 8px
+  - Bordures cards : radius 6px (max 8px)
 
 ### Interdits design
   - Gradients violets sur fond blanc

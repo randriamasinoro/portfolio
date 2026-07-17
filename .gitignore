@@ -37,3 +37,6 @@ next-env.d.ts
 
 # session context (local only)
 CONTEXT.md
+
+# sphinx build artifacts (générés, non versionnés)
+docs/_build/

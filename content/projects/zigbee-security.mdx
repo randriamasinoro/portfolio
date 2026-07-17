@@ -1,32 +1,134 @@
 ---
-draft: true
 id: zigbee-security
-title: Sécurité Zigbee, Analyse passive
-description: Capture et analyse du protocole Zigbee par SDR. Extraction de clés réseau et reverse engineering du handshake d'appairage.
+title: Sécurité du protocole Zigbee, attaques de couche
+description: Étude offensive du protocole Zigbee sur un banc isolé. De l'écoute passive à une chaîne d'attaques actives (saturation, usurpation du coordinateur, rejeu, éjection), avec un attaquant nRF52840 piloté par WHAD et industrialisé sur un banc de test reproductible.
 domains:
   - cybersecurity
   - embedded
 tags:
-  - Python
-  - SDR
-  - Wireshark
   - Zigbee
-  - GNU Radio
-date: "2025"
-github: https://github.com/randriamasinoro/zigbee-security
+  - IEEE 802.15.4
+  - WHAD
+  - nRF52840
+  - ESP32-H2
+  - Python
+media:
+  - /images/zigbee-security/banc-de-test.png
+date: "2026"
 featured: true
 ---
 
 ## Contexte
 
-Analyse passive du protocole Zigbee par Software Defined Radio (SDR).
+Zigbee équipe des millions d'objets domotiques (ampoules, capteurs, serrures), et beaucoup de ces réseaux tournent sans chiffrement, souvent par défaut. Ce projet de mémoire de M1 Cybersécurité des Systèmes Embarqués mesure jusqu'où va cette exposition : quelle gamme d'attaques un réseau Zigbee non sécurisé rend possible, et surtout quel est l'impact réel de chacune, chiffres à l'appui.
 
-## Méthodologie
+Le travail part d'un banc d'attaque existant, dont le décodeur et le codeur de trames ont été conservés. Ma contribution porte sur l'extension de la suite d'attaques, le remplacement de l'attaquant par un dongle nRF52840 piloté par WHAD, et l'industrialisation de l'ensemble sur un banc de test reproductible.
 
-- Capture des trames 802.15.4 avec HackRF One
-- Déchiffrement des paquets après extraction de la clé réseau
-- Reconstruction du graphe de topology réseau
+<Callout type="warning">
+  Le réseau est étudié volontairement sans chiffrement. Ce choix méthodologique isole les attaques de couche du chiffrement, une protection orthogonale traitée séparément plus bas.
+</Callout>
 
-## Résultats
+---
 
-Extraction complète de la clé réseau sur un hub domotique grand public en moins de 30 minutes d'écoute passive.
+## Objectifs
+
+- Décrire le protocole couche par couche à partir de trames réelles capturées
+- Construire une chaîne d'attaques allant de l'écoute passive aux attaques actives
+- Quantifier l'impact de chaque attaque sur la disponibilité et l'intégrité du service
+- Industrialiser les attaques sur un banc de test pour des campagnes rejouables
+- Distinguer ce que le chiffrement bloquerait de ce qu'il laisserait passer
+
+---
+
+## Le banc
+
+Le réseau légitime reproduit un scénario domotique minimal : un coordinateur et une ampoule, sur deux cartes ESP32-H2 (firmwares Espressif `HA_on_off_switch` et `HA_on_off_light`). Le coordinateur pilote l'ampoule par des commandes On/Off, ce qui fournit un trafic de référence à observer et à perturber.
+
+L'attaquant est un dongle nRF52840 piloté par WHAD. L'intérêt de WHAD est de séparer proprement la radio bas niveau (le dongle) de la logique d'attaque, écrite en Python sur l'hôte : l'intelligence de l'attaque vit côté PC, le dongle ne fait qu'émettre et écouter.
+
+Tout a d'abord été validé en local, cartes reliées en USB, puis industrialisé sur un banc de test (plateforme WANTED, bâtie sur WALT) où chaque nœud est un Raspberry Pi qui démarre par le réseau. Un scénario complet, du déploiement des firmwares à la collecte des logs, se décrit en YAML et se rejoue à l'identique, sans manipuler les cartes à la main.
+
+![Architecture du banc de test : une VM Debian hébergeant le serveur WALT et le partage NFS, reliée aux trois nœuds Raspberry Pi par un commutateur PoE.](/images/zigbee-security/banc-de-test.png)
+
+---
+
+## Les outils : voir puis forger
+
+Avant d'attaquer, il faut comprendre le trafic. Le premier outil est passif : il écoute le canal 11 et transforme chaque trame en JSON, sans rien émettre. Pour chaque trame, deux choses sont conservées, les octets bruts et leur décodage couche par couche (MAC, réseau, APS, ZCL).
+
+Le principe retenu est que les octets bruts sont la seule référence, le décodage n'étant qu'une aide à la lecture. Toutes les attaques s'appuient sur ces octets bruts, jamais sur l'interprétation, ce qui évite qu'une erreur de décodage se propage dans une trame forgée. Le sniffer détecte aussi automatiquement le PAN ID et l'adresse de l'ampoule, qui changent à chaque formation du réseau, plutôt que de les coder en dur.
+
+Le codeur fait l'inverse : il assemble une trame à partir de ses champs. En pratique il produit les couches basses (MAC et réseau), les couches hautes d'une commande étant fixes et ajoutées en octets constants, seuls les compteurs de séquence variant. C'est la brique qui fait passer de « observer le réseau » à « parler sur le réseau ».
+
+---
+
+## Les attaques
+
+Six attaques ont été montées, de la simple gêne jusqu'à l'exclusion définitive d'un équipement. Chacune vise une propriété précise du protocole.
+
+### Saturer le canal (ACK flood)
+
+En 802.15.4, un équipement écoute le canal avant d'émettre (CSMA/CA). L'attaque détourne ce mécanisme : en émettant sans arrêt et sans respecter cette écoute, l'attaquant garde le canal occupé, et les équipements légitimes diffèrent indéfiniment leurs transmissions. L'inondation se fait avec des acquittements, la trame la plus courte de la norme (trois octets), pour maximiser le nombre d'émissions par seconde.
+
+### Usurper le coordinateur (Toggle flood)
+
+Sans chiffrement, rien n'authentifie l'émetteur d'une commande. Une trame qui se présente avec l'adresse du coordinateur (0x0000) est acceptée par l'ampoule comme légitime. L'attaque usurpe donc le coordinateur et injecte des commandes Toggle forgées : l'ampoule bascule des dizaines de fois par seconde, elle obéit à l'attaquant.
+
+### Rejouer une vraie commande (replay)
+
+Une vraie commande du coordinateur est capturée puis rejouée. Rejouée telle quelle, elle échoue pour deux raisons subtiles : le FCS capturé doit être retiré (la radio ajoute le sien), et la couche réseau rejette les doublons. Il suffit d'incrémenter les compteurs de séquence à chaque rejeu. Sans chiffrement, muter un simple compteur contourne l'anti-rejeu.
+
+### Éjecter un équipement (NWK Leave)
+
+Le résultat le plus marquant, parce que le choix de la commande fait tout. La disassociation de couche MAC est ignorée : Zigbee gère l'appartenance au réseau à la couche réseau, pas en MAC. La bonne commande, c'est le NWK Leave. Non signé, l'ampoule ne peut pas en vérifier l'authenticité, elle part. Cinq trames suffisent, sans aucune inondation.
+
+<Callout type="tip">
+  Le beacon spam, lui, n'a rien donné, et c'est instructif : les faux beacons ne touchent qu'un équipement en cours de scan, or l'ampoule est déjà appairée. Un déni de service ne marche que s'il vise un mécanisme réellement actif au moment de l'attaque.
+</Callout>
+
+---
+
+## Des chiffres, pas juste des démos
+
+Chaque attaque est quantifiée sur le banc, avec un trafic de référence d'une commande par seconde et les journaux série des trois nœuds.
+
+| Attaque | Débit | Exéc. ampoule | Perte cmd. | Gel service | Éjection |
+|---------|-------|---------------|------------|-------------|----------|
+| ACK flood | 514 pps | 16 / 27 | 40,7 % | 3,5 s | Non |
+| Toggle flood | 227 pps | 1 922 forcées | s.o. | 3,2 s | Non |
+| Combinée | 450 pps | 1 090 forcées | s.o. | 2,3 s | Non |
+| Replay ciblé | 15 trames | 15 / 15 | s.o. | s.o. | Non |
+| NWK Leave | 5 trames | 0 (silence) | s.o. | s.o. | Oui |
+
+Trois enseignements que la seule description des attaques ne laisse pas deviner :
+
+- L'inondation d'acquittements est l'attaque la plus efficace contre la disponibilité : 40,7 % des commandes perdues et 3,5 s de gel, juste avec des trames de trois octets.
+- L'attaque combinée est *moins* efficace que le Toggle flood seul (1 090 basculements contre 1 922). En intercalant dix acquittements entre chaque commande, la saturation du canal fait échouer les commandes forgées elles-mêmes. Vouloir dégrader et usurper en même temps réduit l'effet.
+- Le NWK Leave est le plus radical et le plus discret : cinq trames en moins d'une seconde excluent l'ampoule définitivement, là où l'inondation mobilise quinze mille trames pour une dégradation seulement partielle.
+
+---
+
+## Et si le réseau était chiffré ?
+
+Question naturelle côté défense. La campagne n'ayant pas été rejouée en mode chiffré, la réponse se déduit de ce que protège le chiffrement Zigbee (AES-128 CCM*, qui chiffre le contenu et authentifie l'émetteur).
+
+Tout ce qui fabrique ou rejoue un contenu tomberait : une commande forgée n'aurait pas de code d'intégrité valide, un rejeu ne suffirait plus, un NWK Leave usurpé serait ignoré. En revanche, l'ACK flood resterait efficace : il n'a rien à lire ni à écrire, il occupe le canal, et un acquittement n'est pas chiffré. Chiffrement et disponibilité sont deux problèmes distincts, et c'est précisément ce que la campagne met en évidence.
+
+---
+
+## Le problème le plus formateur
+
+Au début, rien n'était mesurable : l'ampoule se réinitialisait et rejoignait le réseau en boucle, impossible de distinguer l'effet d'une attaque du bruit de fond.
+
+Le diagnostic s'est appuyé sur les logs horodatés, avec quelques fausses pistes au passage. Les « échecs d'envoi » côté interrupteur n'en étaient pas, la fonction renvoyant un numéro de séquence et non un code d'erreur. Le crash, corrélé au temps écoulé, a un moment fait soupçonner à tort un minuteur interne de la pile.
+
+La vraie cause est le tout premier démarrage après programmation. Le reset déclenché par l'outil de flash est incomplet et laisse le cœur radio mal réinitialisé ; comme c'est aussi le premier appairage (mémoire vide), c'est ce premier join sur un reset bancal qui plante. Le remède n'est pas dans le code : effacer la mémoire, reprogrammer, puis faire un reset manuel dans le bon ordre. Au démarrage suivant, l'ampoule n'est plus « neuve » et le cycle devient stable. Sur le banc de test, ce reset a été automatisé juste après la programmation, ce qui rend le contournement invisible dans un scénario.
+
+C'est typiquement le genre de bug qui ne se résout qu'en lisant les logs ligne par ligne, et qui apprend beaucoup sur ce qui se passe réellement entre le flash, la pile Zigbee et la radio.
+
+---
+
+## Pour aller plus loin
+
+- Rejouer la campagne sur un réseau chiffré pour mesurer, et non plus déduire, ce que le chiffrement bloque. Encore faut-il le sécuriser correctement : avec la clé de lien par défaut `ZigBeeAlliance09`, un attaquant à l'écoute de l'appairage peut remonter à la clé réseau. Il faut des install codes, une clé unique par appareil.
+- Viser un impact plus élevé. La CVE-2020-6007 sur la passerelle Philips Hue montre qu'un débordement de tas dans une trame ZCL peut mener à une exécution de code, donc à un pivot du réseau Zigbee vers le réseau IP, passant de l'attaque de couche à la prise de contrôle d'un système.

@@ -37,10 +37,10 @@ export const metadata: Metadata = {
     template: "%s, Elisa Randriamasinoro",
   },
   description:
-    "Étudiant M1 Cybersécurité des Systèmes Embarqués à UBS Lorient : reverse engineering firmware, Zigbee, CAN bus, data science. Stage & alternance sept. 2026.",
+    "Titulaire d'un Master 1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche une alternance sept. 2026 en cybersécurité, systèmes embarqués, data science ou IA. Reverse engineering firmware, CAN bus, DevSecOps.",
   keywords: [
     "cybersécurité systèmes embarqués",
-    "stage cybersécurité",
+    "alternance cybersécurité",
     "UBS Lorient",
     "ENSIBS Vannes",
     "reverse engineering firmware",
@@ -51,9 +51,11 @@ export const metadata: Metadata = {
     "DevSecOps",
     "data science",
     "alternance data science",
-    "stage data science",
+    "alternance systèmes embarqués",
+    "alternance intelligence artificielle",
     "machine learning",
-    "M1 cybersécurité",
+    "M2 cybersécurité systèmes embarqués",
+    "cycle ingénieur ENSIBS",
   ],
   authors: [{ name: "Sehenonirina Elisa Randriamasinoro" }],
   openGraph: {
@@ -63,13 +65,13 @@ export const metadata: Metadata = {
     siteName: "Sehenonirina Elisa Randriamasinoro",
     title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
     description:
-      "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Reverse engineering, Zigbee, CAN bus, data science. Stage & alternance 2026.",
+      "Master 1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Alternance rentrée 2026 : M2 CSSE (UBS) ou cycle ingénieur Cybersécurité & Data Science (ENSIBS Vannes). Cybersécurité, embarqué, data science, IA.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
     description:
-      "M1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Reverse engineering, Zigbee, CAN bus, data science. Stage & alternance 2026.",
+      "Master 1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Alternance rentrée 2026 : M2 CSSE (UBS) ou cycle ingénieur Cybersécurité & Data Science (ENSIBS Vannes). Cybersécurité, embarqué, data science, IA.",
   },
   robots: {
     index: true,

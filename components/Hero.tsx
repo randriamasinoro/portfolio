@@ -43,9 +43,13 @@ export default function Hero() {
           className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px] mb-3 animate-fade-up"
           style={{ animationDelay: "0.1s" }}
         >
-          Étudiant en M1 Cybersécurité des Systèmes Embarqués, UBS Lorient.
+          Titulaire d&apos;un Master 1 Cybersécurité des Systèmes Embarqués
+          (UBS Lorient). À la rentrée 2026, alternance en M2 Cybersécurité des
+          Systèmes Embarqués à l&apos;UBS ou en 4ᵉ année du cycle ingénieur
+          Cybersécurité &amp; Data Science à l&apos;ENSIBS Vannes.
           <br />
-          Recherche alternance cybersécurité / data (sept. 2026, ENSIBS Vannes).
+          Recherche une alternance dès septembre 2026 en cybersécurité,
+          systèmes embarqués, data science ou intelligence artificielle.
         </p>
 
         <p
@@ -56,7 +60,7 @@ export default function Hero() {
           <span className="text-accent">·</span>{" "}
           Systèmes Embarqués{" "}
           <span className="text-accent">·</span>{" "}
-          Data
+          Data Science
         </p>
 
         <div

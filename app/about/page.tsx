@@ -11,14 +11,14 @@ import { DOMAIN_CONFIG } from "@/types/project";
 export const metadata: Metadata = {
   title: "À propos",
   description:
-    "Titulaire d'un Master 1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Alternance rentrée 2026 : M2 CSSE à l'UBS ou cycle ingénieur Cybersécurité & Data Science à l'ENSIBS Vannes. Recherche une alternance en cybersécurité, systèmes embarqués, data science ou IA.",
+    "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche. Alternance également envisagée. Cybersécurité, embarqué, data science, IA.",
   alternates: { canonical: "/about" },
   openGraph: {
     type: "profile",
     url: "https://sinoro.fr/about",
     title: "À propos, Sehenonirina Elisa Randriamasinoro",
     description:
-      "Master 1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Alternance rentrée 2026 : M2 CSSE (UBS) ou cycle ingénieur Cybersécurité & Data Science (ENSIBS Vannes). Cybersécurité, embarqué, data science, IA.",
+      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche. Alternance également envisagée. Cybersécurité, embarqué, data science, IA.",
   },
 };
 
@@ -80,31 +80,20 @@ export default function AboutPage() {
           <div className="grid gap-10 sm:gap-16 items-start sm:grid-cols-[minmax(0,1fr)_200px]">
             <div className="max-w-[640px]">
               <p className="font-body text-[18px] leading-[1.6] text-fg mb-5">
-                Titulaire d&apos;un Master 1 Cybersécurité des Systèmes
-                Embarqués à UBS Lorient, je travaille à la croisée de la
+                En Master 2 Cybersécurité des Systèmes Embarqués à
+                l&apos;UBS Lorient, je travaille à la croisée de la
                 cybersécurité, du DevSecOps et de la data science. J&apos;aime
                 autant durcir et superviser une infrastructure que comprendre
                 comment un système fonctionne en profondeur, du réseau
                 jusqu&apos;au firmware.
               </p>
               <p className="font-body text-base leading-[1.6] text-fg-2 mb-5">
-                Je recherche une alternance à partir de septembre 2026 en
-                cybersécurité, systèmes embarqués, data science ou intelligence
-                artificielle. Selon l&apos;opportunité, je poursuis dans
-                l&apos;une de ces deux formations :
+                Je recherche un stage de fin d&apos;études de 4 à 6 mois à
+                partir de janvier 2027, avec une perspective de pré-embauche,
+                en cybersécurité, systèmes embarqués, data science ou
+                intelligence artificielle. Une alternance reste également
+                envisageable.
               </p>
-              <ul className="font-body text-base leading-[1.7] text-fg-2 mb-4 pl-5 list-disc space-y-1">
-                <li>
-                  M2 Cybersécurité des Systèmes Embarqués à l&apos;UBS Lorient,
-                  alternance d&apos;un an orientée cybersécurité embarquée, IoT
-                  et systèmes bas niveau ;
-                </li>
-                <li>
-                  cycle ingénieur Cybersécurité &amp; Data Science à
-                  l&apos;ENSIBS Vannes (admis en 4ᵉ année), alternance de deux
-                  ans au rythme 1 mois école / 1 mois entreprise.
-                </li>
-              </ul>
               <p className="font-mono text-[13px] text-fg-muted tracking-[0.04em]">
                 France · Europe · télétravail OK
               </p>
@@ -114,7 +103,7 @@ export default function AboutPage() {
                 <div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.04em] px-3 py-[6px] rounded-full border w-fit"
                   style={{ color: "#A855F7", borderColor: "rgba(168,85,247,0.4)", background: "rgba(168,85,247,0.08)" }}>
                   <span className="w-[6px] h-[6px] rounded-full bg-current inline-block" aria-hidden="true" />
-                  Alternance · rentrée 2026 · Cybersécurité, Embarqué, Data / IA
+                  Stage de fin d&apos;études · janvier 2027 · alternance possible
                 </div>
               </div>
             </div>

@@ -43,13 +43,12 @@ export default function Hero() {
           className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px] mb-3 animate-fade-up"
           style={{ animationDelay: "0.1s" }}
         >
-          Titulaire d&apos;un Master 1 Cybersécurité des Systèmes Embarqués
-          (UBS Lorient). À la rentrée 2026, alternance en M2 Cybersécurité des
-          Systèmes Embarqués à l&apos;UBS ou en 4ᵉ année du cycle ingénieur
-          Cybersécurité &amp; Data Science à l&apos;ENSIBS Vannes.
+          En Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient).
           <br />
-          Recherche une alternance dès septembre 2026 en cybersécurité,
+          Recherche un stage de fin d&apos;études de 4 à 6 mois à partir de
+          janvier 2027, avec perspective de pré-embauche, en cybersécurité,
           systèmes embarqués, data science ou intelligence artificielle.
+          Alternance également envisagée.
         </p>
 
         <p

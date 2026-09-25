@@ -19,13 +19,13 @@ export function GET() {
 
   const body = `# Sehenonirina Elisa Randriamasinoro
 
-> Titulaire d'un Master 1 Cybersécurité des Systèmes Embarqués (UBS Lorient).
+> En Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient, 2026-2027).
 > Spécialités : sécurité des protocoles sans fil embarqués (Zigbee/802.15.4),
 > reverse engineering de firmwares, sécurité CAN bus, hardening Linux embarqué,
-> data science et IA. Recherche une alternance à partir de septembre 2026 en
-> cybersécurité, systèmes embarqués, data science ou intelligence artificielle,
-> pour un M2 Cybersécurité des Systèmes Embarqués à l'UBS Lorient ou un cycle
-> ingénieur Cybersécurité & Data Science à l'ENSIBS Vannes.
+> data science et IA. Recherche un stage de fin d'études de 4 à 6 mois à partir
+> de janvier 2027, avec perspective de pré-embauche, en cybersécurité, systèmes
+> embarqués, data science ou intelligence artificielle. Alternance également
+> envisagée.
 
 ## Pages principales
 

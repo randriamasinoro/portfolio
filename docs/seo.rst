@@ -12,7 +12,7 @@ cherche le nom *Sehenonirina Elisa Randriamasinoro*.
    On ne rank pas sur un mot générique comme « data » ou « embarqué »
    (millions de pages en concurrence). Les gains réels sont sur le **nom
    propre** et les **longues traînes** (« stage cybersécurité embarqué
-   Lorient », « reverse engineering firmware ENSIBS »).
+   Lorient », « stage cybersécurité embarquée Lorient »).
 
 
 Les 3 piliers (référentiel Google)
@@ -66,7 +66,7 @@ Fait (dans le code)
 - 🔲 **Backlinks** : mettre ``sinoro.fr`` dans le profil **LinkedIn**
 - 🔲 **Backlinks** : mettre ``sinoro.fr`` dans le profil **GitHub** (champ website)
 - 🔲 **Backlinks** : lien dans les README des repos GitHub
-- 🔲 **Backlinks** : demander un lien dans un annuaire **UBS / ENSIBS**
+- 🔲 **Backlinks** : demander un lien dans un annuaire **UBS**
   (domaine ``.fr`` académique = très fort)
 - 🔲 (Optionnel) **Analytics** : Umami auto-hébergé sur le VPS
 - 🔲 **Suivi** mensuel dans Search Console (pages indexées, requêtes)

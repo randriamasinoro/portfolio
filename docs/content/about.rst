@@ -83,9 +83,9 @@ Section Formation
 
    export const TIMELINE: TimelineItem[] = [
      {
-       year: "2026–29",
-       title: "4ème année — Cycle ingénieur Cybersécurité & Data Science",
-       org: "ENSIBS — Vannes (admis)",
+       year: "2026–27",
+       title: "Master 2 Cybersécurité des Systèmes Embarqués",
+       org: "UBS — Lorient",
      },
      {
        year: "2025–26",

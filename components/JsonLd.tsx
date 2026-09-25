@@ -5,9 +5,9 @@ const personSchema = {
   alternateName: "Elisa Randriamasinoro",
   url: "https://sinoro.fr",
   email: "mailto:randriamasnrelisa@gmail.com",
-  jobTitle: "Titulaire d'un Master 1 Cybersécurité des Systèmes Embarqués",
+  jobTitle: "Master 2 Cybersécurité des Systèmes Embarqués",
   description:
-    "Titulaire d'un Master 1 Cybersécurité des Systèmes Embarqués (UBS Lorient). Sécurité des protocoles sans fil embarqués (Zigbee/802.15.4), reverse engineering de firmwares, sécurité CAN bus, hardening Linux embarqué, data science et IA. Recherche une alternance à la rentrée 2026, en M2 Cybersécurité des Systèmes Embarqués à l'UBS ou en cycle ingénieur Cybersécurité & Data Science à l'ENSIBS Vannes.",
+    "En Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Sécurité des protocoles sans fil embarqués (Zigbee/802.15.4), reverse engineering de firmwares, sécurité CAN bus, hardening Linux embarqué, data science et IA. Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche ; alternance également envisagée.",
   alumniOf: [
     {
       "@type": "CollegeOrUniversity",
@@ -35,7 +35,7 @@ const personSchema = {
   ],
   seeks: {
     "@type": "Demand",
-    name: "Alternance à partir de septembre 2026 en cybersécurité, systèmes embarqués, data science ou intelligence artificielle (M2 Cybersécurité des Systèmes Embarqués à l'UBS Lorient ou cycle ingénieur Cybersécurité & Data Science à l'ENSIBS Vannes)",
+    name: "Stage de fin d'études de 4 à 6 mois à partir de janvier 2027 (perspective de pré-embauche) ou alternance, en cybersécurité, systèmes embarqués, data science ou intelligence artificielle",
   },
 };
 

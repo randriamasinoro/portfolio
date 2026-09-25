@@ -1,7 +1,7 @@
 ---
 id: classification-graines
-title: Triage automatique de haricots par CNN embarqué
-description: Système de classification binaire de haricots blancs (bonne/mauvaise graine) en temps réel via un CNN Keras déployé sur ESP32-CAM. Projet de fin d'études L2 Génie Industriel, IST Antananarivo.
+title: Triage automatique de haricots par CNN et ESP32-CAM
+description: Classification binaire de haricots blancs (bonne/mauvaise graine) en temps réel, CNN Keras sur PC, ESP32-CAM pour la capture et le tri. Stage de fin d'études du DTS (niveau L2), Fablab Solidaire Mamiratra.
 domains:
   - data-science
   - embedded
@@ -13,16 +13,16 @@ tags:
   - ESP32-CAM
   - C++
   - HTTP
-date: "2024"
+date: "2023"
 github: https://github.com/randriamasinoro/classification-graines
 featured: false
 ---
 
 ## Contexte
 
-Projet de fin d'études réalisé en L2 Génie Industriel à l'Institut Supérieur de Technologie d'Antananarivo. Première approche complète alliant mécanique, systèmes embarqués et machine learning.
+Stage de fin d'études du DTS Génie Industriel et Maintenance (niveau L2, IST Antananarivo), réalisé au Fablab Solidaire Mamiratra de juillet à août 2023. Première approche complète alliant mécanique, systèmes embarqués et machine learning.
 
-Objectif : concevoir une machine compacte et économique pour trier automatiquement les haricots blancs (bonnes vs mauvaises graines) en remplaçant le tri manuel par une classification CNN en temps réel via ESP32-CAM.
+Objectif : concevoir une machine compacte et économique pour trier automatiquement les haricots blancs (bonnes vs mauvaises graines) en remplaçant le tri manuel par une classification CNN en temps réel : l'ESP32-CAM capture l'image et actionne le tri, l'inférence tourne sur un ordinateur.
 
 ## Dataset
 

@@ -91,7 +91,7 @@ git push
 2. Build     ── Docker Buildx ── image linux/arm64 ── push ghcr.io
    │
    ▼
-3. Deploy    ── SSH VPS ── docker compose pull && up -d ── prune
+3. Deploy    ── runner auto-hébergé (VPS) ── docker compose pull && up -d ── prune
 ```
 
 - Étage 1 échoue → rien n'est construit ni déployé. Une CVE critique ou une dépendance vulnérable bloque la chaîne.

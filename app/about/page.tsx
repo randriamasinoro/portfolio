@@ -47,9 +47,9 @@ export default function AboutPage() {
 
   return (
     <div className="pt-6 md:pt-12">
-      <div className="grid gap-12 lg:gap-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
-        <div className="max-w-[62ch]">
-          <h1 className="text-[2.25rem] sm:text-[3rem] leading-tight mb-8">À propos</h1>
+      <h1 className="text-[2.25rem] sm:text-[3rem] leading-tight mb-8">À propos</h1>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:gap-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
+        <div className="max-w-[62ch] min-w-0">
           <div className="text-[1.1875rem] leading-relaxed text-fg-2 space-y-5">
             <p className="text-fg">
               Je m&apos;appelle Sehenonirina Elisa Randriamasinoro. Je suis en
@@ -135,19 +135,20 @@ export default function AboutPage() {
 
         </div>
 
-        <aside className="lg:pt-24 font-ui text-[15px]">
+        <aside className="order-first lg:order-none flex flex-row lg:flex-col gap-5 lg:gap-0 items-start text-[15px] min-w-0">
           {photoSrc && (
             <Image
               src={photoSrc}
               alt="Sehenonirina Elisa Randriamasinoro"
               width={320}
               height={320}
-              className="w-40 sm:w-56 lg:w-full max-w-[320px] aspect-square object-cover rounded-md mb-8"
+              className="w-24 sm:w-40 lg:w-full max-w-[320px] shrink-0 aspect-square object-cover rounded-md lg:mb-8"
               priority
             />
           )}
-          <h2 className="text-[1.125rem] mb-4">Contact</h2>
-          <dl className="m-0 space-y-3">
+          <div className="min-w-0">
+          <h2 className="text-[1.125rem] mb-3 lg:mb-4">Contact</h2>
+          <dl className="m-0 space-y-2 lg:space-y-3">
             {CONTACTS.map(({ href, label, text }) => (
               <div key={label}>
                 <dt className="text-fg-muted text-[13px]">{label}</dt>
@@ -164,6 +165,7 @@ export default function AboutPage() {
               </div>
             ))}
           </dl>
+          </div>
         </aside>
       </div>
     </div>

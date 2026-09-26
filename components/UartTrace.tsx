@@ -99,11 +99,19 @@ export default function UartTrace({ message, baud = 115200 }: Props) {
                 role="button"
                 aria-label={`Octet ${hex(f.code)}, caractère ${f.char}, bits ${binary(f.code)}`}
                 aria-pressed={isActive}
-                onMouseEnter={() => setActive(i)}
-                onMouseLeave={() => setActive(null)}
+                // Survol réservé à la souris : au toucher, un tap sélectionne l'octet
+                // (un "clic" qui bascule annulerait l'activation déclenchée par le tap).
+                onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
+                onPointerLeave={(e) => e.pointerType === "mouse" && setActive(null)}
                 onFocus={() => setActive(i)}
                 onBlur={() => setActive(null)}
-                onClick={() => setActive(isActive ? null : i)}
+                onClick={() => setActive(i)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setActive(i);
+                  }
+                }}
                 className="cursor-pointer outline-none"
               >
                 <rect x={x} y={16} width={w} height={HEIGHT - 24} fill={isActive ? "rgba(194,124,255,0.10)" : "transparent"} />

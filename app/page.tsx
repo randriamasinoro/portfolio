@@ -22,7 +22,7 @@ export default function HomePage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative pt-4 md:pt-10 pb-20 md:pb-28">
+      <section className="relative overflow-x-clip pt-4 md:pt-10 pb-20 md:pb-28">
         <span
           className="pointer-events-none select-none absolute top-2 -left-2 font-ui font-bold text-watermark leading-[0.85] text-[5.5rem] sm:text-[9rem] lg:text-[13rem] tracking-[-0.03em] whitespace-nowrap"
           aria-hidden="true"

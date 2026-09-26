@@ -1,0 +1,87 @@
+---
+id: vhdl-fpga
+label: "FPGA"
+title: "Conception numérique en VHDL, de la simulation au FPGA Basys 3"
+description: En licence, une boîte à musique et le jeu de la vie décrits en VHDL et simulés sous ModelSim. En master, le passage sur FPGA Xilinx avec Vivado et une carte Basys 3, jusqu'à un mini-projet de processeur 16 bits.
+domains:
+  - embedded
+tags:
+  - VHDL
+  - FPGA
+  - Vivado
+  - Basys 3
+  - ModelSim
+  - Xilinx
+date: "2026"
+featured: false
+---
+
+## Contexte
+
+J'ai appris la conception numérique en deux temps. En licence à l'UBS (L3, 2025), je décrivais des circuits en VHDL et je les vérifiais en simulation sous ModelSim. En Master 1, dans le cours « Conception d'architectures numériques sur cible FPGA », le même travail est passé sur une vraie cible : un FPGA Xilinx sur carte Basys 3, avec la chaîne d'outils Vivado.
+
+## En licence : décrire un circuit et le simuler
+
+### Une boîte à musique
+
+Le circuit joue une mélodie : il génère la fréquence de chaque note pendant la bonne durée. Je l'ai construit par étapes, un module par fichier :
+
+- `freq_gene` produit un signal carré à la fréquence de la note ;
+- `Timer` est un compteur rechargeable qui signale la fin de la durée d'une note ;
+- une ROM stocke la partition, c'est-à-dire les notes et leurs durées ;
+- `boite_musique` lit la ROM, charge le timer et pilote le générateur.
+
+Le banc de test génère une horloge de 16 kHz et écrit la sortie dans un fichier texte, qui est ensuite joué avec Matlab pour entendre le résultat.
+
+```vhdl
+ELSIF clk = '1' AND clk'EVENT THEN
+  time_over <= '0';
+  IF load = '1' THEN                -- chargement de la durée de la note
+    etat     <= '1';
+    compteur <= TO_INTEGER(UNSIGNED(timer));
+  ELSIF etat = '1' THEN
+    IF compteur = 0 THEN            -- fin de la note
+      time_over <= '1';
+      etat      <= '0';
+    ELSE
+      compteur <= compteur - 1;
+    END IF;
+  END IF;
+END IF;
+```
+
+### Le jeu de la vie de Conway
+
+Chaque cellule est une entité VHDL qui reçoit l'état de ses huit voisines et calcule son nouvel état à chaque front d'horloge : une cellule morte naît avec exactement trois voisines vivantes, une cellule vivante survit avec deux ou trois.
+
+Un package définit la taille de la grille (4 × 4) et un type tableau à deux dimensions. L'entité `colonie` instancie la grille de cellules et les relie à leurs voisines. Le banc de test lit l'état initial dans `init.txt` et écrit chaque génération dans un fichier, ce qui permet de vérifier l'évolution sans matériel.
+
+## En master : passer sur FPGA avec Vivado
+
+Sur la carte Basys 3, les TP ont couvert toute la chaîne, de la description au circuit qui tourne :
+
+- la synthèse et le placement-routage, et les primitives propres au FPGA (blocs mémoire BRAM, blocs DSP) ;
+- la simulation fonctionnelle, temporelle et post-synthèse, pour vérifier que le circuit synthétisé se comporte comme le code ;
+- l'analyse de performances sur cible FPGA ;
+- le débogage matériel sur la carte avec l'analyseur logique intégré de Vivado (ILA).
+
+### Le mini-projet : un processeur 16 bits
+
+Le cours se termine par un mini-projet en autonomie : concevoir un processeur 16 bits simple, sans pipeline, à partir de sa spécification. Il suit une architecture de Von Neumann de type load-store : les accès à la mémoire (`LDR`, `STR`) sont séparés des calculs, qui se font entre registres.
+
+L'unité de contrôle est une machine de Moore qui enchaîne les étapes fetch, decode, puis selon l'instruction exec, accès mémoire ou écriture du résultat. Le jeu d'instructions compte huit opérations : `ADD`, `SUB`, `AND`, `OR`, `LDR`, `STR`, `NOP` et `HALT`.
+
+| Bits 15 à 12 | Bits 11 à 8 | Bits 7 à 4 | Bits 3 à 0 |
+|---|---|---|---|
+| Rs2 | Rs1 | Rd | Opcode |
+
+La démarche impose de construire et de tester chaque bloc séparément, en simulation fonctionnelle puis post-synthèse : registre générique, file de registres, unité arithmétique et logique, puis unité de contrôle.
+
+## Stack
+
+| Étape | Outils |
+|---|---|
+| Langage | VHDL |
+| Simulation (licence) | ModelSim, bancs de test avec entrées et sorties fichier, Matlab pour l'écoute |
+| Cible (master) | FPGA Xilinx, carte Basys 3 |
+| Outils (master) | Vivado : synthèse, placement-routage, analyse temporelle, ILA |

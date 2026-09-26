@@ -32,7 +32,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
       "ESP32, ESP-IDF",
       "nRF52840",
       "I²C, SPI, UART, bus CAN",
-      "FPGA (VHDL)",
+      "FPGA Xilinx avec VHDL et Vivado (Basys 3)",
     ],
   },
   {

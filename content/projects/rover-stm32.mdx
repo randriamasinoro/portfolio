@@ -1,54 +1,78 @@
 ---
-draft: true
 id: rover-stm32
 label: "Rover"
-title: Rover STM32, Pilotage bas niveau
-description: Rover mobile piloté par STM32F4. Contrôle moteurs via PWM, capteurs ultrasons pour évitement d'obstacles, communication UART vers Raspberry Pi.
+title: "Rover autonome sur STM32 : évitement d'obstacles en bare-metal"
+description: Rover à deux moteurs piloté par un STM32F4, sans RTOS. Des timers matériels cadencent la mesure des distances (ultrason et infrarouge) et une machine à états décide d'avancer, de ralentir ou de tourner.
 domains:
   - embedded
 tags:
   - C
-  - STM32
-  - FreeRTOS
-  - UART
+  - STM32F4
+  - Bare-metal
+  - Interruptions
+  - Timers
   - PWM
-date: "2024"
-github: https://github.com/randriamasinoro/rover-stm32
+  - ADC
+date: "2025"
 featured: false
 ---
 
 ## Contexte
 
-Projet de contrôle bas niveau d'un rover mobile sur STM32F446RE. L'objectif était de maîtriser la gestion temps-réel avec FreeRTOS tout en interfaçant des périphériques hardware (moteurs DC, ultrasons, encodeurs).
+Projet de Licence à l'UBS Lorient (L3 Systèmes Numériques, Informatique Embarquée et Objets Connectés), en mars 2025. Le rover a deux moteurs à courant continu et doit avancer seul en évitant les obstacles, à l'aide d'un capteur à ultrasons et d'un capteur infrarouge.
 
-## Architecture
+Le programme est écrit en C sur un STM32F4, en bare-metal : pas de système d'exploitation temps réel. La boucle principale est vide. Tout le travail est fait dans des interruptions, déclenchées par des timers matériels.
 
-Le firmware est découpé en trois tâches FreeRTOS :
+## Quatre timers, quatre rôles
 
-- Tâche `motor_ctrl`, génération PWM sur TIM1/TIM2 pour les ponts en H
-- Tâche `sensor_poll`, mesure distance HC-SR04 par capture IC
-- Tâche `comm_rx`, réception des commandes UART depuis le Raspberry Pi
+| Timer | Rôle | Réglage |
+|---|---|---|
+| TIM1 | PWM des deux moteurs | environ 10 kHz, rapport cyclique de 0 à 99 % |
+| TIM2 | Déclenche la conversion ADC du capteur infrarouge | environ 10 fois par seconde, sans intervention du processeur |
+| TIM3 | Base de temps pour chronométrer l'écho ultrason | environ 1 µs par pas |
+| TIM4 | Interruption périodique : mesure ultrason puis décision | environ 1 fois par seconde |
 
-<Callout type="info">
-  Les tâches partagent une file de messages FreeRTOS, pas de mutex, pas de conflit d'accès aux périphériques.
-</Callout>
+Le capteur infrarouge est lu par l'ADC 12 bits, déclenché par TIM2. Le callback de fin de conversion convertit la tension en distance. Le processeur ne fait donc aucune attente active pour ce capteur.
 
-## Implémentation
+## Mesurer une distance par ultrason
 
-Chaque moteur est contrôlé par deux canaux PWM en complémentaire. La vitesse est encodée sur 12 bits pour une résolution suffisante à basse vitesse.
+Le programme envoie une impulsion de 15 µs sur la broche Trig, puis chronomètre la durée de l'écho avec TIM3. La distance vient de la vitesse du son : 0,0343 cm par microseconde, divisée par deux pour l'aller-retour.
 
 ```c
-void motor_set_speed(Motor *m, int16_t speed) {
-    uint16_t duty = (uint16_t)((abs(speed) * TIM_PERIOD) / 4095);
-    __HAL_TIM_SET_COMPARE(m->htim, m->channel_fwd,
-                          speed >= 0 ? duty : 0);
-    __HAL_TIM_SET_COMPARE(m->htim, m->channel_rev,
-                          speed < 0  ? duty : 0);
-}
+dist = (fin - debut) * 0.0343 / 2;   // durée de l'écho en µs, distance en cm
 ```
 
-## Résultats
+## La décision : une machine à états non bloquante
 
-- Navigation autonome en évitement d'obstacles à 15 cm/s
-- Latence commande UART → action moteur : < 8 ms
-- Consommation RAM FreeRTOS : 3,2 Ko pour les 3 tâches
+À chaque interruption de TIM4, le programme mesure la distance et choisit une action :
+
+- au-delà de 80 cm, le rover avance vite ;
+- entre 15 et 80 cm, il ralentit proportionnellement à la distance, avec une vitesse minimale pour ne pas caler ;
+- sous 15 cm à l'ultrason, ou sous 10 cm à l'infrarouge, il s'arrête, attend 500 ms, puis tourne à droite pendant une seconde.
+
+La manœuvre d'évitement est une machine à états. Elle ne contient aucun `HAL_Delay` : chaque étape compare le temps écoulé avec `HAL_GetTick()` et passe à l'étape suivante lors d'une interruption ultérieure. Une attente dans une interruption bloquerait tout le reste du programme.
+
+```c
+case 0:  arreter();  timenow = HAL_GetTick();  etat = 1;  break;
+case 1:  if (HAL_GetTick() - timenow > 500)  etat = 2;    break;
+case 2:  tourner(15);
+         if (HAL_GetTick() - timenow > 1500) etat = 0;    break;
+```
+
+## Limites
+
+En relisant le code, trois points seraient à reprendre :
+
+- La mesure ultrason attend l'écho à l'intérieur de l'interruption, jusqu'à 40 ms d'attente active. Une capture d'entrée (input capture) sur un timer mesurerait l'écho sans bloquer.
+- Avec le réglage de TIM4, la décision n'est prise qu'environ une fois par seconde. C'est lent pour éviter un obstacle, et les délais de 500 ms de la machine à états sont en pratique arrondis à la seconde.
+- La liaison UART est configurée à 115 200 bauds mais n'est pas utilisée : il n'y a aucune remontée de mesures pour le débogage.
+
+## Stack
+
+| Couche | Technologie |
+|---|---|
+| Cible | STM32F4, 84 MHz |
+| Langage | C, HAL STM32 |
+| Périphériques | TIM1 (PWM), TIM2 (déclenchement ADC), TIM3 (chronométrage), TIM4 (interruption périodique), ADC 12 bits |
+| Capteurs | Capteur à ultrasons (Trig et Echo), capteur infrarouge analogique |
+| Outils | STM32CubeIDE, STM32CubeMX |

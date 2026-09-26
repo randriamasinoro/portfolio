@@ -15,7 +15,7 @@ export default function ThemeToggle() {
 
   // Placeholder pour éviter le CLS avant hydratation
   if (!mounted) {
-    return <div className="w-8 h-8" aria-hidden="true" />;
+    return <div className="w-10 h-10" aria-hidden="true" />;
   }
 
   const isDark = theme === "dark";
@@ -24,7 +24,7 @@ export default function ThemeToggle() {
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
-      className="w-8 h-8 inline-flex items-center justify-center rounded text-fg-muted hover:text-fg transition-colors duration-200"
+      className="w-10 h-10 inline-flex items-center justify-center rounded text-fg-muted hover:text-fg transition-colors duration-200"
     >
       {isDark ? <SunIcon /> : <MoonIcon />}
     </button>

@@ -5,25 +5,23 @@ interface Props {
 }
 
 export default function TableOfContents({ items }: Props) {
-  if (items.length === 0) return null;
+  if (items.length < 3) return null;
 
   return (
-    <aside className="sticky top-[88px] self-start hidden lg:block">
-      <div className="font-mono text-[10px] tracking-[0.08em] text-fg-muted mb-[14px] pb-[10px] border-b border-border">
-        SUR CETTE PAGE
-      </div>
-      <ul className="list-none p-0 m-0 flex flex-col gap-[10px]">
+    <nav aria-label="Sommaire" className="hidden lg:block mt-6">
+      <p className="text-fg-muted mb-3">Sommaire</p>
+      <ul className="list-none p-0 m-0 flex flex-col gap-2 border-l border-border">
         {items.map((item) => (
-          <li key={item.id} style={{ paddingLeft: item.level > 2 ? "12px" : "0" }}>
+          <li key={item.id} className={item.level > 2 ? "pl-7" : "pl-4"}>
             <a
               href={`#${item.id}`}
-              className="font-body text-[13px] text-fg-muted hover:text-fg-2 no-underline transition-colors duration-200"
+              className="text-fg-2 no-underline hover:text-fg hover:underline leading-snug block"
             >
               {item.title}
             </a>
           </li>
         ))}
       </ul>
-    </aside>
+    </nav>
   );
 }

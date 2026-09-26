@@ -3,6 +3,10 @@
 import { useCallback, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import type { Domain, Project } from "@/types/project";
+import { DOMAIN_CONFIG } from "@/types/project";
+
+// « securite » doit trouver « Sécurité » : on compare sans accents ni casse.
+const normalize = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 import FilterBar from "./FilterBar";
 import ProjectCard from "./ProjectCard";
 
@@ -67,12 +71,14 @@ export default function ProjectsClient({ projects }: Props) {
         if (activeTags.length > 0 && !p.tags.some((t) => activeTags.includes(t)))
           return false;
         if (search) {
-          const q = search.toLowerCase();
-          return (
-            p.title.toLowerCase().includes(q) ||
-            p.description.toLowerCase().includes(q) ||
-            p.tags.some((t) => t.toLowerCase().includes(q))
-          );
+          const q = normalize(search);
+          const haystack = [
+            p.title,
+            p.description,
+            ...p.tags,
+            ...p.domains.map((d) => DOMAIN_CONFIG[d]?.label ?? d),
+          ];
+          return haystack.some((field) => normalize(field).includes(q));
         }
         return true;
       }),
@@ -81,9 +87,8 @@ export default function ProjectsClient({ projects }: Props) {
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-10">
         <FilterBar
-          allProjects={projects}
           activeDomains={activeDomains}
           activeTags={activeTags}
           search={search}
@@ -95,19 +100,13 @@ export default function ProjectsClient({ projects }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="py-12 text-center font-mono text-[13px] text-fg-muted border border-dashed border-border-strong rounded">
-          Aucun projet ne correspond aux filtres.
-        </div>
+        <p className="text-fg-2 py-10">
+          Aucun projet ne correspond à ces filtres. Retirez un domaine ou une techno pour élargir.
+        </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filtered.map((project, i) => (
-            <div key={project.id} className={i === 0 ? "md:col-span-2" : ""}>
-              <ProjectCard
-                project={project}
-                index={i}
-                onTagClick={handleTagClick}
-              />
-            </div>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((p) => (
+            <ProjectCard key={p.id} project={p} onTagClick={handleTagClick} />
           ))}
         </div>
       )}

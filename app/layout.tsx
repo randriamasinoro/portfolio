@@ -1,29 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
+import { B612, B612_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css"
 import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 import ThemeProvider from "@/components/ThemeProvider";
 import JsonLd from "@/components/JsonLd";
 import Analytics from "@/components/Analytics";
 
-const syne = Syne({
+// B612 : police dessinée par Airbus pour les écrans de cockpit (titres, interface).
+const b612 = B612({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-syne",
+  weight: ["400", "700"],
+  variable: "--font-b612",
   display: "swap",
 });
 
-const ibmPlexSans = IBM_Plex_Sans({
+const b612Mono = B612_Mono({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-ibm-plex-sans", 
+  weight: ["400", "700"],
+  variable: "--font-b612-mono",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+// Source Serif 4 : textes longs (fiches projet, bio).
+const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-jetbrains-mono",
+  variable: "--font-source-serif",
   display: "swap",
 });
 
@@ -88,8 +90,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5F3EE" },
-    { media: "(prefers-color-scheme: dark)", color: "#111111" },
+    { media: "(prefers-color-scheme: light)", color: "#F5F4F7" },
+    { media: "(prefers-color-scheme: dark)", color: "#161616" },
   ],
   colorScheme: "dark light",
 };
@@ -98,18 +100,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="fr"
-      className={`${syne.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
+      className={`${b612.variable} ${b612Mono.variable} ${sourceSerif.variable}`}
       suppressHydrationWarning
     >
-      <body
-      className="bg-bg text-fg min-h-screen"
-      suppressHydrationWarning
-      >
+      <body className="bg-bg text-fg min-h-screen" suppressHydrationWarning>
         <JsonLd />
         <Analytics />
         <ThemeProvider>
           <NavBar />
-          <main className="pt-[60px]">{children}</main>
+          <main className="max-w-page mx-auto px-4 sm:px-8 pb-24">{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

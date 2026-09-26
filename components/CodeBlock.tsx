@@ -20,11 +20,11 @@ export default function CodeBlock({ language, children }: Props) {
   }
 
   return (
-    <div className="relative my-3">
+    <div className="relative my-6">
       <pre
         ref={ref}
-        className="bg-surface-2 rounded font-mono text-[13px] leading-[1.6] text-fg-2 overflow-x-auto"
-        style={{ padding: "14px 16px", margin: 0 }}
+        className="bg-scope-bg rounded-md font-mono text-[13px] leading-[1.65] text-scope-fg overflow-x-auto"
+        style={{ padding: "40px 16px 16px", margin: 0 }}
       >
         {children}
       </pre>
@@ -32,17 +32,14 @@ export default function CodeBlock({ language, children }: Props) {
       <button
         onClick={copy}
         aria-label="Copier le code"
-        className="absolute top-[10px] right-[10px] bg-surface border border-border-strong rounded-sm font-mono text-[11px] inline-flex items-center gap-[6px] px-[9px] py-1 cursor-pointer transition-all duration-200"
-        style={{ color: copied ? "#22C55E" : "#B0B0C0" }}
+        className="absolute top-2 right-2 bg-transparent border border-scope-grid rounded-sm font-ui text-[12px] text-scope-text hover:text-scope-fg inline-flex items-center gap-[6px] px-2 py-1 cursor-pointer"
       >
         {copied ? <CheckIcon /> : <CopyIcon />}
         {copied ? "Copié" : "Copier"}
       </button>
 
       {language && (
-        <span className="absolute bottom-2 right-3 font-mono text-[10px] text-fg-dim tracking-[0.04em]">
-          {language.toUpperCase()}
-        </span>
+        <span className="absolute top-3 left-4 font-ui text-[12px] text-scope-text">{language}</span>
       )}
     </div>
   );

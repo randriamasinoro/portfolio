@@ -1,11 +1,9 @@
 "use client";
 
-import type { Domain, Project } from "@/types/project";
+import type { Domain } from "@/types/project";
 import { DOMAIN_CONFIG } from "@/types/project";
-import { SearchIcon } from "./icons";
 
 interface Props {
-  allProjects: Project[];
   activeDomains: Domain[];
   activeTags: string[];
   search: string;
@@ -15,8 +13,8 @@ interface Props {
   onSearchChange: (q: string) => void;
 }
 
+// Onglets de domaine (un seul actif à la fois, "Tous" pour réinitialiser) + recherche.
 export default function FilterBar({
-  allProjects,
   activeDomains,
   activeTags,
   search,
@@ -25,151 +23,76 @@ export default function FilterBar({
   onTagsChange,
   onSearchChange,
 }: Props) {
-  const domains = Object.entries(DOMAIN_CONFIG) as [Domain, { label: string; color: string }][];
-
-  const allTags = Array.from(
-    new Set(
-      allProjects
-        .filter((p) =>
-          activeDomains.length === 0 || p.domains.some((d) => activeDomains.includes(d))
-        )
-        .flatMap((p) => p.tags)
-    )
-  ).sort();
-
-  function toggleDomain(key: Domain) {
-    onDomainsChange(
-      activeDomains.includes(key)
-        ? activeDomains.filter((d) => d !== key)
-        : [...activeDomains, key]
-    );
-  }
-
-  function toggleTag(tag: string) {
-    onTagsChange(
-      activeTags.includes(tag)
-        ? activeTags.filter((t) => t !== tag)
-        : [...activeTags, tag]
-    );
-  }
-
-  const hasFilters = activeDomains.length > 0 || activeTags.length > 0 || search.length > 0;
+  const domains = Object.entries(DOMAIN_CONFIG) as [Domain, (typeof DOMAIN_CONFIG)[Domain]][];
+  const tabs: { key: Domain | null; label: string }[] = [
+    { key: null, label: "Tous" },
+    ...domains.map(([key, { label }]) => ({ key, label })),
+  ];
+  const current = activeDomains[0] ?? null;
 
   return (
-    <div className="bg-surface border border-border rounded flex flex-col gap-[14px] p-[18px]">
-      {/* Recherche */}
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none">
-          <SearchIcon />
-        </span>
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrer par domaine">
+          {tabs.map(({ key, label }) => {
+            const active = current === key;
+            return (
+              <button
+                key={label}
+                type="button"
+                onClick={() => onDomainsChange(key ? [key] : [])}
+                aria-pressed={active}
+                className={`min-h-[44px] px-4 rounded-md border text-[15px] cursor-pointer transition-colors duration-150 ${
+                  active
+                    ? "border-accent text-fg bg-surface"
+                    : "border-transparent bg-transparent text-fg-2 hover:text-fg"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
         <input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Rechercher un projet, une technologie…"
-          className="w-full bg-surface-2 border border-border text-fg font-body text-sm placeholder:text-fg-dim rounded pl-9 pr-4 py-[9px] outline-none focus:border-accent transition-colors duration-200"
+          placeholder="Rechercher un titre ou une techno"
           aria-label="Rechercher un projet"
+          className="lg:ml-auto w-full lg:w-72 bg-surface border border-border rounded-md text-fg placeholder:text-fg-muted px-4 min-h-[44px] outline-none focus:border-accent"
         />
       </div>
 
-      {/* Filtres domaines */}
-      <div className="flex gap-2 flex-wrap items-center">
-        <span className="font-mono text-[11px] text-fg-muted tracking-[0.04em] mr-1">
-          DOMAINES
-        </span>
-        {domains.map(([key, { label, color }]) => {
-          const active = activeDomains.includes(key);
-          return (
-            <button
-              key={key}
-              onClick={() => toggleDomain(key)}
-              className="font-mono text-xs inline-flex items-center gap-[6px] rounded-full cursor-pointer transition-all duration-200"
-              style={{
-                padding: "5px 11px",
-                border: `1px solid ${active ? `${color}66` : "var(--border-strong)"}`,
-                background: active ? `${color}1F` : "transparent",
-                color: active ? color : "#6B7280",
-                letterSpacing: "0.02em",
-              }}
-              aria-pressed={active}
-            >
-              {active && (
-                <span
-                  className="w-[6px] h-[6px] rounded-full bg-current inline-block"
-                  aria-hidden="true"
-                />
-              )}
-              {label}
-            </button>
-          );
-        })}
-        {activeDomains.length > 0 && (
-          <button
-            onClick={() => onDomainsChange([])}
-            className="font-mono text-[11px] text-fg-muted bg-transparent border-none cursor-pointer px-[6px] py-1 hover:text-fg transition-colors duration-200"
-          >
-            réinitialiser
-          </button>
-        )}
-      </div>
-
-      {/* Filtres tags */}
-      {allTags.length > 0 && (
-        <div className="flex gap-2 flex-wrap items-center">
-          <span className="font-mono text-[11px] text-fg-muted tracking-[0.04em] mr-1">
-            TAGS
-          </span>
-          {allTags.map((tag) => {
-            const active = activeTags.includes(tag);
-            return (
-              <button
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className="font-mono text-[11px] cursor-pointer rounded-sm transition-all duration-200"
-                style={{
-                  padding: "3px 8px",
-                  background: active ? "rgba(45,125,210,0.12)" : "var(--surface-2)",
-                  color: active ? "var(--accent-strong)" : "var(--fg-2)",
-                  border: active ? "1px solid rgba(45,125,210,0.45)" : "1px solid transparent",
-                  letterSpacing: "0.04em",
-                }}
-                aria-pressed={active}
-              >
-                {tag}
-              </button>
-            );
-          })}
-          {activeTags.length > 0 && (
-            <button
-              onClick={() => onTagsChange([])}
-              className="font-mono text-[11px] text-fg-muted bg-transparent border-none cursor-pointer px-[6px] py-1 hover:text-fg transition-colors duration-200"
-            >
-              réinitialiser
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Compteur */}
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-[11px] text-fg-muted">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[14px] text-fg-muted">
+        <span aria-live="polite">
           {filteredCount} projet{filteredCount > 1 ? "s" : ""}
-          {hasFilters && " · filtré"}
         </span>
-        {hasFilters && (
+        {activeTags.map((tag) => (
           <button
+            key={tag}
+            type="button"
+            onClick={() => onTagsChange(activeTags.filter((t) => t !== tag))}
+            aria-label={`Retirer le filtre ${tag}`}
+            className="inline-flex items-center gap-2 bg-surface-2 text-fg border-none rounded-md px-3 min-h-[36px] cursor-pointer"
+          >
+            {tag}
+            <span aria-hidden="true">×</span>
+          </button>
+        ))}
+        {(activeTags.length > 0 || search) && (
+          <button
+            type="button"
             onClick={() => {
-              onDomainsChange([]);
               onTagsChange([]);
               onSearchChange("");
             }}
-            className="font-mono text-[11px] text-fg-dim hover:text-fg-muted transition-colors duration-200 bg-transparent border-none cursor-pointer"
+            className="bg-transparent border-none p-0 cursor-pointer text-accent-ink underline"
           >
-            tout effacer
+            Effacer la recherche
           </button>
         )}
       </div>
     </div>
   );
 }
-

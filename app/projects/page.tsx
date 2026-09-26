@@ -15,36 +15,43 @@ export const metadata: Metadata = {
   },
 };
 import { readProjects } from "@/lib/projects";
-import SectionTitle from "@/components/SectionTitle";
 import ProjectsClient from "@/components/ProjectsClient";
+import ProjectCard from "@/components/ProjectCard";
 
 export default function ProjectsPage() {
   const projects = readProjects();
 
   return (
-    <div className="max-w-layout mx-auto px-6 py-16">
-      <header className="mb-10">
-        <p className="font-mono text-[13px] text-accent tracking-[0.04em] mb-3">
-          ~ / projets
-        </p>
-        <SectionTitle as="h1">Projets techniques</SectionTitle>
-        <p className="font-body text-base text-fg-2 max-w-[640px] mt-4 leading-[1.55]">
-          Liste filtrable par domaine et tag technologique.
-          Cliquer une card pour ouvrir la fiche détaillée.
+    <div className="relative pt-6 md:pt-12">
+      {/* Halos flous derrière le titre */}
+      <div
+        className="pointer-events-none absolute -top-24 left-0 right-0 h-[420px]"
+        style={{
+          background:
+            "radial-gradient(28% 50% at 22% 45%, var(--glow-1), transparent 100%), radial-gradient(22% 45% at 76% 35%, var(--glow-2), transparent 100%)",
+        }}
+        aria-hidden="true"
+      />
+      <header className="relative mb-10 max-w-[60ch]">
+        <h1 className="text-[2.5rem] sm:text-[3.25rem] leading-tight">Projets</h1>
+        <p className="text-fg-2 text-[1.0625rem] leading-relaxed mt-3">
+          Projets d&apos;école, de stage et personnels, du plus récent au plus
+          ancien. Cliquez sur une techno pour ne garder que les projets qui l&apos;utilisent.
         </p>
       </header>
 
-      <Suspense fallback={<ProjectsFallback />}>
+      {/* Fallback = liste complète rendue côté serveur (SEO, pas de JS requis) */}
+      <Suspense
+        fallback={
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {projects.map((p) => (
+              <ProjectCard key={p.id} project={p} />
+            ))}
+          </div>
+        }
+      >
         <ProjectsClient projects={projects} />
       </Suspense>
-    </div>
-  );
-}
-
-function ProjectsFallback() {
-  return (
-    <div className="font-mono text-[13px] text-fg-muted animate-pulse">
-      Chargement…
     </div>
   );
 }

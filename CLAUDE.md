@@ -2,10 +2,12 @@ cat > ~/portfolio/CLAUDE.md << 'EOF'
 # Portfolio Elisa — Instructions projet
 Sprints 1 → 6 terminés. Site en ligne. Phase d'amélioration continue.
 
-## Référence design visuelle
-URL : https://api.anthropic.com/v1/design/h/pHdmt2gvWCht4YNZavHfVw?open_file=ui_kits%2Fportfolio%2Findex.html
-Ce fichier est la référence visuelle (layout, animations, interactions).
-Ne pas copier son code — implémenter avec notre stack définie ci-dessous.
+## Direction design (refonte Sprint 7, v3 "sombre violet")
+Validée par Elisa sur la base de captures d'un template Figma (style, pas copie) :
+fond sombre neutre, un seul accent violet, sa photo détourée dans le hero,
+cards de projets avec couverture typographique. "Pas trop de choses."
+Skill de référence : frontend-design (plugin claude-plugins-official).
+Les schémas techniques ne sont jamais la première image vue : ils vont dans les fiches.
 
 ## Concept
 Site portfolio technique data-driven, modulaire et évolutif.
@@ -16,7 +18,7 @@ Double usage : vitrine recruteurs (stage de fin d'études janv. 2027, alternance
 - Style      : Tailwind CSS uniquement (pas de CSS custom sauf exception justifiée)
 - Contenu    : MDX — fichiers dans /content/projects/
 - Typage     : TypeScript strict, pas de any
-- Animations : Framer Motion
+- Animations : CSS uniquement (Framer Motion retiré)
 - Hébergement : VPS Oracle Cloud ARM64, Docker + Nginx + GitHub Actions
 
 ## Architecture data-driven
@@ -34,6 +36,9 @@ date        : string    -- année YYYY
 github      : string    -- URL GitHub
 demo?       : string    -- URL démo optionnel
 media?      : string[]  -- chemins images optionnel
+featured?   : boolean   -- affiché dans "Projets choisis" sur l'accueil
+order?      : number    -- position dans la sélection (1 = premier, le plus mémorisé)
+cover?      : string    -- visuel de la vitrine (sinon media[0]) ; SVG accepté
 
 ## Domaines valides
 "data-science" | "cybersecurity" | "embedded" | "devsecops"
@@ -49,77 +54,69 @@ reverse-engineering    → [cybersecurity]
 cryptographie          → [cybersecurity]
 can-bus                → [embedded, cybersecurity]
 
-## Design system (light + dark, defaultTheme dark)
+## Design system (dark par défaut, mode clair disponible)
 
-Le thème est piloté par next-themes (darkMode: "class").
-Toutes les couleurs sont des variables CSS définies dans app/globals.css :
-:root pour le mode clair, .dark pour le mode sombre.
-Ne jamais hardcoder une couleur hex dans un composant pour le fond, la surface,
-les bordures ou le texte — utiliser les tokens Tailwind (bg-bg, bg-surface,
-text-fg, border-border, etc.) qui pointent vers ces variables.
+Thème piloté par next-themes (darkMode: "class", defaultTheme "dark").
+Couleurs = variables CSS dans app/globals.css (:root clair, .dark sombre),
+exposées en tokens Tailwind (bg-bg, bg-surface, text-fg, text-fg-2, text-fg-muted,
+border-border, bg-accent, text-accent-ink, bg-accent-deep, text-watermark...).
+Jamais de hex dans un composant (exception : écran d'instrument UartTrace).
 
-### Palette — mode sombre (.dark)
-Fond principal   : #111111  (--bg)
-Surface cards    : #1A1A1A  (--surface)
-Bordures         : #2E2E2E  (--border) / #3D3D3D (--border-strong)
-Texte principal  : #EEEBE4  (--fg)
-Texte secondaire : #A8A59E  (--fg-2) / #6B6862 (--fg-muted)
-Accent global    : #2D7DD2  (--accent)
+### Palette sombre (.dark)
+bg #161616, surface #1E1E1F, surface-2 #262628, border #303033 / #48484D
+fg #F2F2F3, fg-2 #BDBDC3, fg-muted #8E8E96
+accent #A43BFF (grands textes, boutons), accent-ink #C27CFF (liens, petits textes),
+accent-deep #4A1F6E (bloc derrière la photo), watermark #211A27 (mot en filigrane)
 
-### Palette — mode clair (:root), crème chaud
-Fond principal   : #F5F3EE  (--bg)
-Surface cards    : #FFFFFF  (--surface)
-Bordures         : #D8D3C8  (--border) / #B8B3A8 (--border-strong)
-Texte principal  : #111111  (--fg)
-Texte secondaire : #444444  (--fg-2) / #777777 (--fg-muted)
-Accent global    : #2D7DD2  (--accent)
-
-Couleurs domaines (identiques dans les deux thèmes) :
-  data-science  : #3B82F6
-  cybersecurity : #EF4444
-  embedded      : #22C55E
-  devsecops     : #A855F7
+### Domaines (types/project.ts, DOMAIN_CONFIG : trace + ink)
+cybersecurity rouge --ch1, embedded turquoise --ch2, data ambre --ch3, devsecops bleu --ch4
+Utilisés pour l'étiquette des cards et le halo de la couverture.
 
 ### Typographie
-Titres    : Syne — bold, impactant
-Corps     : IBM Plex Sans — lisibilité technique
-Code/tags : JetBrains Mono — style terminal
-Interdits : Inter, Roboto, Arial, Helvetica
+Interface et titres : B612 (police Airbus pour écrans de cockpit), police du body
+Textes longs des fiches : Source Serif 4 (classe font-body sur le contenu MDX)
+Code : B612 Mono
 
-### Animations et interactions
-Respecter les animations et interactions du fichier design de référence.
-Principes généraux :
-  - Transitions : 200–300ms ease-out
-  - Entrée de page : fade + translateY staggered
-  - Hover cards : glow couleur du domaine + légère élévation
-  - Titres hero : effet typewriter au chargement
-  - Scroll : animations déclenchées à l'entrée dans le viewport
-  - Mobile : animations réduites si impact sur performance
+### Mise en page
+  - Accueil : hero ("Bonjour, je m'appelle Elisa" dans un cadre, photo détourée
+    public/photo-detouree.png sur bloc violet, mot "EMBARQUÉ" en filigrane),
+    puis projets choisis (featured + order : 1 card large, puis grille 2 colonnes),
+    puis encart disponibilité + "M'écrire"
+  - Projets : titre avec halos flous, onglets de domaine (Tous / ...), recherche,
+    grille de cards 3 colonnes
+  - Card : couverture typographique (frontmatter `label`, sinon tags[0]) sur fond
+    sombre avec halo du domaine ; `cover` seulement pour une vraie belle photo
+  - Fiche projet : colonne gauche sticky (fiche + sommaire), texte serif à droite
+  - À propos : bio, panneau UART interactif, compétences, formation, certifications
+  - Pas de carrousel
 
-### Effets visuels
-  - Grille de points subtile en background (style circuit imprimé)
-  - Cards au hover : légère élévation (translateY -2px) + ombre portée douce
-  - Card : bordure haute 3px couleur du domaine, autres bords 1px var(--border)
-  - Badge tags style monospace avec bordure colorée
-  - Bordures cards : radius 6px (max 8px)
+### Lois UX appliquées (lawsofux.com)
+  - Fitts : cibles cliquables >= 40px
+  - Hick / Miller : un bouton principal, 4 technos max par card
+  - Position : ordre des projets choisis réglé par `order`
+  - Postel : recherche insensible aux accents et à la casse
+  - Apogée-fin : l'accueil se termine sur la disponibilité + "M'écrire"
+  - Jakob : logo à gauche, menu à droite, lien actif souligné
 
-### Interdits design
-  - Gradients violets sur fond blanc
-  - Glassmorphism excessif
-  - Animations décoratives sans utilité
-  - Rounded corners > 8px sur les cards
-  - Illustrations génériques
+### Rédaction (textes du site et des MDX)
+  - Première personne, phrases courtes, faits vérifiables (chiffres, outils, résultats)
+  - Dire aussi ce qui n'a pas marché et les limites
+  - Pas de tiret cadratin (—), pas de gras au milieu d'une phrase
+  - Formules interdites : "à la croisée de", "au-delà de", "passionné(e)",
+    "de bout en bout", "robuste", "plonger dans", "n'est pas seulement X mais Y",
+    énumérations en trois adjectifs
+  - Ne jamais inventer un fait absent des sources
 
 ## Composants clés
-NavBar        : navigation fixe, indicateur page active
-ProjectCard   : card projet avec glow hover domaine
-DomainBadge   : badge coloré par domaine
-TechTag       : badge monospace style terminal [Python]
-FilterBar     : filtres domaines + tags + compteur
-ProjectDetail : page détail avec sidebar sticky
-SectionTitle  : titre section avec accent coloré
-CodeBlock     : bloc code avec bouton copier
-Callout       : note colorée info/warning/tip
+NavBar        : logo "E" + nom, menu à droite, lien actif en violet souligné
+Footer        : contact + lien vers le code source du site
+UartTrace     : panneau analyseur logique, trame UART 8N1 interactive (page À propos)
+ProjectCard   : card projet (couverture typographique, domaines, titre, résumé, technos)
+DomainBadge   : libellé du domaine avec repère à la couleur de sa voie
+FilterBar     : onglets de domaine + recherche + technos actives + compteur
+TableOfContents : sommaire de la colonne latérale (lg+)
+CodeBlock     : bloc code sur écran d'instrument, bouton copier
+Callout       : note avec filet gauche à la couleur d'une voie
 
 ## Conventions code
 - Composants    : PascalCase (ProjectCard.tsx)
@@ -324,3 +321,13 @@ Next.js optimise automatiquement via le composant Image.
 - Graphiques résultats ML (matplotlib, Power BI)
 - Captures terminal
 - Diagrammes de flux
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

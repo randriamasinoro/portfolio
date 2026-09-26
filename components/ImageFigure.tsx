@@ -36,7 +36,7 @@ export default function ImageFigure({ src, alt, caption, size = "full", href }: 
           className="group relative block rounded-sm overflow-hidden border border-border hover:border-fg-muted transition-colors duration-200"
         >
           {media}
-          <span className="absolute top-2 right-2 inline-flex items-center gap-1 font-mono text-[11px] text-fg bg-bg/80 backdrop-blur px-2 py-1 rounded border border-border-strong opacity-80 group-hover:opacity-100 transition-opacity">
+          <span className="absolute top-2 right-2 inline-flex items-center gap-1 font-ui text-[12px] text-fg bg-surface px-2 py-1 rounded-sm border border-border-strong">
             Ouvrir
             <ArrowUpRightIcon />
           </span>

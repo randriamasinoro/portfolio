@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { existsSync } from "fs";
 import { join } from "path";
-import FadeIn from "@/components/animations/FadeIn";
-import SectionTitle from "@/components/SectionTitle";
-import { GitHubIcon, MailIcon, LinkedInIcon, PhoneIcon } from "@/components/icons";
-import { SKILL_GROUPS, TIMELINE } from "@/lib/about";
-import { DOMAIN_CONFIG } from "@/types/project";
+import DomainBadge from "@/components/DomainBadge";
+import UartTrace from "@/components/UartTrace";
+import { CERTIFICATIONS, SKILL_GROUPS, TIMELINE } from "@/lib/about";
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -34,233 +32,140 @@ function resolvePhotoPath(): string | null {
 }
 
 const CONTACTS = [
-  {
-    href: "mailto:randriamasnrelisa@gmail.com",
-    label: "Email",
-    text: "randriamasnrelisa@gmail.com",
-    icon: <MailIcon />,
-  },
-  {
-    href: "tel:+33664689713",
-    label: "Téléphone",
-    text: "06 64 68 97 13",
-    icon: <PhoneIcon />,
-  },
+  { href: "mailto:randriamasnrelisa@gmail.com", label: "Email", text: "randriamasnrelisa@gmail.com" },
+  { href: "tel:+33664689713", label: "Téléphone", text: "06 64 68 97 13" },
   {
     href: "https://www.linkedin.com/in/sehenonirina-elisa-randriamasinoro",
     label: "LinkedIn",
     text: "sehenonirina-elisa-randriamasinoro",
-    icon: <LinkedInIcon />,
   },
-  {
-    href: "https://github.com/randriamasinoro",
-    label: "GitHub",
-    text: "randriamasinoro",
-    icon: <GitHubIcon />,
-  },
+  { href: "https://github.com/randriamasinoro", label: "GitHub", text: "randriamasinoro" },
 ] as const;
 
 export default function AboutPage() {
   const photoSrc = resolvePhotoPath();
 
   return (
-    <div className="max-w-layout mx-auto px-6 py-16 pb-24">
-      <FadeIn>
-        <header className="mb-16">
-          <p className="font-mono text-[13px] text-accent tracking-[0.04em] mb-3">
-            ~ / à-propos
-          </p>
-          <SectionTitle as="h1">Profil</SectionTitle>
-        </header>
-      </FadeIn>
+    <div className="pt-6 md:pt-12">
+      <div className="grid gap-12 lg:gap-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
+        <div className="max-w-[62ch]">
+          <h1 className="text-[2.25rem] sm:text-[3rem] leading-tight mb-8">À propos</h1>
+          <div className="text-[1.1875rem] leading-relaxed text-fg-2 space-y-5">
+            <p className="text-fg">
+              Je m&apos;appelle Sehenonirina Elisa Randriamasinoro. Je suis en
+              Master 2 Cybersécurité des Systèmes Embarqués à l&apos;UBS
+              Lorient. Avant, j&apos;ai fait une licence en systèmes numériques
+              et objets connectés à l&apos;UBS, et deux diplômes techniques à
+              l&apos;IST-T d&apos;Antananarivo, en génie industriel puis en
+              systèmes automatisés.
+            </p>
+            <p>
+              Côté embarqué, je développe en C sur STM32, sous FreeRTOS ou en
+              bare-metal, et j&apos;ai construit une distribution Linux avec
+              Yocto pour une carte STM32MP135. Côté sécurité, je travaille sur
+              un banc d&apos;attaques Zigbee (nRF52840, ESP32-H2, WHAD) et sur
+              l&apos;injection de trames CAN, et j&apos;ai mis en place un secure
+              boot U-Boot signé en RSA sous QEMU.
+            </p>
+            <p>
+              J&apos;administre aussi un serveur ARM64 qui héberge ce site,
+              derrière un VPN WireGuard, avec Wazuh, CrowdSec et une
+              supervision Prometheus et Grafana, déployé par une chaîne
+              DevSecOps.
+            </p>
+            <p>
+              Je cherche un stage de fin d&apos;études de 4 à 6 mois à partir
+              de janvier 2027, en cybersécurité des systèmes embarqués, avec une
+              perspective de pré-embauche. Une alternance m&apos;intéresse
+              aussi.
+            </p>
+          </div>
 
-      {/* Bio */}
-      <FadeIn delay={0.1}>
-        <section className="mb-24">
-          <div className="grid gap-10 sm:gap-16 items-start sm:grid-cols-[minmax(0,1fr)_200px]">
-            <div className="max-w-[640px]">
-              <p className="font-body text-[18px] leading-[1.6] text-fg mb-5">
-                En Master 2 Cybersécurité des Systèmes Embarqués à
-                l&apos;UBS Lorient, je travaille à la croisée de la
-                cybersécurité, des systèmes embarqués et du DevSecOps. J&apos;aime
-                autant durcir et superviser une infrastructure que comprendre
-                comment un système fonctionne en profondeur, du réseau
-                jusqu&apos;au firmware.
-              </p>
-              <p className="font-body text-base leading-[1.6] text-fg-2 mb-5">
-                Je recherche un stage de fin d&apos;études de 4 à 6 mois à
-                partir de janvier 2027, avec une perspective de pré-embauche,
-                en cybersécurité et systèmes embarqués. Une alternance reste
-                également
-                envisageable.
-              </p>
-              <p className="font-mono text-[13px] text-fg-muted tracking-[0.04em]">
-                France · Europe · télétravail OK
-              </p>
+          <section className="mt-12">
+            <UartTrace message="Elisa" />
+          </section>
 
-              {/* Badge disponibilité */}
-              <div className="mt-5 flex flex-col gap-2">
-                <div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.04em] px-3 py-[6px] rounded-full border w-fit"
-                  style={{ color: "#A855F7", borderColor: "rgba(168,85,247,0.4)", background: "rgba(168,85,247,0.08)" }}>
-                  <span className="w-[6px] h-[6px] rounded-full bg-current inline-block" aria-hidden="true" />
-                  Stage de fin d&apos;études · janvier 2027 · alternance possible
+          <section className="mt-16">
+            <h2 className="text-[1.5rem] mb-6">Compétences</h2>
+            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
+              {SKILL_GROUPS.map(({ label, domain, skills }) => (
+                <div key={label}>
+                  {domain ? (
+                    <DomainBadge domain={domain} />
+                  ) : (
+                    <span className="font-ui text-[13px] text-fg-muted">{label}</span>
+                  )}
+                  <p className="text-[1.0625rem] text-fg-2 leading-relaxed mt-2 m-0">{skills.join(", ")}</p>
                 </div>
-              </div>
+              ))}
             </div>
+          </section>
 
-            {/* Photo de profil */}
-            <div className="w-[160px] sm:w-[200px] shrink-0">
-              {photoSrc ? (
-                <Image
-                  src={photoSrc}
-                  alt="Sehenonirina Elisa Randriamasinoro"
-                  width={200}
-                  height={200}
-                  className="w-full aspect-square object-cover rounded border border-border"
-                  priority
-                />
-              ) : (
-                <div
-                  className="w-full aspect-square bg-surface border border-border border-dashed rounded flex flex-col items-center justify-center gap-2 text-center"
-                  role="img"
-                  aria-label="Photo de profil non encore ajoutée"
-                >
-                  <PlaceholderIcon />
-                  <span className="font-mono text-[10px] text-fg-dim tracking-[0.04em] leading-tight px-2">
-                    Déposer <code className="text-fg-muted">public/photo.jpg</code>
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      </FadeIn>
+          <section className="mt-16">
+            <h2 className="text-[1.5rem] mb-6">Formation</h2>
+            <ol className="list-none p-0 m-0 border-l border-border-strong">
+              {TIMELINE.map((item) => (
+                <li key={item.year} className="relative pl-6 pb-7 last:pb-0">
+                  <span
+                    className="absolute -left-[5px] top-[7px] w-[9px] h-[9px] rounded-full bg-bg border-2 border-fg"
+                    aria-hidden="true"
+                  />
+                  <p className="font-ui text-[14px] text-fg-muted m-0">{item.year}</p>
+                  <p className="font-ui text-[1.0625rem] font-bold text-fg m-0 mt-1">{item.title}</p>
+                  <p className="text-fg-2 m-0">{item.org}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
 
-      {/* Compétences */}
-      <FadeIn delay={0.15}>
-        <section className="mb-24">
-          <div className="mb-8">
-            <SectionTitle>Compétences</SectionTitle>
-          </div>
-          <div
-            className="grid gap-4"
-            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}
-          >
-            {SKILL_GROUPS.map(({ domain, skills }) => {
-              const { color, label } = DOMAIN_CONFIG[domain];
-              return (
-                <div key={domain} className="bg-surface border border-border rounded p-5">
-                  <div className="flex items-center gap-[10px] mb-4">
-                    <div
-                      className="w-7 h-7 rounded-sm flex items-center justify-center"
-                      style={{ background: `${color}1F`, border: `1px solid ${color}66`, color }}
-                    >
-                      <DomainDotIcon />
-                    </div>
-                    <h3 className="font-body text-sm font-semibold text-fg m-0 tracking-[0.02em]">
-                      {label}
-                    </h3>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="font-mono text-[11px] text-fg-2 tracking-[0.02em] px-[9px] py-1 rounded-sm bg-surface-2"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      </FadeIn>
+          <section className="mt-16">
+            <h2 className="text-[1.5rem] mb-6">Certifications</h2>
+            <ul className="list-none p-0 m-0 space-y-4">
+              {CERTIFICATIONS.map((c) => (
+                <li key={c.title}>
+                  <p className="font-ui text-[1.0625rem] font-bold text-fg m-0">{c.title}</p>
+                  <p className="text-fg-2 m-0">
+                    {c.org}
+                    {c.date && `, ${c.date}`}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-      {/* Parcours */}
-      <FadeIn delay={0.2}>
-        <section className="mb-24">
-          <div className="mb-8">
-            <SectionTitle>Formation</SectionTitle>
-          </div>
-          <ol className="list-none p-0 m-0 max-w-[680px] relative">
-            <div
-              className="absolute top-[6px] bottom-[6px] bg-border-strong"
-              style={{ left: "71px", width: "1px" }}
-              aria-hidden="true"
+        </div>
+
+        <aside className="lg:pt-24 font-ui text-[15px]">
+          {photoSrc && (
+            <Image
+              src={photoSrc}
+              alt="Sehenonirina Elisa Randriamasinoro"
+              width={320}
+              height={320}
+              className="w-40 sm:w-56 lg:w-full max-w-[320px] aspect-square object-cover rounded-md mb-8"
+              priority
             />
-            {TIMELINE.map((item, i) => (
-              <li
-                key={i}
-                className="grid items-baseline gap-4 py-[14px]"
-                style={{ gridTemplateColumns: "64px auto 1fr" }}
-              >
-                <span className="font-mono text-[11px] text-fg-muted tracking-[0.04em] whitespace-nowrap">
-                  {item.year}
-                </span>
-                <span
-                  className="w-[9px] h-[9px] rounded-full bg-surface border border-accent z-10"
-                  style={{ marginLeft: "-4px" }}
-                  aria-hidden="true"
-                />
-                <div>
-                  <div className="font-body text-[15px] font-semibold text-fg mb-[2px]">
-                    {item.title}
-                  </div>
-                  <div className="font-body text-[13px] text-fg-muted">{item.org}</div>
-                </div>
-              </li>
+          )}
+          <h2 className="text-[1.125rem] mb-4">Contact</h2>
+          <dl className="m-0 space-y-3">
+            {CONTACTS.map(({ href, label, text }) => (
+              <div key={label}>
+                <dt className="text-fg-muted text-[13px]">{label}</dt>
+                <dd className="m-0 break-all">
+                  <a
+                    href={href}
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="text-fg"
+                  >
+                    {text}
+                  </a>
+                </dd>
+              </div>
             ))}
-          </ol>
-        </section>
-      </FadeIn>
-
-      {/* Contact */}
-      <FadeIn delay={0.25}>
-        <section>
-          <div className="mb-6">
-            <SectionTitle>Contact</SectionTitle>
-          </div>
-          <div className="flex flex-col gap-3 max-w-sm">
-            {CONTACTS.map(({ href, label, text, icon }) => (
-              <a
-                key={label}
-                href={href}
-                target={href.startsWith("http") ? "_blank" : undefined}
-                rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                aria-label={label}
-                className="flex items-center gap-3 font-body text-sm text-fg-2 hover:text-fg transition-colors duration-200 group"
-              >
-                <span className="w-9 h-9 rounded bg-surface border border-border text-fg-muted group-hover:text-fg group-hover:border-border-strong inline-flex items-center justify-center transition-all duration-200 shrink-0">
-                  {icon}
-                </span>
-                <span className="font-mono text-[12px] text-fg-muted group-hover:text-fg transition-colors duration-200 truncate">
-                  {text}
-                </span>
-              </a>
-            ))}
-          </div>
-        </section>
-      </FadeIn>
+          </dl>
+        </aside>
+      </div>
     </div>
-  );
-}
-
-function DomainDotIcon() {
-  return (
-    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
-      <circle cx={12} cy={12} r={4} />
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-    </svg>
-  );
-}
-
-function PlaceholderIcon() {
-  return (
-    <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="text-fg-dim" aria-hidden="true">
-      <circle cx={12} cy={8} r={4} />
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-    </svg>
   );
 }

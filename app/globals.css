@@ -2,116 +2,120 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Light mode (crème chaud) ────────────────────────────────────── */
+/* ── Clair : gris d'établi, encre, voies d'oscilloscope ─────────────── */
 :root {
-  --bg:            #F5F3EE;
+  /* ── Clair ── */
+  --bg:            #F5F4F7;
   --surface:       #FFFFFF;
-  --surface-2:     #EDE9DF;
-  --surface-3:     #E5E0D5;
-  --border:        #D8D3C8;
-  --border-strong: #B8B3A8;
-  --fg:            #111111;
-  --fg-2:          #444444;
-  --fg-muted:      #777777;
-  --fg-dim:        #AAAAAA;
-  --accent:        #2D7DD2;
-  --accent-strong: #2468BA;
+  --surface-2:     #ECEBF0;
+  --border:        #DDDBE3;
+  --border-strong: #BEBBC7;
+  --fg:            #151417;
+  --fg-2:          #45434B;
+  --fg-muted:      #6B6873;
+  --accent:        #8A1FE6;   /* grands textes, fonds */
+  --accent-ink:    #7A12D6;   /* liens et petits textes (AA) */
+  --accent-deep:   #8A1FE6;   /* bloc derrière la photo */
+  --watermark:     #EAE4F2;   /* grand mot en filigrane */
+  --glow-1:        rgba(138, 31, 230, 0.10);
+  --glow-2:        rgba(255, 90, 110, 0.08);
 
-  --nav-bg:        rgba(245, 243, 238, 0.88);
-  --nav-menu-bg:   rgba(245, 243, 238, 0.97);
-  --dot-color:     rgba(0, 0, 0, 0.04);
-  --selection-bg:  rgba(45, 125, 210, 0.18);
+  /* Écran d'instrument (panneau UART, blocs de code) : identique dans les deux thèmes */
+  --scope-bg:      #0D0C10;
+  --scope-grid:    #221F29;
+  --scope-text:    #9A96A6;
+  --scope-fg:      #E2E0E8;
+  --trace:         #C27CFF;
+
+  /* Domaines */
+  --ch1: #FF5A6E;  --ch1-ink: #C4283D;   /* cybersécurité */
+  --ch2: #2EC4B6;  --ch2-ink: #0E7F75;   /* embarqué */
+  --ch3: #F2B33D;  --ch3-ink: #8A6100;   /* data */
+  --ch4: #5B8CFF;  --ch4-ink: #2F5BD6;   /* devsecops */
+
+  --selection-bg:  rgba(138, 31, 230, 0.22);
 }
 
-/* ── Dark mode (noir sobre) ──────────────────────────────────────── */
 .dark {
-  --bg:            #111111;
-  --surface:       #1A1A1A;
-  --surface-2:     #222222;
-  --surface-3:     #2A2A2A;
-  --border:        #2E2E2E;
-  --border-strong: #3D3D3D;
-  --fg:            #EEEBE4;
-  --fg-2:          #A8A59E;
-  --fg-muted:      #6B6862;
-  --fg-dim:        #4A4845;
-  --accent:        #2D7DD2;
-  --accent-strong: #4A95E0;
+  /* ── Sombre (par défaut) ── */
+  --bg:            #161616;
+  --surface:       #1E1E1F;
+  --surface-2:     #262628;
+  --border:        #303033;
+  --border-strong: #48484D;
+  --fg:            #F2F2F3;
+  --fg-2:          #BDBDC3;
+  --fg-muted:      #8E8E96;
+  --accent:        #A43BFF;
+  --accent-ink:    #C27CFF;
+  --accent-deep:   #4A1F6E;
+  --watermark:     #211A27;
+  --glow-1:        rgba(120, 30, 230, 0.28);
+  --glow-2:        rgba(220, 40, 60, 0.16);
 
-  --nav-bg:        rgba(17, 17, 17, 0.72);
-  --nav-menu-bg:   rgba(17, 17, 17, 0.95);
-  --dot-color:     rgba(255, 255, 255, 0.035);
-  --selection-bg:  rgba(45, 125, 210, 0.30);
+  --ch1-ink: #FF8593;
+  --ch2-ink: #5ED8CC;
+  --ch3-ink: #F5C566;
+  --ch4-ink: #8DAEFF;
+
+  --selection-bg:  rgba(164, 59, 255, 0.35);
 }
 
 @layer base {
   html,
   body {
     @apply bg-bg text-fg;
-    font-family: var(--font-ibm-plex-sans), ui-sans-serif, system-ui;
+    font-family: var(--font-b612), ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
   h1, h2, h3 {
-    font-family: var(--font-syne), ui-sans-serif, system-ui;
+    font-family: var(--font-b612), ui-sans-serif, system-ui, sans-serif;
+    text-wrap: balance;
     @apply font-bold text-fg;
     margin: 0;
   }
 
+  a {
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
   ::selection {
     background: var(--selection-bg);
-    @apply text-fg;
   }
 
   :focus-visible {
-    @apply outline outline-2 outline-offset-2 outline-accent rounded;
+    @apply outline outline-2 outline-offset-2 outline-accent rounded-sm;
   }
 
   * { box-sizing: border-box; }
 }
 
 @layer utilities {
-  /* Animation d'entrée CSS — s'exécute dès le 1er rendu, sans attendre le JS.
-     Essentiel pour le LCP : le contenu above-the-fold reste peint immédiatement. */
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+  /* Moment unique de la page : la trace UART se dessine une fois au chargement. */
+  @keyframes trace-draw {
+    from { stroke-dashoffset: var(--trace-length); }
+    to   { stroke-dashoffset: 0; }
   }
-  .animate-fade-up {
-    animation: fade-up 0.5s cubic-bezier(0.2, 0, 0, 1) both;
+  .animate-trace {
+    stroke-dasharray: var(--trace-length);
+    animation: trace-draw 1.4s cubic-bezier(0.3, 0, 0.2, 1) both;
   }
-
-  @keyframes fade-down {
-    from { opacity: 0; transform: translateY(-8px); }
-    to   { opacity: 1; transform: translateY(0); }
+  @keyframes decode-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
-  .animate-fade-down {
-    animation: fade-down 0.2s cubic-bezier(0.2, 0, 0, 1) both;
-  }
-
-  .dot-grid {
-    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-position: 0 0;
-  }
-
-  .nav-blur {
-    background: var(--nav-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-
-  .nav-menu-blur {
-    background: var(--nav-menu-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  .animate-decode {
+    animation: decode-in 0.3s ease-out both;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }

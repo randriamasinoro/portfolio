@@ -4,12 +4,11 @@ import Link from "next/link";
 import { readProject, readProjects, getRelatedProjects } from "@/lib/projects";
 import { extractToc } from "@/lib/toc";
 import { DOMAIN_CONFIG } from "@/types/project";
-import DomainBadge from "@/components/DomainBadge";
-import TechTag from "@/components/TechTag";
 import TableOfContents from "@/components/TableOfContents";
 import MDXContent from "@/components/MDXContent";
 import ProjectJsonLd from "@/components/ProjectJsonLd";
 import ProjectCard from "@/components/ProjectCard";
+import DomainBadge from "@/components/DomainBadge";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -49,148 +48,71 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const { frontmatter: project, content } = data;
   const toc = extractToc(content);
-  const primaryDomain = project.domains[0];
-  const domainColor = DOMAIN_CONFIG[primaryDomain]?.color ?? "#2D7DD2";
   const related = getRelatedProjects(id);
 
   return (
-    <div className="max-w-layout mx-auto px-6 py-16">
+    <article className="pt-6 md:pt-12">
       <ProjectJsonLd project={project} />
 
-      {/* Breadcrumb */}
-      <Link
-        href="/projects"
-        className="inline-flex items-center gap-[6px] font-mono text-xs text-fg-muted hover:text-fg transition-colors duration-200 mb-6 no-underline"
-      >
-        <ArrowLeftIcon />
-        Projets
+      <Link href="/projects" className="text-[15px] text-fg-muted hover:text-accent-ink">
+        Tous les projets
       </Link>
 
-      {/* Header */}
-      <header className="mb-12 pb-8 border-b border-border">
-        <div className="flex gap-2 flex-wrap mb-5">
-          {project.domains.map((d) => (
-            <DomainBadge key={d} domain={d} />
-          ))}
-        </div>
-
-        <h1
-          className="font-display font-bold text-fg mb-4"
-          style={{
-            fontSize: "clamp(2.25rem, 5vw, 3.5rem)",
-            lineHeight: 1.1,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          {project.title}
-        </h1>
-
-        <p className="font-body text-[18px] leading-[1.55] text-fg-2 max-w-[720px] mb-6">
-          {project.description}
-        </p>
-
-        {/* Signature auteur, E-E-A-T + maillage interne vers /about */}
-        <p className="font-body text-sm text-fg-muted mb-5">
-          Par{" "}
-          <Link
-            href="/about"
-            className="text-fg font-medium hover:text-accent transition-colors duration-200"
-          >
-            Sehenonirina Elisa Randriamasinoro
-          </Link>
-          , M1 Cybersécurité des Systèmes Embarqués, UBS Lorient
-        </p>
-
-        <div className="flex gap-[14px] flex-wrap items-center mb-5">
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 font-body text-sm font-medium px-[14px] py-[9px] rounded bg-surface text-fg border border-border-strong no-underline transition-colors duration-200 hover:border-fg-muted"
-            >
-              <GitHubIcon />
-              Code source
-              <ArrowUpRightIcon />
-            </a>
-          )}
-          <span className="font-mono text-xs text-fg-muted inline-flex items-center gap-4">
-            <span>{project.date}</span>
-            <span
-              className="w-1 h-1 rounded-full bg-fg-dim inline-block"
-              aria-hidden="true"
-            />
-            <span>{project.tags.length} stack</span>
-          </span>
-        </div>
-
-        <div className="flex gap-3 flex-wrap">
-          {project.tags.map((tag) => (
-            <TechTag key={tag}>{tag}</TechTag>
-          ))}
-        </div>
+      <header className="mt-6 mb-10 md:mb-14">
+        <h1 className="text-[2.125rem] sm:text-[2.875rem] lg:text-[3.25rem] leading-[1.08] max-w-[22ch]">{project.title}</h1>
       </header>
 
-      {/* Contenu + ToC */}
-      <div className="grid gap-16 items-start lg:grid-cols-[minmax(0,1fr)_220px]">
-        <main
-          className="min-w-0"
-          style={{ "--domain-color": domainColor } as React.CSSProperties}
-        >
-          <MDXContent content={content} domainColor={domainColor} />
-        </main>
+      <div className="grid gap-10 lg:gap-16 lg:grid-cols-[240px_minmax(0,1fr)]">
+        <aside className="font-ui text-[14px] lg:sticky lg:top-6 lg:self-start">
+          <dl className="grid grid-cols-[6rem_minmax(0,1fr)] lg:grid-cols-1 gap-x-4 gap-y-2 lg:gap-y-0 border-y border-border py-4">
+            <dt className="text-fg-muted lg:mt-0">Année</dt>
+            <dd className="lg:mb-4">{project.date}</dd>
+            <dt className="text-fg-muted">Domaines</dt>
+            <dd className="flex flex-col gap-1 lg:mb-4">
+              {project.domains.map((d) => (
+                <DomainBadge key={d} domain={d} />
+              ))}
+            </dd>
+            <dt className="text-fg-muted">Technos</dt>
+            <dd className="text-fg-2 leading-relaxed lg:mb-4">{project.tags.join(", ")}</dd>
+            {project.github && (
+              <>
+                <dt className="text-fg-muted">Code</dt>
+                <dd className="lg:mb-4">
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-fg break-all">
+                    Dépôt GitHub
+                  </a>
+                </dd>
+              </>
+            )}
+            <dt className="text-fg-muted">Auteur</dt>
+            <dd>
+              {/* Signature auteur, E-E-A-T + maillage interne vers /about */}
+              <Link href="/about" className="text-fg">
+                Sehenonirina Elisa Randriamasinoro
+              </Link>
+            </dd>
+          </dl>
+          <TableOfContents items={toc} />
+        </aside>
 
-        <TableOfContents items={toc} />
+        <div className="min-w-0 max-w-[68ch]">
+          <p className="font-body text-[1.3125rem] leading-relaxed text-fg mb-10">{project.description}</p>
+          <MDXContent content={content} />
+        </div>
       </div>
 
       {/* Projets similaires, maillage interne + clusters thématiques */}
       {related.length > 0 && (
-        <section className="mt-20 pt-10 border-t border-border">
-          <div className="flex justify-between items-baseline mb-8">
-            <h2
-              className="font-display font-bold text-fg m-0"
-              style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", letterSpacing: "-0.02em" }}
-            >
-              Projets similaires
-            </h2>
-            <Link
-              href="/projects"
-              className="font-mono text-xs text-accent no-underline hover:text-accent-strong transition-colors duration-200"
-            >
-              Tous les projets
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {related.map((p, i) => (
-              <ProjectCard key={p.id} project={p} index={i} />
+        <section className="mt-24">
+          <h2 className="text-[1.75rem] mb-2">Projets proches</h2>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 mt-6">
+            {related.map((p) => (
+              <ProjectCard key={p.id} project={p} />
             ))}
           </div>
         </section>
       )}
-    </div>
-  );
-}
-
-function ArrowLeftIcon() {
-  return (
-    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M19 12H5M12 19l-7-7 7-7" />
-    </svg>
-  );
-}
-
-function ArrowUpRightIcon() {
-  return (
-    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M7 17L17 7M7 7h10v10" />
-    </svg>
-  );
-}
-
-function GitHubIcon() {
-  return (
-    <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
-    </svg>
+    </article>
   );
 }

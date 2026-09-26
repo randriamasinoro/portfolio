@@ -18,7 +18,7 @@ export const DOMAIN_CONFIG: Record<
   Domain,
   { label: string; color: string }
 > = {
-  "data-science": { label: "Data Science", color: "#3B82F6" },
+  "data-science": { label: "Data & IA", color: "#3B82F6" },
   cybersecurity:  { label: "Cybersécurité", color: "#EF4444" },
   embedded:       { label: "Systèmes Embarqués", color: "#22C55E" },
   devsecops:      { label: "DevSecOps", color: "#A855F7" },

@@ -38,7 +38,7 @@ Pour changer le **label affiché** d'un domaine :
 .. code-block:: typescript
 
    export const DOMAIN_CONFIG = {
-     "data-science": { label: "Data Science", color: "#3B82F6" },   // ← modifier label
+     "data-science": { label: "Data & IA", color: "#3B82F6" },   // ← modifier label
      cybersecurity:  { label: "Cybersécurité", color: "#EF4444" },
      embedded:       { label: "Systèmes Embarqués", color: "#22C55E" },
      devsecops:      { label: "DevSecOps", color: "#A855F7" },

@@ -1,0 +1,114 @@
+---
+id: extraction-llm-documents
+title: Extraction fiable de données juridiques par LLM
+description: Pipeline qui fait lire des statuts et actes notariés en PDF par un LLM, produit un JSON contrôlé par schéma puis remplit un formulaire web, avec des garde-fous contre les hallucinations.
+domains:
+  - data-science
+tags:
+  - LLM
+  - Agents IA
+  - Claude Code
+  - Python
+  - Playwright
+  - JSON Schema
+  - pdftotext
+date: "2026"
+featured: false
+---
+
+## Contexte
+
+Des micro-tâches de saisie demandent de relire des documents juridiques de sociétés (statuts, actes notariés, procès-verbaux d'assemblée, cessions de parts) et d'en reporter le contenu dans un formulaire web : capital social, nombre de parts, liste des associés, état civil de chacun.
+
+Le travail est répétitif, mais une seule erreur (un associé oublié, un prénom dans le mauvais ordre) fait refuser la tâche. C'était un bon terrain pour une question qui dépasse la saisie : **comment rendre fiable la sortie d'un LLM quand l'erreur coûte cher ?**
+
+<Callout type="info">
+  Les documents traités contiennent des données personnelles réelles. Ni le code, ni les
+  documents, ni les résultats ne sont publiés. Cette page décrit la démarche, pas les données.
+</Callout>
+
+---
+
+## Architecture : le LLM lit, le code contrôle
+
+Le principe est de séparer le jugement (lire un acte juridique) de l'exécution (remplir un formulaire), et de ne jamais laisser le LLM agir sans contrôle.
+
+```
+PDF de la tâche
+    │  prepare.py : pdftotext + résumé compact (identité, actes, capital, répartition, état civil)
+    ▼
+LLM (Claude Code, terminal)
+    │  lit le résumé, ouvre le texte complet aux endroits utiles, écrit un JSON
+    ▼
+validate.py ── contrat JSON Schema + cohérence (parts × nominal = capital)
+    ▼
+fill_repartition.py ── Playwright branché sur Chrome (CDP) remplit le formulaire
+    ▼
+verify.py ── relit le formulaire : sommes, champs obligatoires vides, SIREN ↔ dénomination
+    ▼
+submit.py ── soumission seulement si tout est OK, sinon arrêt et question à l'humain
+```
+
+Le pipeline a été conçu et itéré avec Claude Code : mon travail a porté sur l'architecture, les règles métier et surtout les contrôles.
+
+---
+
+## Les garde-fous contre les hallucinations
+
+Un LLM qui ne trouve pas une information a tendance à la « compléter » de façon plausible. Chaque garde-fou vise un mode d'échec précis :
+
+| Risque | Garde-fou |
+|---|---|
+| Un associé oublié | La somme des parts doit tomber exactement sur le total, sinon blocage |
+| Un montant inventé ou arrondi | Règle écrite : ce qui n'est pas dans le document n'est pas saisi, il part dans une liste `a_verifier` |
+| Une identité « plausible » mais fausse | En mode d'extraction automatique, chaque montant et chaque identité doit être justifié par une **citation mot pour mot** du document, dont le script vérifie l'existence |
+| Un SIREN erroné recopié des statuts | Résolution par API (Pappers, API gouv), puis affichage « SIREN - nom » pour détecter une société différente |
+| Un cas ambigu | Le pipeline s'arrête et pose la question au lieu de soumettre |
+
+<Callout type="tip">
+  Une citation introuvable ou une somme qui ne tombe pas juste est <strong>signalée</strong>,
+  jamais comblée. Le rôle de l'humain se réduit à arbitrer ce qui est signalé.
+</Callout>
+
+---
+
+## Apprendre des refus
+
+La plateforme refuse une saisie sans jamais donner le motif. Pour chaque refus, j'ai comparé le document d'origine avec ce qui avait été saisi, jusqu'à retrouver la cause.
+
+Les refus se sont ramenés à trois causes : un associé oublié, une donnée inventée (reliquat réparti « également », arrondi), un état civil bâclé (nom d'usage à la place du nom de naissance, ville homonyme). Chacune est devenue soit un contrôle automatique, soit une règle écrite dans les instructions du LLM, consignée dans un fichier de leçons que l'agent n'ouvre qu'en cas de doute précis.
+
+---
+
+## Économiser les tokens et le contexte
+
+- Le PDF est converti en texte, puis résumé en un seul digest : le LLM ne lit le texte complet qu'aux endroits utiles.
+- L'image d'une page n'est utilisée que pour les documents scannés, jamais en routine.
+- Les vérifications passent par des scripts qui relisent le formulaire, plutôt que par des captures d'écran analysées par le modèle.
+- Les instructions sont découpées : un chemin rapide chargé à chaque tâche, les cas particuliers seulement à la demande.
+
+---
+
+## Comparer les modèles
+
+J'ai testé une extraction entièrement automatique par un autre LLM (Gemini, plusieurs variantes « flash »), qui devait lui aussi citer ses sources.
+
+- Une variante allégée (« lite ») a rendu 0 part pour 4 associés sur 5 sur un même dossier, là où la variante standard trouvait tout. Le contrôle des sommes l'a attrapé, mais une erreur d'état civil serait passée : variante écartée.
+- Le quota gratuit (20 requêtes par jour et par modèle) a imposé une rotation entre modèles et un compteur local.
+- Un dossier traité de bout en bout par cette extraction a été refusé sans cause identifiable, alors qu'elle concordait ligne à ligne avec l'acte. Faute de pouvoir expliquer l'échec, elle a été désactivée au profit d'une extraction relue.
+
+---
+
+## Limites
+
+- Les documents manuscrits ou mal scannés restent peu fiables : l'OCR est signalé comme incertain, rien n'est affirmé.
+- Le contrôle des sommes ne détecte pas une erreur d'état civil cohérente mais fausse : cette partie repose encore sur la relecture.
+- Traiter des données personnelles avec une API LLM externe doit être encadré (RGPD) avant tout usage réel.
+
+---
+
+## Ce que ce projet m'a appris
+
+Un LLM est un bon lecteur de documents, mais un mauvais juge de sa propre fiabilité. La valeur du pipeline n'est pas dans l'extraction elle-même, elle est dans tout ce qui l'entoure : un contrat de sortie strict, des contrôles indépendants du modèle, et le réflexe de transformer chaque erreur en règle ou en test.
+
+C'est la même logique qu'en sécurité : on ne fait pas confiance à un composant, on vérifie ce qu'il produit.

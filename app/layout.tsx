@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   title: {
-    default: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
+    default: "Sehenonirina Elisa Randriamasinoro, Cybersécurité embarquée",
     template: "%s, Elisa Randriamasinoro",
   },
   description:
@@ -49,11 +49,11 @@ export const metadata: Metadata = {
     "Zigbee",
     "CAN Bus",
     "DevSecOps",
-    "data science",
-    "alternance data science",
+    "sécurité IoT",
+    "alternance cybersécurité embarquée",
     "alternance systèmes embarqués",
-    "alternance intelligence artificielle",
-    "machine learning",
+    "Linux embarqué",
+    "FreeRTOS",
     "M2 cybersécurité systèmes embarqués",
     "stage systèmes embarqués janvier 2027",
     "stage pré-embauche cybersécurité",
@@ -64,15 +64,15 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://sinoro.fr",
     siteName: "Sehenonirina Elisa Randriamasinoro",
-    title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
+    title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité embarquée",
     description:
-      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche. Alternance également envisagée. Cybersécurité, embarqué, data science, IA.",
+      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité & Data",
+    title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité embarquée",
     description:
-      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche. Alternance également envisagée. Cybersécurité, embarqué, data science, IA.",
+      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   },
   robots: {
     index: true,

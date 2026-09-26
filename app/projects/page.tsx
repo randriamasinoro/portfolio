@@ -4,14 +4,14 @@ import { Suspense } from "react";
 export const metadata: Metadata = {
   title: "Projets techniques",
   description:
-    "Projets en cybersécurité des systèmes embarqués : reverse engineering de firmware, analyse de protocoles radio (Zigbee, BLE, CAN Bus), sécurité IoT, data science et pipelines DevSecOps. UBS Lorient.",
+    "Projets en cybersécurité des systèmes embarqués : reverse engineering de firmware, analyse de protocoles radio (Zigbee, BLE, CAN Bus), sécurité IoT et pipelines DevSecOps. UBS Lorient.",
   alternates: { canonical: "/projects" },
   openGraph: {
     type: "website",
     url: "https://sinoro.fr/projects",
     title: "Projets techniques, Sehenonirina Elisa Randriamasinoro",
     description:
-      "Projets cybersécurité embarquée, reverse engineering firmware, protocoles radio (Zigbee, CAN Bus), IoT, data science et DevSecOps.",
+      "Projets cybersécurité embarquée, reverse engineering firmware, protocoles radio (Zigbee, CAN Bus), IoT et DevSecOps.",
   },
 };
 import { readProjects } from "@/lib/projects";

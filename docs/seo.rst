@@ -4,7 +4,7 @@ Stratégie SEO
 Documentation complète du référencement (SEO) du portfolio **sinoro.fr**.
 
 Objectif : être trouvé par les recruteurs sur des recherches liées à
-**cybersécurité embarquée** et **data science**, et bien apparaître quand on
+**cybersécurité embarquée** et **systèmes embarqués**, et bien apparaître quand on
 cherche le nom *Sehenonirina Elisa Randriamasinoro*.
 
 .. note::
@@ -166,7 +166,7 @@ Maillage interne
 Longueurs des balises
    ``<title>`` 50–60 car. · ``meta description`` 120–160 car. · ``og:title``
    ≤ 60 · ``twitter:title`` ≤ 70. Choix assumé : garder le **nom complet** dans
-   le title, slogan raccourci en « Cybersécurité & Data ».
+   le title, slogan raccourci en « Cybersécurité embarquée ».
 
 URLs propres
    ``/projects/zigbee-security`` (descriptif) plutôt qu'un identifiant aléatoire.

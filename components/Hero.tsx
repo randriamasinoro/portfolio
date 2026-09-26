@@ -30,7 +30,7 @@ export default function Hero() {
         >
           {/* Titre sémantique complet (SEO + lecteurs d'écran) */}
           <span className="sr-only">
-            Sehenonirina Elisa Randriamasinoro, Cybersécurité &amp; Data Science
+            Sehenonirina Elisa Randriamasinoro, Cybersécurité des Systèmes Embarqués
           </span>
           {/* Version visuelle */}
           <span aria-hidden="true">
@@ -46,8 +46,8 @@ export default function Hero() {
           En Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient).
           <br />
           Recherche un stage de fin d&apos;études de 4 à 6 mois à partir de
-          janvier 2027, avec perspective de pré-embauche, en cybersécurité,
-          systèmes embarqués, data science ou intelligence artificielle.
+          janvier 2027, avec perspective de pré-embauche, en cybersécurité et
+          systèmes embarqués.
           Alternance également envisagée.
         </p>
 
@@ -59,7 +59,7 @@ export default function Hero() {
           <span className="text-accent">·</span>{" "}
           Systèmes Embarqués{" "}
           <span className="text-accent">·</span>{" "}
-          Data Science
+          DevSecOps
         </p>
 
         <div

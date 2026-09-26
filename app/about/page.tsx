@@ -11,14 +11,14 @@ import { DOMAIN_CONFIG } from "@/types/project";
 export const metadata: Metadata = {
   title: "À propos",
   description:
-    "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche. Alternance également envisagée. Cybersécurité, embarqué, data science, IA.",
+    "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   alternates: { canonical: "/about" },
   openGraph: {
     type: "profile",
     url: "https://sinoro.fr/about",
     title: "À propos, Sehenonirina Elisa Randriamasinoro",
     description:
-      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche. Alternance également envisagée. Cybersécurité, embarqué, data science, IA.",
+      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   },
 };
 
@@ -82,7 +82,7 @@ export default function AboutPage() {
               <p className="font-body text-[18px] leading-[1.6] text-fg mb-5">
                 En Master 2 Cybersécurité des Systèmes Embarqués à
                 l&apos;UBS Lorient, je travaille à la croisée de la
-                cybersécurité, du DevSecOps et de la data science. J&apos;aime
+                cybersécurité, des systèmes embarqués et du DevSecOps. J&apos;aime
                 autant durcir et superviser une infrastructure que comprendre
                 comment un système fonctionne en profondeur, du réseau
                 jusqu&apos;au firmware.
@@ -90,8 +90,8 @@ export default function AboutPage() {
               <p className="font-body text-base leading-[1.6] text-fg-2 mb-5">
                 Je recherche un stage de fin d&apos;études de 4 à 6 mois à
                 partir de janvier 2027, avec une perspective de pré-embauche,
-                en cybersécurité, systèmes embarqués, data science ou
-                intelligence artificielle. Une alternance reste également
+                en cybersécurité et systèmes embarqués. Une alternance reste
+                également
                 envisageable.
               </p>
               <p className="font-mono text-[13px] text-fg-muted tracking-[0.04em]">

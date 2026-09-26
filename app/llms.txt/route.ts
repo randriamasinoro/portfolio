@@ -22,10 +22,9 @@ export function GET() {
 > En Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient, 2026-2027).
 > Spécialités : sécurité des protocoles sans fil embarqués (Zigbee/802.15.4),
 > reverse engineering de firmwares, sécurité CAN bus, hardening Linux embarqué,
-> data science et IA. Recherche un stage de fin d'études de 4 à 6 mois à partir
-> de janvier 2027, avec perspective de pré-embauche, en cybersécurité, systèmes
-> embarqués, data science ou intelligence artificielle. Alternance également
-> envisagée.
+> DevSecOps. Recherche un stage de fin d'études de 4 à 6 mois à partir de
+> janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes
+> embarqués. Alternance également envisagée.
 
 ## Pages principales
 

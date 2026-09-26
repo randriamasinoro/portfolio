@@ -7,7 +7,7 @@ const personSchema = {
   email: "mailto:randriamasnrelisa@gmail.com",
   jobTitle: "Master 2 Cybersécurité des Systèmes Embarqués",
   description:
-    "En Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Sécurité des protocoles sans fil embarqués (Zigbee/802.15.4), reverse engineering de firmwares, sécurité CAN bus, hardening Linux embarqué, data science et IA. Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche ; alternance également envisagée.",
+    "En Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Sécurité des protocoles sans fil embarqués (Zigbee/802.15.4), reverse engineering de firmwares, sécurité CAN bus, hardening Linux embarqué, DevSecOps. Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche ; alternance également envisagée.",
   alumniOf: [
     {
       "@type": "CollegeOrUniversity",
@@ -26,7 +26,7 @@ const personSchema = {
     "STM32",
     "ESP32",
     "nRF52840",
-    "Data science",
+    "FreeRTOS",
     "DevSecOps",
   ],
   sameAs: [
@@ -35,7 +35,7 @@ const personSchema = {
   ],
   seeks: {
     "@type": "Demand",
-    name: "Stage de fin d'études de 4 à 6 mois à partir de janvier 2027 (perspective de pré-embauche) ou alternance, en cybersécurité, systèmes embarqués, data science ou intelligence artificielle",
+    name: "Stage de fin d'études de 4 à 6 mois à partir de janvier 2027 (perspective de pré-embauche) ou alternance, en cybersécurité et systèmes embarqués",
   },
 };
 

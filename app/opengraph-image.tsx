@@ -4,7 +4,7 @@ import path from "path";
 
 export const runtime = "nodejs";
 export const alt =
-  "Sehenonirina Elisa Randriamasinoro, Cybersécurité des Systèmes Embarqués & Data Science";
+  "Sehenonirina Elisa Randriamasinoro, Cybersécurité des Systèmes Embarqués";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -88,7 +88,6 @@ export default async function Image() {
           {[
             ["Cybersécurité", "#EF4444"],
             ["Systèmes Embarqués", "#22C55E"],
-            ["Data Science", "#3B82F6"],
             ["DevSecOps", "#A855F7"],
           ].map(([label, color]) => (
             <div

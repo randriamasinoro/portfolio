@@ -85,7 +85,7 @@ export default function HomePage() {
             <p className="font-body text-[17px] leading-[1.6] text-fg-2 max-w-[640px]">
                 En Master 2 Cybersécurité des Systèmes Embarqués à
                 l&apos;UBS Lorient, je travaille à la croisée de la
-                cybersécurité, du DevSecOps et de la data science. J&apos;aime
+                cybersécurité, des systèmes embarqués et du DevSecOps. J&apos;aime
                 autant durcir et superviser une infrastructure que comprendre
                 comment un système fonctionne en profondeur, du réseau
                 jusqu&apos;au firmware.

@@ -1,18 +1,19 @@
 ---
 id: driveinsight
-title: DriveInsight, Gestion de parc automobile connecté
-description: Plateforme web de réservation de véhicules couplée à un système embarqué de télémétrie IoT en temps réel. Particle Boron + GPS + capteurs physiques + tableau de bord admin.
+label: "IoT"
+title: "DriveInsight : télémétrie et gestion d'une flotte de véhicules"
+description: Plateforme web de réservation de véhicules avec une télémétrie embarquée simulée (GPS, capteurs) et un tableau de bord d'administration.
 domains:
   - embedded
 tags:
   - PHP
   - SQLite
   - IoT
-  - Particle Boron
+  - Firmware Particle
   - GPS
   - JavaScript
   - MapTiler
-date: "2025"
+date: "2024"
 github: https://github.com/randriamasinoro/driveInsight
 media:
   - /images/park/client.png
@@ -25,15 +26,18 @@ featured: false
 
 La gestion d'un parc automobile de location repose encore, dans de nombreuses structures malgaches, sur des tableurs, des registres papier et des appels téléphoniques pour vérifier la disponibilité d'un véhicule.
 
-DriveInsight fusionne une plateforme web de réservation avec un système embarqué de télémétrie, pour donner au gestionnaire de flotte une vision complète et en temps réel : de l'état de charge de la batterie d'un véhicule jusqu'à sa position GPS sur la carte.
+DriveInsight est une plateforme web de réservation et de gestion d'un parc de véhicules, conçue pour recevoir la télémétrie d'un module embarqué par véhicule : position GPS, niveau de carburant, niveau d'huile et tension de la batterie.
 
-Projet de Fin d'Études, L3 Génie des Systèmes Automatisés · Institut de Technologie d'Antananarivo · 2024
+La plateforme web fonctionne. Le module embarqué, lui, est resté au stade du firmware : je l'ai écrit pour un Particle Boron, mais il n'a jamais tourné sur une vraie carte. Pour tester la chaîne côté serveur, j'ai envoyé à la main des coordonnées GPS et des valeurs de capteurs aux endpoints de l'API, sans la carte.
+
+Projet réalisé de juillet à septembre 2024 dans le cadre du DTSS Génie des Systèmes Automatisés (grade licence) à l'IST-T d'Antananarivo.
 
 ## Architecture
 
 ```
 ┌──────────────────────────────────────┐
-│            Particle Boron            │  ← embarqué dans chaque véhicule
+│   Particle Boron (firmware écrit,    │  ← non testé sur carte,
+│   non flashé sur une carte)          │    télémétrie simulée
 │  GPS · Capteur carburant · Huile     │
 │  Batterie · Réseau Telma (cellulaire)│
 └────────────────┬─────────────────────┘
@@ -78,42 +82,46 @@ AND date_fin_existante > date_debut_demandée
 
 ![Tableau de bord admin, vue d'ensemble du parc et réservations](/images/park/admin1.png)
 
-![Tableau de bord admin, suivi IoT temps réel et position GPS](/images/park/admin2.png)
+![Tableau de bord admin, suivi de la télémétrie et position GPS, alimenté par des données simulées](/images/park/admin2.png)
 
 Le dashboard sépare les données en trois requêtes indépendantes : véhicules en location, réservations à venir, véhicules disponibles. Un même véhicule peut apparaître dans plusieurs sections sans ambiguïté, contrairement à un `LEFT JOIN … LIMIT 1` qui masquait silencieusement les réservations futures.
 
-L'administrateur peut supprimer une réservation, ajouter un véhicule au parc, et accéder au suivi temps réel : position GPS sur carte interactive et état des capteurs embarqués.
+L'administrateur peut supprimer une réservation, ajouter un véhicule au parc, et consulter la télémétrie de chaque véhicule : position GPS sur une carte interactive et état des capteurs. Sur les captures, ces données sont simulées.
 
-## Module embarqué, Particle Boron
+## Module embarqué : le firmware
 
-Chaque véhicule est équipé d'un Particle Boron configuré pour le réseau cellulaire Telma Madagascar (`APN: telmanet`). Il centralise trois flux :
+Le firmware (`firmware/GPSandSensorData.ino`) cible un Particle Boron connecté au réseau cellulaire Telma Madagascar (`APN: telmanet`). Il prévoit trois flux :
 
-- Position GPS, coordonnées NMEA toutes les 10 secondes, affichées sur MapTiler SDK
-- Niveau de carburant, capteur analogique externe, converti via mapping ADC 12 bits (0–4095)
-- État mécanique, niveau d'huile et tension batterie (0–15 V), remontés toutes les 5 secondes
+- Position GPS, trames NMEA décodées par TinyGPS++, envoyées toutes les 10 secondes
+- Niveaux de carburant et d'huile, lus sur l'ADC 12 bits (0 à 4095) et convertis en pourcentage
+- Tension de la batterie, convertie de 0 à 15 V, envoyée toutes les 5 secondes avec les niveaux
 
 <Callout type="info">
 Les données transitent par HTTP GET vers des fichiers JSON horodatés côté serveur. L'interface admin interroge ces fichiers par polling JavaScript, sans WebSocket ni broker MQTT.
 </Callout>
 
-## Défis techniques résolus
+## Ce que j'ai corrigé dans le firmware
 
-Mapping ADC sur Particle Boron. La fonction `map()` de l'API Particle convertit la plage 0–4095 en unités métier (% carburant, volts). Un bug de nommage entre les paramètres firmware et les endpoints PHP a nécessité un débogage hardware/software en intégration système.
+Quatre erreurs ont été corrigées dans le code, et chacune est commentée dans le fichier :
 
-Configuration réseau cellulaire. L'APN Telma doit impérativement être configuré avant `Particle.connect()`, dans le cas contraire, la connexion s'établit silencieusement sur le mauvais réseau, sans erreur apparente.
+- l'APN Telma est configuré avant `Particle.connect()`, et non après ;
+- le code de retour HTTP se lit dans `response.status`, pas `response.status_code` ;
+- les noms des paramètres envoyés (`distance1`, `distance2`, `distance3`) correspondent maintenant à ceux qu'attend l'endpoint PHP ;
+- les lectures ADC (0 à 4095) sont converties en unités utiles avec `map()`.
 
-Synchronisation IoT → Web sans infrastructure complexe. Le Boron pousse ses données en HTTP GET, stockées en JSON côté serveur. Le polling JavaScript en admin maintient l'affichage à jour sans dépendance à une infrastructure temps réel.
+Côté serveur, les données reçues en HTTP GET sont écrites dans des fichiers JSON, et l'interface admin les relit par polling JavaScript, sans WebSocket ni broker MQTT.
 
 ## Limites et perspectives
 
-Le système actuel est un prototype fonctionnel avec des contraintes assumées :
+C'est un prototype académique, avec des limites connues :
 
+- Le module embarqué n'a pas été testé sur une vraie carte : la télémétrie affichée dans l'admin provient de données simulées
 - Authentification admin basique (pas de bcrypt, pas de tokens de session)
 - Pas de paiement réel, la réservation est déclarative
 - Données IoT stockées en JSON plats (pas de requêtes temporelles)
 - Serveur PHP mono-thread (`php -S`), non adapté à un déploiement multi-utilisateurs
 
-Prochaine évolution structurante : intégration du bus CAN via OBD-II. Tout véhicule moderne dispose d'un port OBD-II donnant accès au bus CAN interne. Via un transceiver MCP2515 (SPI) + TJA1050, le Boron pourrait lire directement les PIDs SAE J1979 :
+Évolution prévue : passer par le bus CAN via OBD-II. Tout véhicule moderne dispose d'un port OBD-II donnant accès au bus CAN interne. Via un transceiver MCP2515 (SPI) + TJA1050, le Boron pourrait lire directement les PIDs SAE J1979 :
 
 ```
 Boron SPI ── MCP2515 ── TJA1050 ── OBD-II (pin 6/14) ── CAN bus véhicule
@@ -128,7 +136,7 @@ Cela remplacerait les trois capteurs câblés manuellement par un seul connecteu
 | Backend | PHP 8.3 · SQLite 3 (PDO) |
 | Frontend | HTML5 · CSS3 · JavaScript · Flatpickr |
 | Cartographie | MapTiler SDK v2 |
-| Embarqué | Particle Boron · TinyGPS++ · HttpClient |
+| Embarqué | Firmware Particle pour Boron, TinyGPS++, HttpClient (non testé sur carte) |
 | Réseau IoT | Cellulaire, Telma Madagascar (`telmanet`) |
 | Capteurs | ADC analogique, carburant, huile, batterie (12 bits) |
 | Évolution prévue | Bus CAN via OBD-II, MCP2515 + TJA1050 + PIDs SAE J1979 |

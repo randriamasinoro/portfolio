@@ -1,0 +1,97 @@
+---
+id: health-hub
+label: "FreeRTOS"
+title: "Health Hub : migration d'un moniteur de santé STM32 vers FreeRTOS"
+description: Moniteur multi-capteurs sur STM32F411 (fréquence cardiaque, température, mouvement). J'ai migré le code bare-metal vers FreeRTOS, avec six tâches priorisées, des files de messages et un mutex sur le bus I²C.
+domains:
+  - embedded
+tags:
+  - C
+  - STM32
+  - FreeRTOS
+  - CMSIS-RTOS v2
+  - I²C
+  - STM32CubeIDE
+  - MPU6050
+  - MAX30105
+date: "2025"
+github: https://github.com/randriamasinoro/health_hub
+featured: true
+order: 3
+---
+
+## Contexte
+
+Projet de Master 1 à l'UBS Lorient. Le point de départ est un projet STM32CubeIDE fourni par l'encadrant : un code bare-metal qui lit plusieurs capteurs de santé, affiche les valeurs sur un écran OLED et les envoie en UART vers la plateforme Thingsboard, via un script Python.
+
+Mon travail a consisté à migrer ce code vers FreeRTOS : découper le programme en tâches, choisir leurs priorités et leurs périodes, et organiser l'échange de données entre elles sans conflit sur le bus partagé.
+
+<Callout type="info">
+Le projet de base, les bibliothèques de capteurs et le script Thingsboard viennent de l'encadrant. Ma contribution est la migration FreeRTOS (dernier commit du dépôt).
+</Callout>
+
+## Le matériel
+
+| Rôle | Composant |
+|---|---|
+| Microcontrôleur | STM32F411RE (carte Nucleo) |
+| Mouvement | MPU6050, accéléromètre et gyroscope 6 axes |
+| Fréquence cardiaque | MAX30105, capteur optique |
+| Température corporelle | MAX30205 (Fever click) |
+| Affichage | Écran OLED 1,12 pouce |
+
+Les trois capteurs sont sur le même bus I²C. C'est la contrainte qui structure toute l'architecture.
+
+## Architecture FreeRTOS
+
+![Chronogramme des six tâches FreeRTOS, périodes tirées du code, durées illustratives](/images/health-hub/ordonnancement-freertos.svg)
+
+Le programme est découpé en six tâches, reliées par cinq files de messages. Chaque étape a sa propre tâche : acquisition, calcul, affichage.
+
+```
+MotionTask ──qAttitudeAlgo──▶ AttitudeTask ──qAttitudeDisplay──┐
+HeartRateTask ──qBPMalgo──▶ processTaskBPM ──qBPMDisplay───────┼──▶ DisplayTask ──▶ OLED
+TempTask ──qTempData───────────────────────────────────────────┘
+
+MotionTask, HeartRateTask, TempTask : accès I²C protégés par mutexI2C
+```
+
+| Tâche | Rôle | Priorité | Période |
+|---|---|---|---|
+| MotionTask | Lit accéléromètre et gyroscope | Haute | 50 ms |
+| HeartRateTask | Échantillonne le signal infrarouge | Au-dessus de normale | 10 ms |
+| AttitudeTask | Calcule les normes d'accélération et de rotation | Au-dessus de normale | 100 ms |
+| processTaskBPM | Calcule le rythme cardiaque | Normale | à chaque échantillon |
+| TempTask | Lit la température | En dessous de normale | 1 s |
+| DisplayTask | Met à jour l'écran | Basse | 100 ms |
+
+L'affichage a la priorité la plus basse : s'il prend du retard, aucune mesure n'est perdue. À l'inverse, l'échantillonnage cardiaque tourne toutes les 10 ms, parce que le calcul du rythme a besoin d'un signal régulier.
+
+## Partager le bus I²C
+
+Trois tâches lisent des capteurs sur le même bus. Sans protection, une tâche plus prioritaire peut interrompre une transaction I²C en cours et la corrompre. Chaque lecture est donc encadrée par un mutex :
+
+```c
+osMutexAcquire(mutexI2CHandle, osWaitForever);
+irSample = acquireHeartSampleC();
+osMutexRelease(mutexI2CHandle);
+osMessageQueuePut(qBPMalgoHandle, &irSample, 0, 10);
+```
+
+## Dimensionner les files
+
+La file entre l'échantillonnage cardiaque et le calcul du rythme peut contenir 10 échantillons : le calcul peut prendre un peu de retard sans en perdre. Les autres files ne contiennent qu'un seul élément, car l'écran n'a besoin que de la dernière valeur. La tâche d'affichage lit ses files sans attendre, et garde la valeur précédente si rien de nouveau n'est arrivé.
+
+## Analyse des performances
+
+Avec les outils de STM32CubeIDE, j'ai analysé l'empreinte mémoire, la charge CPU et le respect des contraintes de temps réel de la version FreeRTOS.
+
+## Stack
+
+| Couche | Technologie |
+|---|---|
+| Cible | STM32F411RE |
+| Noyau temps réel | FreeRTOS, API CMSIS-RTOS v2 |
+| Langages | C, C++ (bibliothèques capteurs via un wrapper Arduino) |
+| Bus | I²C, UART |
+| Outils | STM32CubeIDE, STM32CubeMX (.ioc) |

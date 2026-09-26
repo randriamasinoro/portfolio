@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" font-family="B612, Helvetica Neue, sans-serif">
+<rect width="960" height="540" rx="10" fill="#0D1210"/>
+<text x="32" y="44" fill="#D5DDD9" font-size="20" font-weight="700">Ordonnancement FreeRTOS, 6 tâches</text>
+<text x="32" y="70" fill="#8FA39A" font-size="14">Périodes tirées du code, durées d'exécution illustratives</text>
+<line x1="190.0" y1="96" x2="190.0" y2="472" stroke="#1C2622" stroke-width="1.4"/>
+<text x="190.0" y="496" fill="#8FA39A" font-size="13" text-anchor="middle">0 ms</text>
+<line x1="226.5" y1="96" x2="226.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="263.0" y1="96" x2="263.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="299.5" y1="96" x2="299.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="336.0" y1="96" x2="336.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="372.5" y1="96" x2="372.5" y2="472" stroke="#1C2622" stroke-width="1.4"/>
+<text x="372.5" y="496" fill="#8FA39A" font-size="13" text-anchor="middle">50 ms</text>
+<line x1="409.0" y1="96" x2="409.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="445.5" y1="96" x2="445.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="482.0" y1="96" x2="482.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="518.5" y1="96" x2="518.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="555.0" y1="96" x2="555.0" y2="472" stroke="#1C2622" stroke-width="1.4"/>
+<text x="555.0" y="496" fill="#8FA39A" font-size="13" text-anchor="middle">100 ms</text>
+<line x1="591.5" y1="96" x2="591.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="628.0" y1="96" x2="628.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="664.5" y1="96" x2="664.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="701.0" y1="96" x2="701.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="737.5" y1="96" x2="737.5" y2="472" stroke="#1C2622" stroke-width="1.4"/>
+<text x="737.5" y="496" fill="#8FA39A" font-size="13" text-anchor="middle">150 ms</text>
+<line x1="774.0" y1="96" x2="774.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="810.5" y1="96" x2="810.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="847.0" y1="96" x2="847.0" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="883.5" y1="96" x2="883.5" y2="472" stroke="#1C2622" stroke-width="0.7"/>
+<line x1="920.0" y1="96" x2="920.0" y2="472" stroke="#1C2622" stroke-width="1.4"/>
+<text x="920.0" y="496" fill="#8FA39A" font-size="13" text-anchor="middle">200 ms</text>
+<text x="32" y="130" fill="#D5DDD9" font-size="15">MotionTask</text>
+<text x="32" y="148" fill="#8FA39A" font-size="12">priorité haute</text>
+<line x1="190" y1="144" x2="920" y2="144" stroke="#17B6AE" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="190.0" y="120" width="14.6" height="24" rx="2" fill="#17B6AE"/>
+<rect x="372.5" y="120" width="14.6" height="24" rx="2" fill="#17B6AE"/>
+<rect x="555.0" y="120" width="14.6" height="24" rx="2" fill="#17B6AE"/>
+<rect x="737.5" y="120" width="14.6" height="24" rx="2" fill="#17B6AE"/>
+<text x="32" y="192" fill="#D5DDD9" font-size="15">HeartRateTask</text>
+<text x="32" y="210" fill="#8FA39A" font-size="12">priorité au-dessus de normale</text>
+<line x1="190" y1="206" x2="920" y2="206" stroke="#17B6AE" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="190.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="226.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="263.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="299.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="336.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="372.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="409.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="445.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="482.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="518.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="555.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="591.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="628.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="664.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="701.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="737.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="774.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="810.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="847.0" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="883.5" y="182" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<text x="32" y="254" fill="#D5DDD9" font-size="15">AttitudeTask</text>
+<text x="32" y="272" fill="#8FA39A" font-size="12">priorité au-dessus de normale</text>
+<line x1="190" y1="268" x2="920" y2="268" stroke="#17B6AE" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="211.9" y="244" width="10.9" height="24" rx="2" fill="#17B6AE"/>
+<rect x="576.9" y="244" width="11.0" height="24" rx="2" fill="#17B6AE"/>
+<text x="32" y="316" fill="#D5DDD9" font-size="15">processTaskBPM</text>
+<text x="32" y="334" fill="#8FA39A" font-size="12">priorité normale</text>
+<line x1="190" y1="330" x2="920" y2="330" stroke="#17B6AE" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="195.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="232.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="268.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="305.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="341.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="378.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="414.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="451.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="487.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="524.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="560.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="597.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="633.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="670.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="706.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="743.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="779.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="816.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="852.5" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<rect x="889.0" y="306" width="4.4" height="24" rx="2" fill="#17B6AE"/>
+<text x="32" y="378" fill="#D5DDD9" font-size="15">TempTask</text>
+<text x="32" y="396" fill="#8FA39A" font-size="12">priorité sous la normale</text>
+<line x1="190" y1="392" x2="920" y2="392" stroke="#17B6AE" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="200.9" y="368" width="11.0" height="24" rx="2" fill="#17B6AE"/>
+<text x="32" y="440" fill="#D5DDD9" font-size="15">DisplayTask</text>
+<text x="32" y="458" fill="#8FA39A" font-size="12">priorité basse</text>
+<line x1="190" y1="454" x2="920" y2="454" stroke="#17B6AE" stroke-opacity="0.35" stroke-width="1.5"/>
+<rect x="241.1" y="430" width="32.8" height="24" rx="2" fill="#17B6AE"/>
+<rect x="606.1" y="430" width="32.9" height="24" rx="2" fill="#17B6AE"/>
+<text x="928" y="44" fill="#E9C12B" font-size="14" text-anchor="end">Lectures I²C sous mutexI2C</text>
+</svg>

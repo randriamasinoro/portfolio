@@ -1,7 +1,8 @@
 ---
 id: wireguard-vpn
-title: VPN WireGuard, accès distant chiffré & frontière de confiance
-description: Un VPN WireGuard auto-hébergé sur VPS ARM64 qui transforme un serveur isolé en réseau privé multi-appareils, et sert de frontière de confiance pour exposer des services d'administration en interne uniquement.
+label: "WireGuard"
+title: VPN WireGuard pour l'administration du VPS
+description: VPN WireGuard auto-hébergé sur VPS ARM64. Il relie mes appareils dans un réseau privé, et les services d'administration du VPS ne sont accessibles que par ce tunnel.
 domains:
   - cybersecurity
   - devsecops
@@ -15,7 +16,7 @@ tags:
   - ARM64
   - dnsmasq
 date: "2026"
-featured: true
+featured: false
 ---
 
 ## Contexte
@@ -30,7 +31,7 @@ Mais le projet a pris une autre dimension quand le VPN est devenu une frontière
 
 - Monter un VPN auto-hébergé sur mon VPS, sans service tiers
 - Connecter plusieurs appareils : PC Linux + smartphones (iOS, Android)
-- Comprendre en profondeur le routage et le NAT sous Linux (pas juste copier une config)
+- Comprendre en profondeur le routage et le NAT sous Linux (plutôt que copier une config)
 - Utiliser le VPN comme mécanisme de contrôle d'accès à des services internes
 - Gestion des clés sans compromis : aucune clé privée ne quitte son appareil
 

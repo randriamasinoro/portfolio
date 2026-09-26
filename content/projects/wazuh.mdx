@@ -1,7 +1,8 @@
 ---
 id: wazuh
-title: Wazuh SIEM/XDR, surveillance de sécurité sur VPS personnel
-description: Déploiement de Wazuh sur VPS ARM64 pour comprendre comment fonctionne un SIEM/XDR en conditions réelles. Collecte de logs, détection d'intrusion et premier regard sur l'audit de conformité.
+label: "Wazuh"
+title: "Wazuh : un SIEM/XDR sur mon VPS"
+description: "Wazuh installé sur mon VPS ARM64 pour voir comment un SIEM/XDR fonctionne sur une vraie machine : collecte de logs, détection d'intrusion et premier audit de conformité CIS."
 domains:
   - cybersecurity
   - devsecops
@@ -19,7 +20,7 @@ date: "2026"
 github: https://github.com/randriamasinoro/portfolio
 media:
   - /images/wazuh/wazuhassesment.png
-featured: true
+featured: false
 ---
 
 ## Contexte
@@ -33,7 +34,7 @@ L'idée n'était pas de produire un rapport d'audit parfait, mais de comprendre 
 ## Architecture
 
 ```
-VPS Oracle Cloud (ARM64 — Ubuntu 24.04)
+VPS Oracle Cloud (ARM64, Ubuntu 24.04)
 │
 ├── Wazuh Manager        ← corrélation des alertes, règles de détection
 ├── Wazuh Indexer        ← stockage des événements (OpenSearch)
@@ -44,7 +45,7 @@ Agent Wazuh
  └── SCA Module          ← vérifications de conformité CIS
 ```
 
-Le dashboard n'est pas exposé sur Internet — accessible uniquement depuis le VPN WireGuard. C'est cohérent avec l'approche du reste du homelab.
+Comme le reste du homelab, le dashboard n'est pas exposé sur Internet : il n'est accessible que depuis le VPN WireGuard.
 
 ---
 
@@ -65,7 +66,7 @@ Ce n'est pas spectaculaire en isolation, mais voir ces événements corrélés d
 
 Le module SCA lance des vérifications automatiques contre le CIS Ubuntu 24.04 LTS Benchmark.
 
-![Résultat SCA Wazuh — CIS Ubuntu 24.04 LTS Benchmark sur mon VPS](/images/wazuh/wazuhassesment.png)
+![Résultat SCA Wazuh du benchmark CIS Ubuntu 24.04 LTS sur mon VPS](/images/wazuh/wazuhassesment.png)
 
 La capture montre le résultat sur mon serveur : 118 passed, 119 failed, score de 49 %.
 

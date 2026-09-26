@@ -1,7 +1,8 @@
 ---
 id: zigbee-security
-title: Sécurité du protocole Zigbee, attaques de couche
-description: Étude offensive du protocole Zigbee sur un banc isolé. De l'écoute passive à une chaîne d'attaques actives (saturation, usurpation du coordinateur, rejeu, éjection), avec un attaquant nRF52840 piloté par WHAD et industrialisé sur un banc de test reproductible.
+label: "Zigbee"
+title: Attaques sur le protocole Zigbee
+description: "Étude offensive de Zigbee sur un banc isolé : écoute passive, puis attaques actives (saturation, usurpation du coordinateur, rejeu, éjection) depuis un dongle nRF52840 piloté par WHAD, sur un banc de test reproductible."
 domains:
   - cybersecurity
   - embedded
@@ -16,6 +17,7 @@ media:
   - /images/zigbee-security/banc-de-test.png
 date: "2026"
 featured: true
+order: 1
 ---
 
 ## Contexte
@@ -88,7 +90,7 @@ Le résultat le plus marquant, parce que le choix de la commande fait tout. La d
 
 ---
 
-## Des chiffres, pas juste des démos
+## Mesures
 
 Chaque attaque est quantifiée sur le banc, avec un trafic de référence d'une commande par seconde et les journaux série des trois nœuds.
 

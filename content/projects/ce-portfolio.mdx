@@ -1,7 +1,8 @@
 ---
 id: ce-portfolio
-title: Ce portfolio, architecture data-driven & déploiement continu
-description: Le site que vous consultez, un portfolio Next.js 16 piloté par des fichiers MDX, déployé en continu sur VPS ARM64 via un pipeline sécurisé, et optimisé pour la performance et le SEO.
+label: "Next.js"
+title: "Ce portfolio : Next.js, MDX et déploiement continu"
+description: "Le site que vous lisez : Next.js 16 et fichiers MDX, redéployé automatiquement sur un VPS ARM64 à chaque push, avec des contrôles de sécurité dans le pipeline."
 domains:
   - devsecops
 tags:
@@ -18,12 +19,12 @@ tags:
 date: "2026"
 github: https://github.com/randriamasinoro/portfolio
 demo: https://sinoro.fr
-featured: true
+featured: false
 ---
 
 ## Contexte
 
-Ce portfolio est à la fois une vitrine pour des recruteurs et un outil personnel que je fais évoluer. Plutôt que de coder chaque projet en dur, j'ai conçu le site comme une petite plateforme : le contenu est séparé du code, la mise en ligne est automatique, et chaque détail (performance, accessibilité, SEO) est traité comme une exigence, pas une option.
+Ce portfolio est à la fois une vitrine pour des recruteurs et un outil personnel que je fais évoluer. Plutôt que de coder chaque projet en dur, j'ai conçu le site comme une petite plateforme : le contenu est séparé du code, la mise en ligne est automatique, et la performance, l'accessibilité et le SEO sont mesurés.
 
 Le projet que vous lisez en ce moment est lui-même décrit par un fichier MDX, c'est sa propre démonstration.
 
@@ -102,7 +103,7 @@ git push
 
 ## Performance
 
-La performance a été traitée comme un objectif chiffré, pas une impression. Le principal gain est venu d'une décision contre-intuitive : retirer Framer Motion.
+J'ai mesuré la performance avec Lighthouse à chaque étape. Le plus gros gain est venu du retrait de Framer Motion.
 
 | Action | Effet mesuré |
 |---|---|
@@ -119,7 +120,7 @@ La performance a été traitée comme un objectif chiffré, pas une impression. 
 
 ## SEO & identité numérique
 
-Au-delà des balises `title`/`description`, j'ai poussé jusqu'aux signaux que Google utilise pour construire une entité :
+En plus des balises `title`/`description`, j'ai ajouté les signaux que Google utilise pour construire une entité :
 
 - Donnée structurée JSON-LD : un schéma `Person` (formation, compétences, `sameAs` vers GitHub/LinkedIn) et `WebSite`, pour lier mon nom à mes profils.
 - Maillage interne : projets liés entre eux (ce projet pointe vers d'autres), bon pour le crawl et l'utilisateur.
@@ -133,7 +134,7 @@ Au-delà des balises `title`/`description`, j'ai poussé jusqu'aux signaux que G
 
 - Dark mode soigné, palette définie par tokens Tailwind (couleur par domaine).
 - `aria-label` sur tous les boutons-icônes, structure de titres cohérente.
-- Typographie technique : Syne (titres), IBM Plex Sans (corps), JetBrains Mono (code/tags).
+- Typographie : IBM Plex Sans pour le texte, JetBrains Mono pour le code. Depuis la refonte de septembre 2026, le site n'a plus d'animations et tient sur une colonne de lecture.
 - Composants réutilisables : `ProjectCard`, `DomainBadge`, `TechTag`, `Callout`, `CodeBlock`…
 
 ---
@@ -157,6 +158,6 @@ Au-delà des balises `title`/`description`, j'ai poussé jusqu'aux signaux que G
 
 ## Ce que ce projet m'a appris
 
-Construire un portfolio « qui marche » est facile ; construire une plateforme qui reste simple à faire évoluer demande des choix d'architecture dès le départ. Séparer le contenu (MDX) du code a transformé chaque ajout de projet en une tâche d'écriture, pas de développement.
+Le choix qui m'a le plus servi a été de séparer le contenu (MDX) du code dès le départ : ajouter un projet revient à écrire un fichier, sans toucher au code.
 
-L'autre enseignement est venu de la mesure : sans Lighthouse, j'aurais gardé une librairie d'animation « parce que c'est pratique ». Les chiffres ont tranché, et m'ont rappelé que la meilleure dépendance est souvent celle qu'on retire.
+L'autre enseignement est venu de la mesure : sans Lighthouse, j'aurais gardé une librairie d'animation « parce que c'est pratique ». Les chiffres ont tranché.

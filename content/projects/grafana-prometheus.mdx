@@ -1,7 +1,8 @@
 ---
 id: grafana-prometheus
-title: Monitoring VPS, Prometheus & Grafana
-description: Stack d'observabilité auto-hébergée sur VPS ARM64 pour surveiller la santé du serveur et de tous ses conteneurs Docker. Métriques système et par conteneur, dashboards temps réel derrière VPN.
+label: "Grafana"
+title: Supervision du VPS avec Prometheus et Grafana
+description: Prometheus et Grafana auto-hébergés sur mon VPS ARM64 pour suivre l'état du serveur et de chaque conteneur Docker. Les dashboards ne sont accessibles que par le VPN.
 domains:
   - devsecops
 tags:
@@ -18,21 +19,21 @@ date: "2026"
 github: https://github.com/randriamasinoro/portfolio
 media:
   - /images/grafanaprometheus/santevps.png
-featured: true
+featured: false
 ---
 
 ## Contexte
 
 Mon VPS héberge plusieurs services : ce portfolio, un VPN WireGuard, Umami, Wazuh, une landing page. Tant que tout tourne, on ne se pose pas de questions. Mais quand un conteneur consomme trop de RAM ou qu'un disque se remplit, je voulais le voir venir au lieu de le découvrir quand le serveur rame.
 
-J'ai monté une stack d'observabilité classique : Prometheus pour collecter les métriques, Grafana pour les visualiser. L'objectif était de comprendre la chaîne complète, pas juste d'installer un dashboard tout fait.
+J'ai monté une stack d'observabilité classique : Prometheus pour collecter les métriques, Grafana pour les visualiser. Je voulais comprendre chaque maillon de la chaîne plutôt qu'installer un dashboard tout fait.
 
 ---
 
 ## Architecture
 
 ```
-VPS Oracle Cloud (ARM64 — Ubuntu 24.04)
+VPS Oracle Cloud (ARM64, Ubuntu 24.04)
 │
 ├── Node Exporter   ← métriques système (CPU, RAM, disque, réseau)
 ├── cAdvisor        ← métriques par conteneur Docker
@@ -44,10 +45,10 @@ VPS Oracle Cloud (ARM64 — Ubuntu 24.04)
 ```
 
 Chaque brique a un rôle précis :
-- **Node Exporter** expose les métriques de la machine hôte
-- **cAdvisor** lit le démon Docker et expose les métriques de chaque conteneur
-- **Prometheus** interroge ces deux sources à intervalle régulier et stocke tout
-- **Grafana** lit Prometheus et trace les graphiques
+- Node Exporter expose les métriques de la machine hôte
+- cAdvisor lit le démon Docker et expose les métriques de chaque conteneur
+- Prometheus interroge ces deux sources à intervalle régulier et stocke tout
+- Grafana lit Prometheus et trace les graphiques
 
 ---
 
@@ -74,7 +75,7 @@ Toutes les 15 secondes, Prometheus interroge ces endpoints, récupère les métr
 
 Une fois Prometheus branché comme source de données, Grafana affiche tout. La capture montre le dashboard Node Exporter Full sur mon serveur : pression CPU, charge système, RAM utilisée, swap, espace disque, trafic réseau.
 
-![Dashboard Grafana — santé du VPS via Node Exporter](/images/grafanaprometheus/santevps.png)
+![Dashboard Grafana de l'état du VPS (Node Exporter)](/images/grafanaprometheus/santevps.png)
 
 Pour les conteneurs, un second dashboard branché sur cAdvisor donne la consommation CPU/RAM/réseau de chaque service Docker individuellement : je vois précisément ce que coûte le portfolio, Umami ou Wazuh.
 

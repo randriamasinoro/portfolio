@@ -1,5 +1,6 @@
 ---
 id: extraction-llm-documents
+label: "LLM"
 title: Extraction fiable de données juridiques par LLM
 description: Pipeline qui fait lire des statuts et actes notariés en PDF par un LLM, produit un JSON contrôlé par schéma puis remplit un formulaire web, avec des garde-fous contre les hallucinations.
 domains:
@@ -20,7 +21,7 @@ featured: false
 
 Des micro-tâches de saisie demandent de relire des documents juridiques de sociétés (statuts, actes notariés, procès-verbaux d'assemblée, cessions de parts) et d'en reporter le contenu dans un formulaire web : capital social, nombre de parts, liste des associés, état civil de chacun.
 
-Le travail est répétitif, mais une seule erreur (un associé oublié, un prénom dans le mauvais ordre) fait refuser la tâche. C'était un bon terrain pour une question qui dépasse la saisie : **comment rendre fiable la sortie d'un LLM quand l'erreur coûte cher ?**
+Le travail est répétitif, mais une seule erreur (un associé oublié, un prénom dans le mauvais ordre) fait refuser la tâche. C'était un bon terrain pour une question qui dépasse la saisie : comment rendre fiable la sortie d'un LLM quand une erreur coûte cher ?
 
 <Callout type="info">
   Les documents traités contiennent des données personnelles réelles. Ni le code, ni les
@@ -61,7 +62,7 @@ Un LLM qui ne trouve pas une information a tendance à la « compléter » de fa
 |---|---|
 | Un associé oublié | La somme des parts doit tomber exactement sur le total, sinon blocage |
 | Un montant inventé ou arrondi | Règle écrite : ce qui n'est pas dans le document n'est pas saisi, il part dans une liste `a_verifier` |
-| Une identité « plausible » mais fausse | En mode d'extraction automatique, chaque montant et chaque identité doit être justifié par une **citation mot pour mot** du document, dont le script vérifie l'existence |
+| Une identité « plausible » mais fausse | En mode d'extraction automatique, chaque montant et chaque identité doit être justifié par une citation mot pour mot du document, dont le script vérifie l'existence |
 | Un SIREN erroné recopié des statuts | Résolution par API (Pappers, API gouv), puis affichage « SIREN - nom » pour détecter une société différente |
 | Un cas ambigu | Le pipeline s'arrête et pose la question au lieu de soumettre |
 
@@ -109,6 +110,6 @@ J'ai testé une extraction entièrement automatique par un autre LLM (Gemini, pl
 
 ## Ce que ce projet m'a appris
 
-Un LLM est un bon lecteur de documents, mais un mauvais juge de sa propre fiabilité. La valeur du pipeline n'est pas dans l'extraction elle-même, elle est dans tout ce qui l'entoure : un contrat de sortie strict, des contrôles indépendants du modèle, et le réflexe de transformer chaque erreur en règle ou en test.
+Un LLM lit bien un document, mais il ne sait pas juger sa propre fiabilité. Ce qui rend le pipeline fiable se trouve autour de l'extraction : un contrat de sortie strict, des contrôles indépendants du modèle, et une règle ou un test ajouté après chaque erreur.
 
 C'est la même logique qu'en sécurité : on ne fait pas confiance à un composant, on vérifie ce qu'il produit.

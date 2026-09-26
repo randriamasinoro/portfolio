@@ -1,7 +1,8 @@
 ---
 id: umami-analytics
-title: Umami, Analytics self-hosted, dashboard VPN-only
-description: Web analytics sans cookie auto-hébergé sur VPS ARM64, avec une architecture réseau qui sépare la collecte publique du dashboard, ce dernier étant accessible uniquement via VPN WireGuard.
+label: "Umami"
+title: "Umami : statistiques de visite auto-hébergées"
+description: Statistiques de visite sans cookie, auto-hébergées sur VPS ARM64. La collecte est publique, le dashboard n'est accessible que par le VPN WireGuard.
 domains:
   - devsecops
   - cybersecurity
@@ -21,7 +22,7 @@ github: https://github.com/randriamasinoro/portfolio
 media:
   - /images/umami-analytics/overview.png
   - /images/umami-analytics/realtime.png
-featured: true
+featured: false
 ---
 
 ## Contexte
@@ -227,6 +228,6 @@ Ce service est le premier bloc d'un home lab d'observabilité plus large :
 
 ## Ce que ce projet m'a appris
 
-L'analytics en lui-même est trivial à déployer. La valeur était ailleurs : raisonner sur où placer une frontière de confiance. Exposer juste ce qu'il faut (`/script.js`, `/api/send`), verrouiller le reste, et le faire au bon niveau, le reverse proxy, pas l'application.
+Déployer Umami est simple. Le vrai travail a été de décider où placer la frontière de confiance. Exposer juste ce qu'il faut (`/script.js`, `/api/send`), verrouiller le reste, et le faire au bon niveau, le reverse proxy, pas l'application.
 
 Les deux obstacles concrets, le hairpin NAT qui réécrivait mon IP source, et le rendu statique de Next.js qui ignorait ma variable d'environnement, sont exactement le genre de détails qu'on ne comprend qu'en les rencontrant. Chacun a forcé à descendre d'une couche : du routage applicatif vers le NAT, puis du composant React vers le cycle de build.

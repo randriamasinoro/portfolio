@@ -1,5 +1,6 @@
 ---
 id: classification-graines
+label: "CNN"
 title: Triage automatique de haricots par CNN et ESP32-CAM
 description: Classification binaire de haricots blancs (bonne/mauvaise graine) en temps réel, CNN Keras sur PC, ESP32-CAM pour la capture et le tri. Stage de fin d'études du DTS (niveau L2), Fablab Solidaire Mamiratra.
 domains:
@@ -20,7 +21,7 @@ featured: false
 
 ## Contexte
 
-Stage de fin d'études du DTS Génie Industriel et Maintenance (niveau L2, IST Antananarivo), réalisé au Fablab Solidaire Mamiratra de juillet à août 2023. Première approche complète alliant mécanique, systèmes embarqués et machine learning.
+Stage de fin d'études du DTS Génie Industriel et Maintenance (niveau L2, IST-T Antananarivo), réalisé au Fablab Solidaire Mamiratra de juillet à août 2023. C'était mon premier projet qui mélangeait mécanique, systèmes embarqués et machine learning.
 
 Objectif : concevoir une machine compacte et économique pour trier automatiquement les haricots blancs (bonnes vs mauvaises graines) en remplaçant le tri manuel par une classification CNN en temps réel : l'ESP32-CAM capture l'image et actionne le tri, l'inférence tourne sur un ordinateur.
 
@@ -80,7 +81,7 @@ model.compile(
 <Callout type="info">
   Les courbes loss/val_loss descendent conjointement jusqu'à l'époque 6,
   indiquant une bonne généralisation. À partir de l'époque 8, la
-  val_accuracy atteint 1.0 tandis que la loss continue de descendre —
+  val_accuracy atteint 1.0 alors que la loss continue de descendre,
   signe d'un léger surapprentissage en fin d'entraînement. Un early
   stopping à l'époque 7-8 aurait été préférable.
 </Callout>
@@ -103,7 +104,7 @@ resp = requests.get('http://192.168.1.100/capture')
 img = preprocess(resp.content)          # resize 224x224, normalize
 pred = model.predict(img)[0][0]         # sigmoid → [0, 1]
 
-direction = 'droite' if pred > 0.5 else 'gauche'  # seuil 0.5 — version fonctionnelle initiale
+direction = 'droite' if pred > 0.5 else 'gauche'  # seuil 0.5, version fonctionnelle initiale
 requests.get(f'http://192.168.1.100/servo?dir={direction}')
 ```
 
@@ -115,7 +116,7 @@ Seuil de décision fixé à 0.5, frontière naturelle de la fonction sigmoid pou
 Tas de haricots
       ↓
 Cylindre + disque perforé
-(alimentation unitaire — 1 haricot à la fois)
+(alimentation unitaire : 1 haricot à la fois)
       ↓
 Plateau d'acquisition
       ↓
@@ -125,7 +126,7 @@ Ordinateur (Python)
       ↓
 Prétraitement (resize 224×224, normalisation)
       ↓
-CNN — image_model.h5
+CNN (image_model.h5)
       ↓
 Prédiction sigmoid → valeur entre 0 et 1
       ↓ HTTP POST /prediction

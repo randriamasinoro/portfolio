@@ -1,0 +1,64 @@
+---
+id: yocto-home-automation
+label: "Yocto"
+title: "Distribution Linux embarquée avec Yocto pour une box domotique"
+description: Construction d'une distribution Linux sur mesure avec Yocto (Poky) pour la carte STM32MP135F-DK, avec une layer dédiée, une recette image systemd, un SDK et une application C qui lit un capteur I²C.
+domains:
+  - embedded
+tags:
+  - Yocto
+  - Poky
+  - BitBake
+  - Linux embarqué
+  - systemd
+  - STM32MP135F-DK
+  - C
+  - I²C
+date: "2026"
+featured: true
+order: 2
+---
+
+## Contexte
+
+Mini-projet de Master 1 à l'UBS Lorient, dans le cours « Systèmes embarqués avec microprocesseur et General Purpose OS ». Le sujet met en scène un client qui veut développer une box domotique connectée. Il demande sa propre distribution Linux, un outil pour que son équipe développe ses applications, et un déploiement sur une carte STM32MP135F-DK (Cortex-A7).
+
+Le mini-projet n'est pas guidé. Il vient après une série de TP sur Yocto : construire une image avec BitBake, comprendre les recettes et les layers, enrichir l'image avec `local.conf`, puis accélérer les builds avec un miroir de sources et un cache partagé (sstate).
+
+## Ce que j'ai construit
+
+![Empilement des couches de la distribution Yocto, de la carte au service systemd](/images/yocto-home-automation/pile-yocto.svg)
+
+```
+Carte STM32MP135F-DK
+└── Distribution Linux construite avec Yocto (base Poky)
+    └── layer meta-ubs-homeautomation
+        ├── recette image (hérite de core-image)
+        │   rootfs ext4, paquets ipk, init systemd,
+        │   accès SSH, compte utilisateur par défaut
+        └── recette de l'application capteur
+            └── service systemd ──▶ lit le Si7021 (I²C) ──▶ sortie UART
+```
+
+- Une layer dédiée au projet, `meta-ubs-homeautomation`, pour garder mes recettes séparées de Poky et des layers de la carte.
+- Une recette image qui hérite de la classe `core-image`, plutôt qu'un simple `include` de `core-image-minimal`. L'image est définie dans la layer et non dans `local.conf`, donc elle est reproductible par toute l'équipe.
+- Un rootfs en ext4, des paquets au format ipk, systemd comme système d'init, un accès SSH et un compte utilisateur par défaut.
+- Un SDK généré à partir de la distribution, pour que l'équipe du client compile ses applications sur sa machine sans reconstruire l'image.
+
+## L'application capteur
+
+L'application est écrite en C. Elle lit périodiquement la température et l'humidité d'un capteur Si7021 sur le bus I²C et écrit les mesures sur l'UART. Elle est lancée comme un service systemd : elle démarre avec la carte, sans intervention.
+
+## Ce que j'en retiens
+
+Avec Yocto, on ne configure pas un système à la main : on décrit tout, des paquets à l'init, dans des recettes versionnables. La recette image dans une layer dédiée, plutôt que dans `local.conf`, fait toute la différence entre un build qui marche sur ma machine et une distribution qu'une équipe peut reconstruire.
+
+## Stack
+
+| Couche | Technologie |
+|---|---|
+| Cible | STM32MP135F-DK (Arm Cortex-A7) |
+| Build | Yocto Project, Poky, BitBake |
+| Système | Linux, systemd, rootfs ext4, paquets ipk |
+| Application | C, I²C, UART |
+| Capteur | Adafruit Si7021 (température, humidité) |

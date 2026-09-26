@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" font-family="B612, Helvetica Neue, sans-serif">
+<rect width="960" height="540" rx="10" fill="#0D1210"/>
+<text x="40" y="48" fill="#D5DDD9" font-size="20" font-weight="700">Distribution construite avec Yocto</text>
+<text x="40" y="74" fill="#8FA39A" font-size="14">En couleur : ce que j'ai écrit. En gris : les briques existantes réutilisées.</text>
+<rect x="40" y="104" width="880" height="62" rx="6" fill="#17B6AE" fill-opacity="0.14" stroke="#17B6AE" stroke-opacity="0.9" stroke-width="1.5"/>
+<text x="64" y="141.0" fill="#D5DDD9" font-size="17">Service systemd : application C, lit le Si7021 (I²C), écrit sur l'UART</text>
+<rect x="40" y="176" width="880" height="62" rx="6" fill="#17B6AE" fill-opacity="0.14" stroke="#17B6AE" stroke-opacity="0.9" stroke-width="1.5"/>
+<text x="64" y="213.0" fill="#D5DDD9" font-size="17">Recette image : hérite de core-image, rootfs ext4, paquets ipk, systemd, SSH</text>
+<rect x="40" y="248" width="880" height="62" rx="6" fill="#17B6AE" fill-opacity="0.14" stroke="#17B6AE" stroke-opacity="0.9" stroke-width="1.5"/>
+<text x="64" y="285.0" fill="#D5DDD9" font-size="17">Layer meta-ubs-homeautomation</text>
+<rect x="40" y="320" width="880" height="62" rx="6" fill="none" fill-opacity="0" stroke="#8FA39A" stroke-opacity="0.45" stroke-width="1.5"/>
+<text x="64" y="357.0" fill="#8FA39A" font-size="17">Poky : BitBake et openembedded-core</text>
+<rect x="40" y="392" width="880" height="62" rx="6" fill="none" fill-opacity="0" stroke="#8FA39A" stroke-opacity="0.45" stroke-width="1.5"/>
+<text x="64" y="429.0" fill="#8FA39A" font-size="17">Layers BSP de la carte : noyau Linux, chargeur de démarrage</text>
+<rect x="40" y="464" width="880" height="62" rx="6" fill="none" fill-opacity="0" stroke="#8FA39A" stroke-opacity="0.45" stroke-width="1.5"/>
+<text x="64" y="501.0" fill="#8FA39A" font-size="17">Carte STM32MP135F-DK, Arm Cortex-A7</text>
+</svg>

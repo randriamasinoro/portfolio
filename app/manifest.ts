@@ -2,14 +2,14 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Sehenonirina Elisa Randriamasinoro — Portfolio",
+    name: "Sehenonirina Elisa Randriamasinoro, portfolio",
     short_name: "Elisa R.",
     description:
-      "Portfolio technique — Cybersécurité des Systèmes Embarqués.",
+      "Portfolio technique, cybersécurité des systèmes embarqués.",
     start_url: "/",
     display: "standalone",
-    background_color: "#111111",
-    theme_color: "#111111",
+    background_color: "#161616",
+    theme_color: "#161616",
     lang: "fr",
     categories: ["technology", "education", "portfolio"],
     icons: [
@@ -17,6 +17,11 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/favicon.ico",
         sizes: "any",
         type: "image/x-icon",
+      },
+      {
+        src: "/icon.png",
+        sizes: "512x512",
+        type: "image/png",
       },
     ],
   };

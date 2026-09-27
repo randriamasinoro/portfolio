@@ -80,6 +80,9 @@ Textes longs des fiches : Source Serif 4 (classe font-body sur le contenu MDX)
 Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trompeur dans du code)
 
 ### Mise en page
+  - Pleine largeur : max-w-page = 2400px (garde-fou 4K), marges px-5 / sm:px-10 / xl:px-16
+  - Texte limité à 720px (environ 70 caractères) et centré ; schémas, tableaux et
+    blocs de code prennent toute la largeur de la colonne (fiches jusqu'à 1000px)
   - Accueil : hero ("Bonjour, je m'appelle Elisa" dans un cadre, photo détourée
     public/photo-detouree.png sur bloc violet, mot "EMBARQUÉ" en filigrane),
     puis projets choisis (featured + order : 1 card large, puis grille 2 colonnes),

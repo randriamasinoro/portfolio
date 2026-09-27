@@ -1,0 +1,17 @@
+% out: public/images/reverse-engineering/demarche.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+\tikzset{b/.style={box, minimum width=44mm, minimum height=15mm}}
+\node[b, grey] (bin) {\textbf{Binaire inconnu}\\\sub{pas de source}};
+\node[b, blue, right=13mm of bin] (stat) {\textbf{Analyse statique}\\\sub{Ghidra : désassemblage,}\\\sub{décompilation}};
+\node[b, blue, right=13mm of stat] (dyn) {\textbf{Analyse dynamique}\\\sub{exécution observée,}\\\sub{interception d'appels}};
+\node[b, violet, below=15mm of dyn] (model) {\textbf{Modèle de menace}\\\sub{usage normal,}\\\sub{ce qu'il doit résister}};
+\node[b, pink, left=13mm of model] (vuln) {\textbf{Vulnérabilités}\\\sub{recensées, classées,}\\\sub{causes racines}};
+\node[b, green, left=13mm of vuln] (fix) {\textbf{Corrections}\\\sub{3 niveaux : système,}\\\sub{compilation, code}};
+\draw[arr] (bin) -- (stat); \draw[arr] (stat) -- (dyn);
+\draw[arr] (dyn) -- (model); \draw[arr] (model) -- (vuln); \draw[arr] (vuln) -- (fix);
+\draw[arr, draw=muted, dashed] (stat.south) -- ++(0,-7.5mm) -| (model.north);
+\end{tikzpicture}
+\end{document}

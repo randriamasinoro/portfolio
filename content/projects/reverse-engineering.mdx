@@ -1,15 +1,65 @@
 ---
-draft: true
 id: reverse-engineering
-label: "Firmware"
-title: "Reverse engineering (à compléter)"
-description: Fiche en attente des sources du projet. Ne pas publier avant d'avoir le contenu réel.
+label: "Ghidra"
+title: "Reverse engineering d'un programme inconnu"
+description: Analyse d'un binaire sans code source pour comprendre son fonctionnement et évaluer sa sécurité. Analyse statique avec Ghidra, analyse dynamique, modèle de menace, recensement des vulnérabilités et corrections à plusieurs niveaux.
 domains:
   - cybersecurity
 tags:
   - Ghidra
+  - Reverse engineering
+  - Analyse statique
+  - Analyse dynamique
+  - C
+  - Sécurité logicielle
 date: "2026"
-featured: false
+featured: true
+order: 5
 ---
 
-Fiche vide volontairement : l'ancien brouillon contenait des résultats inventés et a été retiré.
+## En bref
+
+Le reverse engineering, c'est comprendre comment un programme fonctionne sans avoir son code source, en partant seulement du fichier exécutable. On l'utilise pour analyser un logiciel dont on a perdu les sources, ou pour trouver les failles d'un programme qu'on ne connaît pas.
+
+Dans ce cours, on m'a confié un scénario : une entreprise de domotique utilise depuis 2002 un système de serrure connectée, dont elle a perdu le code source. On me remet juste l'exécutable et une question : comment ça marche, et est-ce que c'est sûr ?
+
+## Contexte
+
+Cours de reverse engineering et de sécurité logicielle en Master 2 à l'UBS Lorient, fin 2025. Le fil rouge est un binaire appelé « door-locker » : un contrôleur de serrure qui lit deux capteurs, fait un test, et ouvre la porte si le test réussit et que l'utilisateur le demande sur un terminal. Aucune source n'est fournie, seulement le programme compilé.
+
+Le but n'est pas seulement de trouver la faille. Le vrai travail est d'expliquer précisément comment le programme fonctionne, de poser un modèle de menace, puis de diagnostiquer les causes des failles et de proposer des corrections.
+
+## Démarche
+
+![Démarche : d'un binaire inconnu à des corrections, en passant par l'analyse statique et dynamique, le modèle de menace et le recensement des vulnérabilités](/images/reverse-engineering/demarche.svg)
+
+- Analyse statique avec Ghidra. Ghidra est un outil qui traduit un exécutable en assembleur puis en pseudo-code lisible. En lisant ce code reconstitué, j'ai reconstitué le fonctionnement du programme sans jamais l'exécuter.
+- Analyse dynamique. J'ai ensuite exécuté le programme pour observer son comportement réel. Pour comprendre un point précis, j'ai remplacé une fonction de la bibliothèque C par la mienne au chargement (`LD_PRELOAD`), afin de voir comment le programme réagissait.
+- Modèle de menace. J'ai décrit ce que le programme est censé faire, et ce contre quoi il devrait se protéger. Sans cette étape, on ne peut pas dire si un comportement est une faille ou non.
+- Recensement et classement des vulnérabilités. J'ai listé les failles, je les ai classées par gravité, et surtout j'ai cherché leur cause racine : le vrai défaut de conception ou de code qui les rend possibles.
+- Corrections à trois niveaux. Pour chaque faille, j'ai proposé des corrections au niveau du système, des options de compilation, et du code lui-même.
+
+## Les autres travaux du cours
+
+En parallèle du binaire, le cours couvrait des questions classiques de sécurité logicielle, sur du code dont j'avais cette fois la source :
+
+- Attaque par mesure de temps. Comparer un mot de passe caractère par caractère en s'arrêtant à la première différence prend un temps qui dépend du nombre de caractères corrects. En mesurant ce temps, on peut retrouver un secret sans le connaître. J'ai comparé cette version vulnérable avec une version à temps constant, qui compare toujours l'ensemble.
+- Stockage de mots de passe. J'ai étudié une version dangereuse (empreinte SHA-256 sans sel, vulnérable aux tables précalculées) et une version correcte, inspirée de `/etc/shadow` sous Linux, avec un sel unique par utilisateur. La fiche note qu'en production, il faut un algorithme lent comme Argon2 ou bcrypt, pas SHA-256.
+
+## Ce que j'en retiens
+
+Trouver une faille est souvent la partie la plus courte. Le travail utile est de comprendre le programme en entier, d'expliquer pourquoi la faille existe, et de proposer des corrections à plusieurs niveaux. Un exécutable sans source n'est pas une boîte noire : avec le bon outil et de la méthode, on remonte jusqu'à sa logique.
+
+## Limites
+
+- Le binaire d'origine est un support de cours : je ne publie ni son contenu, ni les détails d'exploitation, pour ne pas donner la solution aux promotions suivantes.
+- L'analyse porte sur un programme d'exercice, volontairement vulnérable. Ce n'est pas un vrai firmware de production.
+
+## Outils
+
+| Outil | Ce que c'est | À quoi il m'a servi |
+|---|---|---|
+| Ghidra | Outil d'analyse et de décompilation de la NSA | Reconstituer le fonctionnement du binaire sans source |
+| LD_PRELOAD | Mécanisme Linux qui remplace une fonction de bibliothèque au chargement | Détourner un appel du programme pour observer son comportement |
+| GCC, make | Compilation C | Tester les versions vulnérables et corrigées |
+| C | Langage | Comprendre le code décompilé et écrire les corrections |

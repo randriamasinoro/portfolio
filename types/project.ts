@@ -15,6 +15,9 @@ export interface Project {
   featured?: boolean;
   order?: number; // position dans "Projets choisis" (1 = en premier)
   draft?: boolean;
+  // Bloc "L'essentiel" en haut de la fiche : 3 lignes scannables (problème/action/résultat
+  // pour un projet perso ; objectif/démarche/acquis pour un projet d'école).
+  resume?: { label: string; texte: string }[];
 }
 
 // Chaque domaine correspond à une voie d'oscilloscope (CH1 à CH4).

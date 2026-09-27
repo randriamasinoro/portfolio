@@ -39,6 +39,8 @@ media?      : string[]  -- chemins images optionnel
 featured?   : boolean   -- affiché dans "Projets choisis" sur l'accueil
 order?      : number    -- position dans la sélection (1 = premier, le plus mémorisé)
 cover?      : string    -- visuel de la vitrine (sinon media[0]) ; SVG accepté
+resume?     : {label,texte}[] -- bloc "L'essentiel" en haut de fiche : 3 lignes
+            (perso : problème/solution/résultat ; école : objectif/démarche/acquis)
 
 ## Domaines valides
 "data-science" | "cybersecurity" | "embedded" | "devsecops"
@@ -93,6 +95,8 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
     sombre avec halo du domaine ; `cover` seulement pour une vraie belle photo
   - Fiche projet : colonne gauche sticky (fiche + sommaire) ; titre, description et texte
     serif dans la même colonne centrée (mobile : titre, fiche, contenu)
+  - Fiche : sous le titre, bloc "L'essentiel" (frontmatter resume) AVANT le détail,
+    pour qu'un recruteur comprenne problème/solution/résultat en un coup d'œil
   - À propos : 3 colonnes en xl (bio + UART | compétences, formation, certifications |
     photo + contact), 2 colonnes en lg, 1 colonne sur mobile (photo et contact en tête)
   - Card phare de l'accueil : horizontale à partir de lg seulement
@@ -128,6 +132,7 @@ NavBar        : logo "E" + nom, menu à droite, lien actif en violet souligné
 Footer        : contact + lien vers le code source du site
 UartTrace     : panneau analyseur logique, trame UART 8N1 interactive (page À propos)
 ProjectCard   : card projet (couverture typographique, domaines, titre, résumé, technos)
+ProjectSummary : bloc "L'essentiel" en haut de fiche (3 lignes scannables, data-driven)
 DomainBadge   : libellé du domaine avec repère à la couleur de sa voie
 FilterBar     : onglets de domaine + recherche + technos actives + compteur
 TableOfContents : sommaire de la colonne latérale (lg+)

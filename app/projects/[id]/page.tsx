@@ -8,6 +8,7 @@ import TableOfContents from "@/components/TableOfContents";
 import MDXContent from "@/components/MDXContent";
 import ProjectJsonLd from "@/components/ProjectJsonLd";
 import ProjectCard from "@/components/ProjectCard";
+import ProjectSummary from "@/components/ProjectSummary";
 import DomainBadge from "@/components/DomainBadge";
 
 interface Props {
@@ -100,6 +101,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
         <div className="min-w-0 w-full max-w-[1000px] mx-auto lg:col-start-2 lg:row-start-2">
           <p className="font-body text-[1.3125rem] leading-relaxed text-fg mb-10 max-w-[720px] mx-auto">{project.description}</p>
+          {project.resume && <ProjectSummary items={project.resume} />}
           <MDXContent content={content} />
         </div>
       </div>

@@ -47,12 +47,14 @@ Extensible sans refonte — ajouter une valeur à la liste suffit.
 ## Projets à intégrer
 zigbee-security        → [cybersecurity, embedded]
 rover-stm32            → [embedded]
-projet-bancaire        → [data-science]
 classification-graines → [data-science]
 devsecops-landing      → [devsecops, cybersecurity]
-reverse-engineering    → [cybersecurity]
-cryptographie          → [cybersecurity]
 can-bus                → [embedded, cybersecurity]
+health-hub             → [embedded]
+yocto-home-automation  → [embedded]
+vhdl-fpga              → [embedded]
+forensique-usb         → [cybersecurity]
+reverse-engineering    → [cybersecurity]  (brouillon vide, en attente des sources)
 
 ## Design system (dark par défaut, mode clair disponible)
 

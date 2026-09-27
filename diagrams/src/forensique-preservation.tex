@@ -1,0 +1,20 @@
+% out: public/images/forensique-usb/preservation-preuve.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+\tikzset{b/.style={box, minimum width=44mm, minimum height=15mm}}
+\node[b, grey] (src) {\textbf{Image reçue}\\\sub{clé USB, environ 4 Go}\\\sub{+ empreintes de référence}};
+\node[b, blue, right=36mm of src] (ref) {\textbf{Copie de référence}\\\sub{lecture seule}\\\sub{fichier 444, dossier 555}};
+\node[b, violet, right=30mm of ref] (work) {\textbf{Copie de travail}\\\sub{seule zone d'analyse}};
+\draw[arr] (src) -- node[above, lab]{MD5, SHA1,} node[below, lab]{SHA256 : identiques} (ref);
+\draw[arr] (ref) -- node[above, lab]{copie} node[below, lab]{re-vérifiée} (work);
+\node[b, teal, below=20mm of work] (ext) {\textbf{Extraction}\\\sub{3 systèmes de fichiers}\\\sub{espace non alloué}};
+\node[b, teal, left=30mm of ext] (ana) {\textbf{Analyse}\\\sub{super-timeline, carving,}\\\sub{volume chiffré}};
+\node[b, green, left=36mm of ana] (rap) {\textbf{Rapport}\\\sub{constats sourcés}\\\sub{« non confirmé » si douteux}};
+\draw[arr] (work) -- (ext); \draw[arr] (ext) -- (ana); \draw[arr] (ana) -- (rap);
+\node[box, yellow, below=12mm of $(rap.south)!0.5!(ext.south)$, minimum width=212mm] (log) {\textbf{Journal de chaque commande, au moment où elle est lancée}\\\sub{horodatage, opérateur, commande exacte, sortie brute, code retour}};
+\foreach \n in {ext,ana,rap} \draw[line width=0.7pt, draw=muted, dashed] (\n.south) -- (\n.south |- log.north);
+\node[labRed, anchor=south, align=center] at ($(src.north)+(0,3mm)$) {jamais modifiée};
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,125 @@
+---
+id: forensique-usb
+label: "Forensique"
+title: "Investigation forensique d'une clé USB"
+description: Enquête numérique sur la copie d'une clé USB saisie. J'ai préservé la preuve, retrouvé des partitions cachées et des fichiers effacés, reconstitué la chronologie et déchiffré un volume protégé par mot de passe.
+domains:
+  - cybersecurity
+tags:
+  - The Sleuth Kit
+  - Autopsy
+  - PhotoRec
+  - mactime
+  - cryptsetup
+  - TrueCrypt
+  - Linux
+date: "2026"
+featured: false
+---
+
+## En bref
+
+La forensique numérique, c'est l'enquête sur des supports informatiques : retrouver ce qui s'est passé sur une machine ou une clé USB, avec des preuves qui tiennent devant un juge.
+
+Dans ce projet, j'ai reçu la copie d'une clé USB saisie chez un suspect (un scénario de cours). La clé semblait presque vide. En réalité, son utilisateur y avait caché deux partitions, dont un volume chiffré, puis effacé ses traces. J'ai retrouvé ces éléments, reconstitué heure par heure ce qu'il avait fait sur trois jours, et retrouvé le mot de passe du volume chiffré grâce à des indices laissés sur la clé elle-même.
+
+## Contexte
+
+Lab de Master 2 à l'UBS Lorient, en septembre 2026. Je reçois une image disque, c'est-à-dire une copie exacte bit à bit de la clé (environ 4 Go), avec ses empreintes de référence. L'enquête suit une méthode professionnelle en six phases : identification, préservation, extraction, analyse, documentation et présentation.
+
+<Callout type="info">
+Les résultats nominatifs (identifiants, mots de passe, contenus retrouvés) restent dans mon dossier d'enquête. C'est un exercice de cours : les publier donnerait la solution aux promotions suivantes.
+</Callout>
+
+## Objectifs
+
+- Garantir que la preuve n'a jamais été modifiée pendant l'enquête
+- Retrouver tout ce que la clé contient, y compris ce qui a été caché ou effacé
+- Reconstituer la chronologie des actions de son utilisateur
+- Tracer chaque manipulation pour que les résultats soient vérifiables
+
+## Stratégie d'enquête
+
+![Stratégie : partir des traces les plus accessibles pour aller vers les zones cachées puis chiffrées, chaque couche vérifiant les hypothèses de la précédente](/images/forensique-usb/strategie-enquete.svg)
+
+- Analyse post-mortem en lecture seule : je lis une copie figée de la clé, je n'exécute jamais rien de ce qu'elle contient.
+- Des pistes numérotées : j'ai découpé l'enquête en 21 pistes, des traces les plus faciles à lire (journaux du système, logiciels installés, sessions) aux plus coûteuses (partitions cachées, espace non alloué, chiffrement). Les premières pistes donnent des hypothèses, les suivantes les vérifient.
+- Recouper chaque constat : un fait n'est retenu que s'il est confirmé par au moins deux sources, par exemple un journal système et les dates d'un fichier. Pour la récupération de fichiers, j'ai lancé deux outils différents, PhotoRec et foremost, puis comparé leurs résultats par empreintes.
+- Séparer preuve et contexte : les images du cache du navigateur aident à comprendre, mais je ne les ai pas traitées comme des preuves. La recherche ciblée a porté sur les fichiers que l'utilisateur avait réellement ouverts.
+- Plusieurs options quand une piste bloque : pour retrouver les fichiers effacés, j'ai prévu quatre approches (récupération par signature, recherche de texte dans l'image brute, test des mots de passe trouvés sur les zones chiffrées, récupération de clés).
+- Des procédures rejouables : chaque étape est décrite avec sa commande, son explication et son résultat, pour qu'une autre personne puisse refaire l'enquête et obtenir la même chose.
+
+## Démarche
+
+### 1. Préserver la preuve
+
+![Chaîne de préservation : l'image reçue n'est jamais modifiée, toute l'analyse se fait sur une copie de travail vérifiée, et chaque commande est journalisée](/images/forensique-usb/preservation-preuve.svg)
+
+Une empreinte (hash) est une sorte d'identifiant unique d'un fichier : si un seul octet change, l'empreinte change. J'ai calculé les empreintes MD5, SHA1 et SHA256 de l'image et je les ai comparées à celles fournies : elles sont identiques, la preuve est donc intacte.
+
+J'ai ensuite créé une copie de référence verrouillée en lecture seule, puis une copie de travail, vérifiée elle aussi. Toute l'analyse se fait sur la copie de travail : l'original n'est jamais touché.
+
+### 2. Tracer chaque action
+
+Chaque commande est enregistrée au moment où elle est lancée : l'heure, la commande exacte, le résultat complet. L'enquête compte 122 journaux de ce type. Chaque manipulation de la preuve est aussi notée dans une chaîne de traçabilité (chain of custody). Un résultat qui n'est pas prouvé par un journal est écrit « non confirmé », jamais présenté comme acquis.
+
+### 3. Retrouver ce qui était caché
+
+La table de partitions de la clé, qui indique au système comment la clé est découpée, avait été modifiée pour ne montrer qu'une seule partie. En analysant l'image octet par octet, j'ai retrouvé trois partitions : une en FAT32, une en NTFS et un volume chiffré. Dans la partition FAT32 se cachait aussi un fichier supprimé de sa table, qui contenait un système de fichiers ext2 : la mémoire d'un Ubuntu démarré depuis la clé.
+
+### 4. Récupérer ce qui avait été effacé
+
+Un fichier supprimé ne disparaît pas tout de suite : ses données restent sur le support tant qu'elles ne sont pas écrasées. J'ai récupéré des fichiers dans cet espace libre avec PhotoRec, et j'ai repéré les traces du nettoyage lui-même : installation d'un outil d'effacement sécurisé (`wipe`), historique de commandes vidé, table de partitions modifiée à la main.
+
+### 5. Reconstituer la chronologie
+
+Chaque fichier garde des dates de création, de modification et d'accès. J'ai fusionné ces dates, pour les trois systèmes de fichiers (FAT32, NTFS et ext2), dans une chronologie unique (super-timeline, avec `mactime`). Je l'ai croisée avec les journaux du système et l'historique du navigateur. Un piège : les journaux sont en heure UTC et les fichiers s'affichent en heure locale, deux heures d'écart en été. Chaque rapprochement en tient compte.
+
+### 6. Déchiffrer le volume protégé
+
+Une partie de la clé était un volume chiffré TrueCrypt, illisible sans mot de passe. Le navigateur de l'utilisateur avait enregistré ses mots de passe dans un trousseau non protégé. Je l'ai déchiffré, et c'est à partir de ces mots de passe que j'ai retrouvé celui du volume. J'ai ensuite déchiffré le volume dans une image séparée, que j'ai analysée comme le reste, sans jamais modifier la copie de travail.
+
+## Le rôle de l'IA dans l'enquête
+
+J'ai mené l'enquête avec un assistant IA (Claude), avec une répartition des rôles écrite dès le départ. Je décidais de ce qu'il fallait chercher et dans quel ordre. L'assistant traduisait chaque demande en commande, me la montrait, ne la lançait qu'après ma validation, puis l'enregistrait dans le journal. Cette règle m'oblige à comprendre chaque commande avant de la lancer, et elle garantit une traçabilité complète.
+
+## Résultats
+
+- Preuve intacte du début à la fin, vérifiée par empreintes
+- Trois partitions retrouvées là où la clé n'en montrait qu'une, plus un système de fichiers caché dans la première
+- Fichiers effacés récupérés et traces d'effacement identifiées
+- Chronologie des actions reconstituée heure par heure sur trois jours
+- Volume chiffré déchiffré, et son contenu analysé
+
+## Limites
+
+- Les deux premières copies de l'image ont été faites avant la mise en place de la traçabilité : leur méthode n'est pas tracée. Les empreintes prouvent quand même qu'elles sont identiques à la source.
+- Les journaux ne sont pas protégés un par un au fil de l'eau : une empreinte unique de tout le dossier est calculée à la fin.
+- Certains fichiers ont été détruits par l'outil d'effacement et ne sont pas récupérables.
+- Le rapport final est en cours de rédaction.
+
+## Outils utilisés
+
+| Outil | Ce que c'est | À quoi il m'a servi |
+|---|---|---|
+| md5sum, sha1sum, sha256sum | Calcul d'empreintes | Prouver que la preuve n'a jamais changé |
+| The Sleuth Kit 4.15 (fsstat, fls, istat, icat, ils, blkls) | Boîte à outils d'analyse de systèmes de fichiers en ligne de commande | Lister les fichiers, y compris supprimés, lire leurs dates, extraire leur contenu sans monter la clé |
+| Autopsy | Interface graphique au-dessus de The Sleuth Kit | Avoir une vue d'ensemble du cas |
+| mactime | Générateur de chronologie de The Sleuth Kit | Construire la super-timeline des trois systèmes de fichiers |
+| PhotoRec 7.1 et foremost 1.5.7 | Récupération de fichiers par signature (carving) | Retrouver des fichiers dans l'espace libre, avec deux outils pour recouper |
+| exiftool 12.76 | Lecture des métadonnées d'images | Dater et trier les images récupérées |
+| xxd, dd, strings, binwalk | Lecture et découpage d'octets bruts | Lire la table de partitions, repérer les zones cachées et chiffrées |
+| utmpdump, grep, awk | Lecture de journaux | Sessions, connexions, installations et montages de périphériques |
+| Python (sqlite3) | Langage de script | Lire l'historique du navigateur stocké en base SQLite, sur une copie |
+| NSS (libnss3) | Bibliothèque de sécurité de Firefox | Déchiffrer le trousseau de mots de passe du navigateur |
+| cryptsetup | Outil de chiffrement de disques sous Linux | Tester les mots de passe candidats sur le volume TrueCrypt (tcryptDump) |
+
+## Pièges rencontrés
+
+| Piège | Conséquence | Ce que j'ai fait |
+|---|---|---|
+| Heures en UTC dans les journaux, en heure locale sur les fichiers | Deux heures de décalage en été, fausses correspondances | Noter le fuseau de chaque heure et convertir avant de comparer |
+| Ouvrir une base SQLite extraite peut la modifier | Altérer un élément de preuve | Toujours travailler sur une copie de la base |
+| Supposer le format d'un fichier | Extraction qui échoue (fichier compressé en gzip et non en lzma) | Vérifier le format avec `file` avant de le traiter |
+| Chercher un mot avec `strings -t d \| grep` | `grep` trouve aussi des chiffres dans la position affichée : faux résultats | Retirer la position avant de chercher |
+| Zone de données qui semble presque vide | J'ai d'abord cru que ce n'était pas le volume chiffré | Le déchiffrement a montré le contraire : un volume peu rempli contient surtout des zéros |

@@ -1,0 +1,14 @@
+% out: public/images/forensique-usb/strategie-enquete.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+\tikzset{lvl/.style={box, minimum height=14mm, align=left, text width=#1, inner xsep=8pt}}
+\node[lvl=150mm, peach, minimum width=164mm] (l1) {\textbf{1. Traces du système} \sub{: journaux d'administration, installations de logiciels, sessions, périphériques branchés, réseau}};
+\node[lvl=136mm, blue, minimum width=150mm, below=4mm of l1] (l2) {\textbf{2. Activité de l'utilisateur} \sub{: fichiers récemment ouverts, historique et cache du navigateur}};
+\node[lvl=122mm, violet, minimum width=136mm, below=4mm of l2] (l3) {\textbf{3. Zones cachées} \sub{: partitions masquées, espace non alloué, fichiers supprimés}};
+\node[lvl=108mm, pink, minimum width=122mm, below=4mm of l3] (l4) {\textbf{4. Données chiffrées} \sub{: trousseau du navigateur, volume TrueCrypt}};
+\draw[arr] ($(l1.north east)+(8mm,0)$) -- node[right, lab, align=left]{de plus en plus\\profond et\\coûteux} ($(l4.south east)+(22mm,0)$);
+\node[note, anchor=north west, align=left] at ($(l4.south west)+(0,-4mm)$) {Chaque couche apporte des hypothèses que la suivante vérifie. Chaque constat est recoupé par au moins deux sources.};
+\end{tikzpicture}
+\end{document}

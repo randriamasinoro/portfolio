@@ -43,6 +43,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
       "WHAD, Wireshark",
       "Attaques par canaux auxiliaires (DPA)",
       "Reverse engineering avec Ghidra",
+      "Forensique : The Sleuth Kit, Autopsy, PhotoRec",
       "Fuzzing, buffer overflow, race conditions",
       "Cryptographie (AES, RSA, ECC, SHA)",
       "Modélisation des menaces STRIDE",

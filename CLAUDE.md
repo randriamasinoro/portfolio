@@ -91,12 +91,20 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
     grille de cards 3 colonnes (4 en 2xl), halos flous sur toute la largeur de l'écran
   - Card : couverture typographique (frontmatter `label`, sinon tags[0]) sur fond
     sombre avec halo du domaine ; `cover` seulement pour une vraie belle photo
-  - Fiche projet : colonne gauche sticky (fiche + sommaire), texte serif à droite
+  - Fiche projet : colonne gauche sticky (fiche + sommaire) ; titre, description et texte
+    serif dans la même colonne centrée (mobile : titre, fiche, contenu)
   - À propos : 3 colonnes en xl (bio + UART | compétences, formation, certifications |
     photo + contact), 2 colonnes en lg, 1 colonne sur mobile (photo et contact en tête)
   - Card phare de l'accueil : horizontale à partir de lg seulement
   - Vérif responsive à chaque changement : 320, 390, 768, 1024, 1440, 1840 px
   - Pas de carrousel
+
+### Halo de la souris
+  - CursorGlow (layout) : halo violet fixe derrière le contenu, suit la souris via les
+    variables CSS --mx / --my (une écoute pointermove + requestAnimationFrame)
+  - Cards : lueur au survol qui suit le curseur (background-attachment: fixed, sans JS)
+  - Souris uniquement (pointer: fine) ; intensité par thème : --cursor-glow, --card-glow
+  - Le fond est sur <html> seulement : un fond opaque sur <body> masquerait le halo
 
 ### Lois UX appliquées (lawsofux.com)
   - Fitts : cibles cliquables >= 40px

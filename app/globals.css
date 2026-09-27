@@ -34,6 +34,13 @@
   --ch4: #5B8CFF;  --ch4-ink: #2F5BD6;   /* devsecops */
 
   --selection-bg:  rgba(138, 31, 230, 0.22);
+
+  /* Halo qui suit la souris (CursorGlow + cards) */
+  --mx: -1000px;
+  --my: -1000px;
+  --cursor-glow:   rgba(138, 31, 230, 0.12);
+  --card-glow:     rgba(138, 31, 230, 0.10);
+  --glow-blend:    multiply;
 }
 
 .dark {
@@ -59,12 +66,21 @@
   --ch4-ink: #8DAEFF;
 
   --selection-bg:  rgba(164, 59, 255, 0.35);
+
+  --cursor-glow:   rgba(164, 59, 255, 0.24);
+  --card-glow:     rgba(164, 59, 255, 0.22);
+  --glow-blend:    screen;
 }
 
 @layer base {
+  /* Fond sur <html> seulement : le halo de la souris (fixed, -z-10) passe entre
+     ce fond et le contenu, ce qui serait impossible si <body> avait un fond opaque. */
+  html {
+    @apply bg-bg;
+  }
   html,
   body {
-    @apply bg-bg text-fg;
+    @apply text-fg;
     font-family: var(--font-b612), ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;

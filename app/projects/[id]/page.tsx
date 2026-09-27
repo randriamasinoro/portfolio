@@ -58,12 +58,14 @@ export default async function ProjectDetailPage({ params }: Props) {
         Tous les projets
       </Link>
 
-      <header className="mt-6 mb-10 md:mb-14">
-        <h1 className="text-[2.125rem] sm:text-[2.875rem] lg:text-[3.25rem] leading-[1.08] max-w-[22ch]">{project.title}</h1>
-      </header>
+      {/* Titre dans la même colonne centrée que le texte ; la fiche technique à gauche.
+          Sur mobile : titre, puis fiche, puis contenu (ordre du DOM). */}
+      <div className="grid gap-10 lg:gap-x-16 lg:gap-y-10 mt-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+        <header className="min-w-0 w-full max-w-[720px] mx-auto lg:col-start-2 lg:row-start-1 lg:mt-4">
+          <h1 className="text-[2.125rem] sm:text-[2.875rem] lg:text-[3.25rem] leading-[1.08]">{project.title}</h1>
+        </header>
 
-      <div className="grid gap-10 lg:gap-16 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="font-ui text-[14px] lg:sticky lg:top-6 lg:self-start">
+        <aside className="font-ui text-[14px] lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-6 lg:self-start">
           <dl className="grid grid-cols-[6rem_minmax(0,1fr)] lg:grid-cols-1 gap-x-4 gap-y-2 lg:gap-y-0 border-y border-border py-4">
             <dt className="text-fg-muted lg:mt-0">Année</dt>
             <dd className="lg:mb-4">{project.date}</dd>
@@ -96,7 +98,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           <TableOfContents items={toc} />
         </aside>
 
-        <div className="min-w-0 w-full max-w-[1000px] mx-auto">
+        <div className="min-w-0 w-full max-w-[1000px] mx-auto lg:col-start-2 lg:row-start-2">
           <p className="font-body text-[1.3125rem] leading-relaxed text-fg mb-10 max-w-[720px] mx-auto">{project.description}</p>
           <MDXContent content={content} />
         </div>

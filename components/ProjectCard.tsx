@@ -49,6 +49,14 @@ export default function ProjectCard({ project, layout = "vertical", onTagClick }
         horizontal ? "grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]" : "flex flex-col"
       }`}
     >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 [mix-blend-mode:var(--glow-blend)]"
+        style={{
+          background: "radial-gradient(380px circle at var(--mx) var(--my), var(--card-glow), transparent 70%)",
+          backgroundAttachment: "fixed",
+        }}
+      />
       <div className={horizontal ? "aspect-[16/9] lg:aspect-auto" : "aspect-[16/9]"}>
         <Cover project={project} large={horizontal} />
       </div>

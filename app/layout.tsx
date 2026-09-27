@@ -3,6 +3,7 @@ import { B612, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css"
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import CursorGlow from "@/components/CursorGlow";
 import ThemeProvider from "@/components/ThemeProvider";
 import JsonLd from "@/components/JsonLd";
 import Analytics from "@/components/Analytics";
@@ -104,10 +105,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${b612.variable} ${codeMono.variable} ${sourceSerif.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-bg text-fg min-h-screen overflow-x-clip" suppressHydrationWarning>
+      <body className="text-fg min-h-screen overflow-x-clip" suppressHydrationWarning>
         <JsonLd />
         <Analytics />
         <ThemeProvider>
+          <CursorGlow />
           <NavBar />
           <main className="max-w-page mx-auto px-5 sm:px-10 xl:px-16 pb-24">{children}</main>
           <Footer />

@@ -85,7 +85,7 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
     puis projets choisis (featured + order : 1 card large, puis grille 2 colonnes),
     puis encart disponibilité + "M'écrire"
   - Projets : titre avec halos flous, onglets de domaine (Tous / ...), recherche,
-    grille de cards 3 colonnes
+    grille de cards 3 colonnes (4 en 2xl), halos flous sur toute la largeur de l'écran
   - Card : couverture typographique (frontmatter `label`, sinon tags[0]) sur fond
     sombre avec halo du domaine ; `cover` seulement pour une vraie belle photo
   - Fiche projet : colonne gauche sticky (fiche + sommaire), texte serif à droite

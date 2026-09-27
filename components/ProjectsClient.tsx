@@ -104,7 +104,7 @@ export default function ProjectsClient({ projects }: Props) {
           Aucun projet ne correspond à ces filtres. Retirez un domaine ou une techno pour élargir.
         </p>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {filtered.map((p) => (
             <ProjectCard key={p.id} project={p} onTagClick={handleTagClick} />
           ))}

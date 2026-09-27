@@ -25,10 +25,10 @@ export default function ProjectsPage() {
     <div className="relative pt-6 md:pt-12">
       {/* Halos flous derrière le titre */}
       <div
-        className="pointer-events-none absolute -top-24 left-0 right-0 h-[420px]"
+        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-screen h-[600px]"
         style={{
           background:
-            "radial-gradient(28% 50% at 22% 45%, var(--glow-1), transparent 100%), radial-gradient(22% 45% at 76% 35%, var(--glow-2), transparent 100%)",
+            "radial-gradient(560px 300px at 30% 50%, var(--glow-1), transparent 70%), radial-gradient(480px 280px at 72% 42%, var(--glow-2), transparent 70%)",
         }}
         aria-hidden="true"
       />
@@ -43,7 +43,7 @@ export default function ProjectsPage() {
       {/* Fallback = liste complète rendue côté serveur (SEO, pas de JS requis) */}
       <Suspense
         fallback={
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {projects.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}

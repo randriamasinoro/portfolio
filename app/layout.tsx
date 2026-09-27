@@ -104,7 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${b612.variable} ${codeMono.variable} ${sourceSerif.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-bg text-fg min-h-screen" suppressHydrationWarning>
+      <body className="bg-bg text-fg min-h-screen overflow-x-clip" suppressHydrationWarning>
         <JsonLd />
         <Analytics />
         <ThemeProvider>

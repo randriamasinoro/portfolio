@@ -8,7 +8,7 @@ const LINKS = [
 export default function Footer() {
   return (
     <footer className="border-t border-border mt-8">
-      <div className="max-w-page mx-auto px-4 sm:px-8 py-8 flex flex-wrap justify-between gap-x-8 gap-y-3 font-ui text-sm text-fg-muted">
+      <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-16 py-8 flex flex-wrap justify-between gap-x-8 gap-y-3 font-ui text-sm text-fg-muted">
         <p className="m-0 py-2">Elisa Randriamasinoro, Lorient</p>
         <ul className="flex flex-wrap gap-x-6 gap-y-2 list-none p-0 m-0">
           {LINKS.map(({ href, label }) => (

@@ -49,7 +49,7 @@ const COMPONENTS = {
   h2({ children }: { children?: ReactNode }) {
     const id = slugify(textOf(children));
     return (
-      <h2 id={id} className="text-[1.5rem] leading-tight text-fg mt-14 mb-4 scroll-mt-6">
+      <h2 id={id} className="text-[1.5rem] leading-tight text-fg mt-14 mb-4 scroll-mt-6 max-w-[720px] mx-auto">
         {children}
       </h2>
     );
@@ -59,29 +59,34 @@ const COMPONENTS = {
     return (
       <h3
         id={id}
-        className="text-[1.1875rem] leading-snug text-fg mt-10 mb-3 scroll-mt-6"
+        className="text-[1.1875rem] leading-snug text-fg mt-10 mb-3 scroll-mt-6 max-w-[720px] mx-auto"
       >
         {children}
       </h3>
     );
   },
   p({ children }: { children?: ReactNode }) {
+    // Markdown place chaque image dans un paragraphe : on l'en sort pour qu'elle
+    // prenne toute la largeur de la colonne, plus large que le texte.
+    if (isValidElement<{ src?: string }>(children) && typeof children.props.src === "string") {
+      return <>{children}</>;
+    }
     return (
-      <p className="text-[1.125rem] text-fg-2 leading-[1.75] mb-5">
+      <p className="text-[1.125rem] text-fg-2 leading-[1.75] mb-5 max-w-[720px] mx-auto">
         {children}
       </p>
     );
   },
   ul({ children }: { children?: ReactNode }) {
     return (
-      <ul className="text-[1.125rem] text-fg-2 leading-[1.7] mb-5 pl-5 list-disc marker:text-fg-muted">
+      <ul className="text-[1.125rem] text-fg-2 leading-[1.7] mb-5 pl-5 list-disc marker:text-fg-muted max-w-[720px] mx-auto">
         {children}
       </ul>
     );
   },
   ol({ children }: { children?: ReactNode }) {
     return (
-      <ol className="text-[1.125rem] text-fg-2 leading-[1.7] mb-5 pl-5 list-decimal marker:text-fg-muted marker:font-ui">
+      <ol className="max-w-[720px] mx-auto text-[1.125rem] text-fg-2 leading-[1.7] mb-5 pl-5 list-decimal marker:text-fg-muted marker:font-ui">
         {children}
       </ol>
     );
@@ -127,7 +132,7 @@ const COMPONENTS = {
   blockquote({ children }: { children?: ReactNode }) {
     return (
       <blockquote
-        className="border-l-2 border-border-strong pl-5 my-6 text-fg-2 italic"
+        className="border-l-2 border-border-strong pl-5 my-6 text-fg-2 italic max-w-[720px] mx-auto"
       >
         {children}
       </blockquote>

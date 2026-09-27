@@ -43,7 +43,7 @@ const config: Config = {
       },
       maxWidth: {
         read:   "680px",
-        page:   "1400px",
+        page:   "2400px",
       },
     },
   },

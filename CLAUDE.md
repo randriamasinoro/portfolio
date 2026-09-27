@@ -89,7 +89,10 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
   - Card : couverture typographique (frontmatter `label`, sinon tags[0]) sur fond
     sombre avec halo du domaine ; `cover` seulement pour une vraie belle photo
   - Fiche projet : colonne gauche sticky (fiche + sommaire), texte serif à droite
-  - À propos : bio, panneau UART interactif, compétences, formation, certifications
+  - À propos : 3 colonnes en xl (bio + UART | compétences, formation, certifications |
+    photo + contact), 2 colonnes en lg, 1 colonne sur mobile (photo et contact en tête)
+  - Card phare de l'accueil : horizontale à partir de lg seulement
+  - Vérif responsive à chaque changement : 320, 390, 768, 1024, 1440, 1840 px
   - Pas de carrousel
 
 ### Lois UX appliquées (lawsofux.com)

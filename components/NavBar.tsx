@@ -15,7 +15,7 @@ export default function NavBar() {
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
-    <nav className="max-w-page mx-auto px-4 sm:px-8 py-5 flex items-center gap-1 sm:gap-4 whitespace-nowrap">
+    <nav className="max-w-page mx-auto px-5 sm:px-10 xl:px-16 py-5 flex items-center gap-1 sm:gap-4 whitespace-nowrap">
       <Link href="/" className="mr-auto no-underline inline-flex items-center gap-2 py-2" aria-label="Accueil">
         <span className="relative inline-flex items-center justify-center w-9 h-9 font-bold text-[1.25rem] text-fg">
           E

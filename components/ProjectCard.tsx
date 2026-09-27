@@ -15,14 +15,14 @@ function Cover({ project, large }: { project: Project; large: boolean }) {
   const domain = DOMAIN_CONFIG[project.domains[0]];
   if (project.cover) {
     return (
-      <div className="relative h-full min-h-[200px] bg-scope-bg">
+      <div className="relative h-full lg:min-h-[200px] bg-scope-bg">
         <Image src={project.cover} alt="" fill sizes="(min-width: 1024px) 600px, 100vw" className="object-cover" />
       </div>
     );
   }
   return (
     <div
-      className="relative h-full min-h-[200px] bg-scope-bg overflow-hidden flex items-end p-6"
+      className="relative h-full lg:min-h-[200px] bg-scope-bg overflow-hidden flex items-end p-6"
       style={{
         backgroundImage: `radial-gradient(circle at 15% 10%, color-mix(in srgb, ${domain?.trace ?? "var(--accent)"} 45%, transparent), transparent 55%), radial-gradient(circle at 95% 100%, color-mix(in srgb, var(--accent) 40%, transparent), transparent 50%)`,
       }}
@@ -46,14 +46,14 @@ export default function ProjectCard({ project, layout = "vertical", onTagClick }
   return (
     <article
       className={`group relative rounded-xl border border-border bg-surface overflow-hidden transition-colors duration-200 hover:border-accent ${
-        horizontal ? "grid md:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]" : "flex flex-col"
+        horizontal ? "grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]" : "flex flex-col"
       }`}
     >
-      <div className={horizontal ? "aspect-[16/9] md:aspect-auto" : "aspect-[16/9]"}>
+      <div className={horizontal ? "aspect-[16/9] lg:aspect-auto" : "aspect-[16/9]"}>
         <Cover project={project} large={horizontal} />
       </div>
 
-      <div className={`flex flex-col gap-3 ${horizontal ? "p-6 md:p-8 justify-center" : "p-5 flex-1"}`}>
+      <div className={`flex flex-col gap-3 ${horizontal ? "p-5 sm:p-6 lg:p-8 justify-center" : "p-5 flex-1"}`}>
         <div className="flex flex-wrap gap-2">
           {project.domains.map((d) => (
             <span

@@ -111,7 +111,7 @@ export default function HomePage() {
         {lead && (
           <div className="grid gap-6">
             <ProjectCard project={lead} layout="horizontal" />
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 2xl:grid-cols-4">
               {others.map((p) => (
                 <ProjectCard key={p.id} project={p} />
               ))}

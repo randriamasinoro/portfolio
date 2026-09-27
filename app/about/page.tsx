@@ -48,8 +48,8 @@ export default function AboutPage() {
   return (
     <div className="pt-6 md:pt-12">
       <h1 className="text-[2.25rem] sm:text-[3rem] leading-tight mb-8">À propos</h1>
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:gap-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
-        <div className="max-w-[62ch] min-w-0">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:gap-x-16 lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_300px]">
+        <div className="max-w-[62ch] min-w-0 lg:col-start-1 lg:row-start-1">
           <div className="text-[1.1875rem] leading-relaxed text-fg-2 space-y-5">
             <p className="text-fg">
               Je m&apos;appelle Sehenonirina Elisa Randriamasinoro. Je suis en
@@ -84,8 +84,10 @@ export default function AboutPage() {
           <section className="mt-12">
             <UartTrace message="Elisa" />
           </section>
+        </div>
 
-          <section className="mt-16">
+        <div className="max-w-[62ch] min-w-0 lg:col-start-1 lg:row-start-2 xl:col-start-2 xl:row-start-1">
+          <section>
             <h2 className="text-[1.5rem] mb-6">Compétences</h2>
             <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
               {SKILL_GROUPS.map(({ label, domain, skills }) => (
@@ -135,7 +137,7 @@ export default function AboutPage() {
 
         </div>
 
-        <aside className="order-first lg:order-none flex flex-row lg:flex-col gap-5 lg:gap-0 items-start text-[15px] min-w-0">
+        <aside className="order-first lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 xl:col-start-3 xl:row-span-1 flex flex-row lg:flex-col gap-5 lg:gap-0 items-start text-[15px] min-w-0">
           {photoSrc && (
             <Image
               src={photoSrc}

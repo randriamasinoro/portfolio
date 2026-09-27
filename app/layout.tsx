@@ -109,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
         <ThemeProvider>
           <NavBar />
-          <main className="max-w-page mx-auto px-4 sm:px-8 pb-24">{children}</main>
+          <main className="max-w-page mx-auto px-5 sm:px-10 xl:px-16 pb-24">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

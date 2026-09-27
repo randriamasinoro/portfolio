@@ -62,7 +62,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         <h1 className="text-[2.125rem] sm:text-[2.875rem] lg:text-[3.25rem] leading-[1.08] max-w-[22ch]">{project.title}</h1>
       </header>
 
-      <div className="grid gap-10 lg:gap-16 lg:grid-cols-[240px_minmax(0,1fr)]">
+      <div className="grid gap-10 lg:gap-16 lg:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="font-ui text-[14px] lg:sticky lg:top-6 lg:self-start">
           <dl className="grid grid-cols-[6rem_minmax(0,1fr)] lg:grid-cols-1 gap-x-4 gap-y-2 lg:gap-y-0 border-y border-border py-4">
             <dt className="text-fg-muted lg:mt-0">Année</dt>
@@ -96,8 +96,8 @@ export default async function ProjectDetailPage({ params }: Props) {
           <TableOfContents items={toc} />
         </aside>
 
-        <div className="min-w-0 max-w-[68ch]">
-          <p className="font-body text-[1.3125rem] leading-relaxed text-fg mb-10">{project.description}</p>
+        <div className="min-w-0 w-full max-w-[1000px] mx-auto">
+          <p className="font-body text-[1.3125rem] leading-relaxed text-fg mb-10 max-w-[720px] mx-auto">{project.description}</p>
           <MDXContent content={content} />
         </div>
       </div>

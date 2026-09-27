@@ -18,7 +18,7 @@ export default function Callout({ type = "info", title, children }: Props) {
 
   return (
     <aside
-      className="text-fg-2 leading-relaxed my-8 pl-5 [&_p]:mb-0"
+      className="text-fg-2 leading-relaxed my-8 pl-5 [&_p]:mb-0 max-w-[720px] mx-auto"
       style={{ borderLeft: `2px solid ${color}` }}
     >
       <p className="font-ui text-[14px] text-fg font-bold mb-1">{title ?? label}</p>

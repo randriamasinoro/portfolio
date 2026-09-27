@@ -1,0 +1,41 @@
+% Préambule commun des schémas du portfolio (TikZ -> PDF -> SVG, voir build.sh)
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+\usetikzlibrary{positioning,arrows.meta,backgrounds,fit,calc}
+
+% Palette : fond pastel, sens fixe pour tout le site
+\definecolor{ink}{HTML}{1F1F24}
+\definecolor{muted}{HTML}{5B5B66}
+\definecolor{cViolet}{HTML}{EBDDFB} % ce que j'ai écrit
+\definecolor{cTeal}{HTML}{D3F1EC}   % embarqué
+\definecolor{cBlue}{HTML}{DCE6FF}   % infrastructure
+\definecolor{cPink}{HTML}{FFD9DE}   % sécurité, blocage
+\definecolor{cYellow}{HTML}{FFEFC2} % stockage, données
+\definecolor{cPeach}{HTML}{FFE5CF}  % utilisateurs, extérieur
+\definecolor{cGrey}{HTML}{ECECF0}   % briques existantes
+\definecolor{cGreen}{HTML}{D9F2D2}  % succès
+\definecolor{inkRed}{HTML}{B3261E}
+\definecolor{inkViolet}{HTML}{6E12C2}
+
+\tikzset{
+  fig/.style={show background rectangle,
+    background rectangle/.style={fill=white, rounded corners=10pt},
+    inner frame sep=16pt, font=\large, >={Stealth[length=3.2mm,width=2.4mm]}},
+  box/.style={draw=ink, line width=0.6pt, rounded corners=5pt, minimum height=12mm,
+    minimum width=30mm, align=center, inner sep=6pt, text=ink},
+  violet/.style={fill=cViolet}, teal/.style={fill=cTeal}, blue/.style={fill=cBlue},
+  pink/.style={fill=cPink}, yellow/.style={fill=cYellow}, peach/.style={fill=cPeach},
+  grey/.style={fill=cGrey}, green/.style={fill=cGreen},
+  simulated/.style={dashed, dash pattern=on 4pt off 2.5pt},
+  arr/.style={->, line width=0.9pt, draw=ink},
+  arrRed/.style={->, line width=0.9pt, draw=inkRed},
+  arrViolet/.style={->, line width=1.6pt, draw=inkViolet},
+  lab/.style={font=\normalsize, text=ink, inner sep=2pt},
+  labRed/.style={font=\normalsize, text=inkRed, inner sep=2pt},
+  note/.style={font=\normalsize, text=muted, align=center},
+  zone/.style={draw=muted, dashed, line width=0.6pt, rounded corners=8pt, inner sep=9pt},
+  zonetitle/.style={font=\normalsize\bfseries, text=muted, anchor=south west, inner sep=2pt},
+}
+\newcommand{\sub}[1]{{\normalsize #1}}

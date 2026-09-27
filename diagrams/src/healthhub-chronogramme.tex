@@ -1,0 +1,30 @@
+% out: public/images/health-hub/ordonnancement-freertos.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\definecolor{chTeal}{HTML}{7FD3C6}\definecolor{chBlue}{HTML}{9DB6F5}\definecolor{chViolet}{HTML}{C7A6F2}
+\def\sx{0.62mm}
+\def\lane#1#2#3#4{% y, nom, priorité, couleur
+  \node[anchor=west, font=\normalsize\bfseries, text=ink] at (-50mm,#1+3mm) {#2};
+  \node[anchor=west, font=\small, text=muted] at (-50mm,#1-2.5mm) {priorité #3};
+  \draw[line width=0.5pt, draw=muted!50] (0,#1-4mm) -- (200*\sx,#1-4mm);}
+\foreach \t in {0,10,...,200} \draw[line width=0.35pt, draw=muted!25] (\t*\sx,4mm) -- (\t*\sx,-100mm);
+\foreach \t in {0,50,100,150,200} \node[font=\small, text=muted] at (\t*\sx,-104mm) {\t{} ms};
+\lane{0mm}{MotionTask}{haute}{}
+\lane{-18mm}{HeartRateTask}{au-dessus de normale}{}
+\lane{-36mm}{AttitudeTask}{au-dessus de normale}{}
+\lane{-54mm}{processTaskBPM}{normale}{}
+\lane{-72mm}{TempTask}{sous la normale}{}
+\lane{-90mm}{DisplayTask}{basse}{}
+\foreach \t in {0,50,100,150} \fill[chTeal, draw=ink, line width=0.4pt, rounded corners=1pt] (\t*\sx,-3mm) rectangle ++(4*\sx,7mm);
+\foreach \t in {0,10,...,190} \fill[chTeal, draw=ink, line width=0.4pt, rounded corners=1pt] (\t*\sx,-21mm) rectangle ++(1.4*\sx,7mm);
+\foreach \t in {6,106} \fill[chBlue, draw=ink, line width=0.4pt, rounded corners=1pt] (\t*\sx,-39mm) rectangle ++(3*\sx,7mm);
+\foreach \t in {1.5,11.5,...,191.5} \fill[chBlue, draw=ink, line width=0.4pt, rounded corners=1pt] (\t*\sx,-57mm) rectangle ++(1.4*\sx,7mm);
+\fill[chTeal, draw=ink, line width=0.4pt, rounded corners=1pt] (3*\sx,-75mm) rectangle ++(3*\sx,7mm);
+\foreach \t in {14,114} \fill[chViolet, draw=ink, line width=0.4pt, rounded corners=1pt] (\t*\sx,-93mm) rectangle ++(9*\sx,7mm);
+\node[anchor=south west, font=\normalsize, text=muted] at (-50mm,9mm) {Périodes tirées du code, durées d'exécution illustratives};
+
+\end{tikzpicture}
+\end{document}

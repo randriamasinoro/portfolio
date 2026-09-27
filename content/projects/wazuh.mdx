@@ -33,17 +33,7 @@ L'idée n'était pas de produire un rapport d'audit parfait, mais de comprendre 
 
 ## Architecture
 
-```
-VPS Oracle Cloud (ARM64, Ubuntu 24.04)
-│
-├── Wazuh Manager        ← corrélation des alertes, règles de détection
-├── Wazuh Indexer        ← stockage des événements (OpenSearch)
-└── Wazuh Dashboard      ← interface web (VPN-only via WireGuard)
-
-Agent Wazuh
- ├── collecte de logs système, auth, Docker
- └── SCA Module          ← vérifications de conformité CIS
-```
+![Architecture Wazuh sur le VPS : agent, manager, indexer et dashboard accessible par VPN](/images/wazuh/architecture.svg)
 
 Comme le reste du homelab, le dashboard n'est pas exposé sur Internet : il n'est accessible que depuis le VPN WireGuard.
 

@@ -34,36 +34,7 @@ Projet réalisé de juillet à septembre 2024 dans le cadre du DTSS Génie des S
 
 ## Architecture
 
-```
-┌──────────────────────────────────────┐
-│   Particle Boron (firmware écrit,    │  ← non testé sur carte,
-│   non flashé sur une carte)          │    télémétrie simulée
-│  GPS · Capteur carburant · Huile     │
-│  Batterie · Réseau Telma (cellulaire)│
-└────────────────┬─────────────────────┘
-                 │ HTTP GET (toutes les 5–10s)
-                 ▼
-┌──────────────────────────────────────┐
-│       Serveur PHP 8.3 (built-in)     │
-│  /api/disponibilite.php              │
-│  /api/reserver.php                   │
-│  /admin/api/location.php             │
-│  /admin/api/capteurs.php             │
-│                                      │
-│  SQLite 3 (PDO)                      │
-│  ├── voitures                        │
-│  ├── reservations                    │
-│  ├── capteurs                        │
-│  └── maintenances                    │
-└──────────┬───────────────────────────┘
-           │
-    ┌──────┴──────┐
-    ▼             ▼
-Interface     Interface
-  client       admin
-(réservation) (suivi IoT
-  + modale)    + gestion parc)
-```
+![Architecture de DriveInsight ; le module embarqué, en pointillés, n'a été testé qu'en simulation](/images/park/architecture.svg)
 
 ## Couche web, interface client
 
@@ -123,9 +94,7 @@ C'est un prototype académique, avec des limites connues :
 
 Évolution prévue : passer par le bus CAN via OBD-II. Tout véhicule moderne dispose d'un port OBD-II donnant accès au bus CAN interne. Via un transceiver MCP2515 (SPI) + TJA1050, le Boron pourrait lire directement les PIDs SAE J1979 :
 
-```
-Boron SPI ── MCP2515 ── TJA1050 ── OBD-II (pin 6/14) ── CAN bus véhicule
-```
+![Évolution prévue : lire le bus CAN du véhicule par le port OBD-II](/images/park/evolution-obd.svg)
 
 Cela remplacerait les trois capteurs câblés manuellement par un seul connecteur standardisé, exposant régime moteur, température, codes défauts DTC, kilométrage réel, sans modification physique du véhicule.
 

@@ -1,0 +1,19 @@
+% out: public/images/wazuh/architecture.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, teal, minimum width=52mm] (ag) {\textbf{Agent Wazuh}\\\sub{logs système, auth, Docker}\\\sub{module SCA : contrôles CIS}};
+\node[box, violet, right=24mm of ag, minimum width=48mm] (mgr) {\textbf{Wazuh Manager}\\\sub{règles de détection}\\\sub{corrélation des alertes}};
+\node[box, yellow, right=18mm of mgr, minimum width=44mm] (idx) {\textbf{Wazuh Indexer}\\\sub{stockage des événements}\\\sub{(OpenSearch)}};
+\node[box, blue, below=14mm of idx, minimum width=44mm] (dash) {\textbf{Wazuh Dashboard}\\\sub{interface web}};
+\draw[arr] (ag) -- node[above, lab]{événements} (mgr);
+\draw[arr] (mgr) -- node[above, lab]{alertes} (idx);
+\draw[arr] (idx) -- (dash);
+\node[zone, fit=(ag)(mgr)(idx)(dash)] (vps) {}; \node[zonetitle] at (vps.north west) {VPS Oracle Cloud (ARM64, Ubuntu 24.04)};
+\node[box, peach, left=16mm of dash.west -| vps.west, anchor=east, minimum width=36mm] (me) {\textbf{Mon PC}\\\sub{via WireGuard}};
+\draw[arr] (me.east) -- node[below, lab, pos=0.8]{VPN uniquement} (dash.west);
+
+\end{tikzpicture}
+\end{document}

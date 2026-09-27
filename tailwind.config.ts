@@ -30,7 +30,7 @@ const config: Config = {
       fontFamily: {
         ui:      ["var(--font-b612)", "ui-sans-serif", "system-ui", "sans-serif"],
         body:    ["var(--font-source-serif)", "ui-serif", "Georgia", "serif"],
-        mono:    ["var(--font-b612-mono)", "ui-monospace", "SF Mono", "Menlo"],
+        mono:    ["var(--font-code)", "ui-monospace", "SF Mono", "Menlo"],
       },
       fontSize: {
         sm:      ["0.875rem",{ lineHeight: "1.55" }],

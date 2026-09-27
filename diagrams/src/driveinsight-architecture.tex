@@ -1,0 +1,17 @@
+% out: public/images/park/architecture.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, teal, simulated, minimum width=96mm] (mod) {\textbf{Module embarqué : Particle Boron}\\[2pt]\sub{firmware écrit, jamais testé sur une carte}\\\sub{GPS, carburant, huile, batterie, réseau Telma}};
+\node[box, grey, below=26mm of mod, minimum width=60mm, xshift=-24mm] (api) {\textbf{API PHP}\\[1pt]\sub{\ttfamily /api/disponibilite.php}\\\sub{\ttfamily /api/reserver.php}\\\sub{\ttfamily /admin/api/location.php}\\\sub{\ttfamily /admin/api/capteurs.php}};
+\node[box, yellow, right=8mm of api, minimum width=44mm] (db) {\textbf{SQLite 3 (PDO)}\\[1pt]\sub{voitures, réservations}\\\sub{capteurs, maintenances}};
+\node[zone, fit=(api)(db)] (srv) {}; \node[zonetitle] at (srv.north west) {Serveur PHP 8.3};
+\draw[arr] (mod.south) -- node[right, lab]{HTTP GET, toutes les 5 à 10 s} node[left, labRed]{simulé : valeurs envoyées à la main} (mod.south |- srv.north);
+\node[box, peach, below=16mm of srv.south, xshift=-30mm, minimum width=52mm] (cli) {\textbf{Interface client}\\\sub{réservation, modale}};
+\node[box, violet, below=16mm of srv.south, xshift=30mm, minimum width=52mm] (adm) {\textbf{Interface admin}\\\sub{suivi, gestion du parc}};
+\draw[arr] (srv.south) -- ++(0,-6mm) -| (cli.north); \draw[arr] (srv.south) -- ++(0,-6mm) -| (adm.north);
+
+\end{tikzpicture}
+\end{document}

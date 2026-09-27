@@ -1,0 +1,21 @@
+% out: public/images/extraction-llm-documents/pipeline.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\tikzset{b/.style={box, minimum width=50mm, minimum height=16mm}}
+\node[b, grey] (pdf) {\textbf{PDF de la tâche}};
+\node[b, blue, right=10mm of pdf] (prep) {\textbf{prepare.py}\\\sub{pdftotext, résumé compact}};
+\node[b, violet, right=10mm of prep] (llm) {\textbf{LLM (Claude Code)}\\\sub{lit le résumé, écrit un JSON}};
+\node[b, blue, right=10mm of llm] (val) {\textbf{validate.py}\\\sub{JSON Schema}\\\sub{parts × nominal = capital}};
+\node[b, teal, below=16mm of val] (fill) {\textbf{fill\_repartition.py}\\\sub{Playwright remplit}\\\sub{le formulaire}};
+\node[b, blue, left=10mm of fill] (ver) {\textbf{verify.py}\\\sub{relit : sommes, champs,}\\\sub{SIREN et dénomination}};
+\node[b, green, left=10mm of ver] (sub) {\textbf{submit.py}\\\sub{soumet si tout est OK}};
+\node[b, pink, left=20mm of sub] (hum) {\textbf{Humain}\\\sub{tranche le doute}};
+\draw[arr] (pdf) -- (prep); \draw[arr] (prep) -- (llm); \draw[arr] (llm) -- (val); \draw[arr] (val) -- (fill);
+\draw[arr] (fill) -- (ver); \draw[arr] (ver) -- (sub);
+\draw[arrRed] (sub) -- node[above, labRed]{doute :} node[below, labRed]{arrêt} (hum);
+
+\end{tikzpicture}
+\end{document}

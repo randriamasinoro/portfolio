@@ -1,0 +1,16 @@
+% out: public/images/park/evolution-obd.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\tikzset{b/.style={box, minimum width=31mm}}
+\node[b, teal] (bo) {\textbf{Boron}\\\sub{microcontrôleur}};
+\node[b, blue, right=14mm of bo] (mcp) {\textbf{MCP2515}\\\sub{contrôleur CAN}};
+\node[b, blue, right=10mm of mcp] (tja) {\textbf{TJA1050}\\\sub{transceiver}};
+\node[b, grey, right=10mm of tja] (obd) {\textbf{OBD-II}\\\sub{broches 6 et 14}};
+\node[b, peach, right=10mm of obd] (can) {\textbf{Bus CAN}\\\sub{du véhicule}};
+\draw[arr] (bo) -- node[above, lab]{SPI} (mcp); \draw[arr] (mcp) -- (tja); \draw[arr] (tja) -- (obd); \draw[arr] (obd) -- (can);
+
+\end{tikzpicture}
+\end{document}

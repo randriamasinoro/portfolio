@@ -112,30 +112,7 @@ Seuil de décision fixé à 0.5, frontière naturelle de la fonction sigmoid pou
 
 ## Pipeline système
 
-```
-Tas de haricots
-      ↓
-Cylindre + disque perforé
-(alimentation unitaire : 1 haricot à la fois)
-      ↓
-Plateau d'acquisition
-      ↓
-ESP32-CAM capture l'image
-      ↓ HTTP GET /capture.jpg
-Ordinateur (Python)
-      ↓
-Prétraitement (resize 224×224, normalisation)
-      ↓
-CNN (image_model.h5)
-      ↓
-Prédiction sigmoid → valeur entre 0 et 1
-      ↓ HTTP POST /prediction
-ESP32-CAM reçoit la décision
-      ↓
-Servomoteur SG90
-  ├── prédiction > 0.5 → bascule droite (bonne graine)
-  └── prédiction ≤ 0.5 → bascule gauche (mauvaise graine)
-```
+![Chaîne de tri : la machine capture l'image, l'ordinateur prédit, le servomoteur trie](/images/classification/chaine-de-tri.svg)
 
 ## Limites
 

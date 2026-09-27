@@ -75,7 +75,7 @@ Utilisés pour l'étiquette des cards et le halo de la couverture.
 ### Typographie
 Interface et titres : B612 (police Airbus pour écrans de cockpit), police du body
 Textes longs des fiches : Source Serif 4 (classe font-body sur le contenu MDX)
-Code : B612 Mono
+Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trompeur dans du code)
 
 ### Mise en page
   - Accueil : hero ("Bonjour, je m'appelle Elisa" dans un cadre, photo détourée
@@ -115,7 +115,8 @@ ProjectCard   : card projet (couverture typographique, domaines, titre, résumé
 DomainBadge   : libellé du domaine avec repère à la couleur de sa voie
 FilterBar     : onglets de domaine + recherche + technos actives + compteur
 TableOfContents : sommaire de la colonne latérale (lg+)
-CodeBlock     : bloc code sur écran d'instrument, bouton copier
+CodeBlock     : bloc code sombre arrondi, coloration Shiki au build (rehype-pretty-code,
+                thème github-dark-default), bouton copier en icône
 Callout       : note avec filet gauche à la couleur d'une voie
 
 ## Conventions code
@@ -285,6 +286,21 @@ Validation :
 Toute modification passe par : @dev → @review → @doc
 Pas de code non validé en production.
 
+
+## Schémas (TikZ -> SVG)
+
+Jamais de schéma en ASCII dans un MDX : tous les schémas sont des figures TikZ.
+- Sources : diagrams/src/<nom>.tex, préambule commun diagrams/preamble.tex
+- 1re ligne de chaque source : "% out: public/images/<id-projet>/<nom>.svg"
+- Build : ./diagrams/build.sh (tout) ou ./diagrams/build.sh <motif> (un seul)
+  Prérequis : pdflatex (tikz, standalone, lmodern) et pdftocairo
+- Style : Latin Modern Sans, fond blanc arrondi, boîtes pastel à coins arrondis
+- Couleurs à sens fixe : violet = ce que j'ai écrit, turquoise = embarqué,
+  bleu = infrastructure, rose = sécurité/blocage, jaune = stockage,
+  pêche = utilisateurs, gris = briques existantes, vert = succès
+- Élément simulé ou non testé : bordure en pointillés (style simulated)
+- Dans le MDX : ![légende descriptive](/images/<id>/<nom>.svg) ; la figure est
+  cliquable pour l'ouvrir en grand (lisibilité mobile)
 
 ## Gestion des images
 

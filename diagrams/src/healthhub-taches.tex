@@ -1,0 +1,26 @@
+% out: public/images/health-hub/taches-et-files.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\tikzset{t/.style={box, minimum width=38mm}, q/.style={font=\small\ttfamily, text=ink, inner sep=2pt}}
+\node[t, teal] (mot) {\textbf{MotionTask}\\\sub{MPU6050}};
+\node[t, teal, below=10mm of mot] (hr) {\textbf{HeartRateTask}\\\sub{MAX30105}};
+\node[t, teal, below=10mm of hr] (tmp) {\textbf{TempTask}\\\sub{MAX30205}};
+\node[t, blue, right=34mm of mot] (att) {\textbf{AttitudeTask}\\\sub{normes accél., gyro}};
+\node[t, blue, right=34mm of hr] (bpm) {\textbf{processTaskBPM}\\\sub{rythme cardiaque}};
+\node[t, violet, right=34mm of bpm] (disp) {\textbf{DisplayTask}\\\sub{priorité basse}};
+\node[box, grey, right=12mm of disp, minimum width=24mm] (oled) {OLED};
+\draw[arr] (mot) -- node[above, q]{qAttitudeAlgo} (att);
+\draw[arr] (hr) -- node[above, q]{qBPMalgo} (bpm);
+\draw[arr] (att.east) -| node[pos=0.25, above, q]{qAttitudeDisplay} (disp.north);
+\draw[arr] (bpm) -- node[above, q]{qBPMDisplay} (disp);
+\draw[arr] (tmp.east) -| node[pos=0.25, above, q]{qTempData} (disp.south);
+\draw[arr] (disp) -- (oled);
+\node[box, grey, left=26mm of hr, minimum width=26mm, minimum height=48mm] (i2c) {\textbf{Bus I²C}\\\sub{partagé}};
+\foreach \n in {mot,hr,tmp} \draw[line width=0.9pt, draw=inkRed, {Stealth[length=2.6mm]}-{Stealth[length=2.6mm]}] (i2c.east |- \n.west) -- (\n.west);
+\node[labRed, below=2mm of i2c] {protégé par mutexI2C};
+
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,18 @@
+% out: public/images/ce-portfolio/pipeline-ci-cd.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, grey] (push) {git push};
+\node[box, pink, right=12mm of push, minimum width=46mm] (sec) {\textbf{1. Sécurité}\\[2pt]\sub{npm audit (critique)}\\\sub{Trivy (CRITICAL)}};
+\node[box, blue, right=26mm of sec, minimum width=46mm] (build) {\textbf{2. Build}\\[2pt]\sub{Docker Buildx, image arm64}\\\sub{push vers ghcr.io}};
+\node[box, violet, right=12mm of build, minimum width=52mm] (dep) {\textbf{3. Déploiement}\\[2pt]\sub{runner auto-hébergé sur le VPS}\\\sub{docker compose pull \&\& up -d}};
+\draw[arr] (push) -- (sec);
+\draw[arr] (sec) -- node[above, lab]{tout passe} (build);
+\draw[arr] (build) -- (dep);
+\node[labRed, below=9mm of sec] (fail) {échec : rien n'est construit ni déployé};
+\draw[arrRed] (sec.south) -- (fail.north);
+
+\end{tikzpicture}
+\end{document}

@@ -39,16 +39,7 @@ Mais le projet a pris une autre dimension quand le VPN est devenu une frontière
 
 ## Architecture
 
-```
-        Appareils distants                         VPS (réseau privé 10.8.0.0/24)
-   ┌───────────────────────┐                       ┌──────────────────────────────┐
-   │  PC Linux  10.8.0.2    │═══ tunnel chiffré ═══▶│  wg0  10.8.0.1                │
-   │  iPhone    10.8.0.3    │     (UDP)             │   │                          │
-   │  Android   10.8.0.4    │                       │   ├─ NAT (MASQUERADE) ─▶ Internet
-   └───────────────────────┘                       │   └─ services internes :     │
-                                                    │       dashboards admin VPN-only
-                                                    └──────────────────────────────┘
-```
+![Tunnel WireGuard entre mes appareils et le VPS, qui sort sur Internet par NAT](/images/wireguard-vpn/tunnel.svg)
 
 - Serveur : interface `wg0` sur `10.8.0.1/24`, écoute sur un port UDP dédié.
 - Peers : chaque appareil a son IP fixe dans le sous-réseau et son couple de clés propre.
@@ -99,11 +90,7 @@ L'usage le plus intéressant : un service exposé uniquement aux IP du VPN. Mon 
 
 C'est exactement le mécanisme qui protège l'interface de mon analytics auto-hébergé, voir le projet [Umami, Analytics self-hosted](/projects/umami-analytics), dont le dashboard est verrouillé derrière ce VPN, avec un DNS interne (dnsmasq) pour que la résolution fonctionne aussi sur mobile.
 
-```
-                    ┌── /script.js, /api/send ──▶ public (collecte)
-   analytics.*  ───►│
-   (reverse proxy)  └── dashboard ──▶ ipwhitelist 10.8.0.0/24 ──▶ VPN uniquement
-```
+![Le reverse proxy laisse passer la collecte publique et réserve le dashboard au VPN](/images/wireguard-vpn/filtrage-proxy.svg)
 
 Le VPN devient ainsi une couche d'authentification réseau : avant même d'arriver au login applicatif, il faut déjà être *dans* le réseau privé.
 

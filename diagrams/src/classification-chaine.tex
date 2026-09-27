@@ -1,0 +1,28 @@
+% out: public/images/classification/chaine-de-tri.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\tikzset{col/.style={box, minimum width=60mm}}
+\node[col, grey] (tas) {Tas de haricots};
+\node[col, teal, below=7mm of tas] (cyl) {\textbf{Cylindre et disque perforé}\\\sub{un haricot à la fois}};
+\node[col, teal, below=7mm of cyl] (plat) {Plateau d'acquisition};
+\node[col, teal, below=7mm of plat] (cam) {\textbf{ESP32-CAM}\\\sub{capture l'image}};
+\node[col, teal, below=36mm of cam] (dec) {\textbf{ESP32-CAM}\\\sub{reçoit la décision}};
+\node[col, teal, below=7mm of dec] (servo) {Servomoteur SG90};
+\node[box, green, below=12mm of servo, xshift=-34mm, minimum width=58mm] (ok) {\textbf{prédiction $>$ 0,5}\\\sub{bascule à droite : bonne graine}};
+\node[box, pink, below=12mm of servo, xshift=34mm, minimum width=58mm] (ko) {\textbf{prédiction $\leq$ 0,5}\\\sub{bascule à gauche : mauvaise graine}};
+\node[col, violet, right=48mm of cam] (pre) {\textbf{Prétraitement}\\\sub{224 × 224, normalisation}};
+\node[col, violet, below=5mm of pre] (cnn) {\textbf{CNN Keras}\\\sub{image\_model.h5}};
+\node[col, violet, right=48mm of dec] (pred) {\textbf{Prédiction sigmoïde}\\\sub{valeur entre 0 et 1}};
+\draw[arr] (tas) -- (cyl); \draw[arr] (cyl) -- (plat); \draw[arr] (plat) -- (cam);
+\draw[arr] (dec) -- (servo); \draw[arr] (servo.south) -- ++(0,-5mm) -| (ok.north); \draw[arr] (servo.south) -- ++(0,-5mm) -| (ko.north);
+\draw[arr] (cam) -- node[above, lab]{HTTP GET} node[below, lab]{/capture.jpg} (pre);
+\draw[arr] (pre) -- (cnn); \draw[arr] (cnn) -- (pred);
+\draw[arr] (pred) -- node[above, lab]{HTTP POST} node[below, lab]{/prediction} (dec);
+\node[zone, fit=(tas)(cyl)(plat)(cam)(dec)(servo)] (m) {}; \node[zonetitle] at (m.north west) {Machine de tri};
+\node[zone, fit=(pre)(cnn)(pred)] (pc) {}; \node[zonetitle] at (pc.north west) {Ordinateur (Python)};
+
+\end{tikzpicture}
+\end{document}

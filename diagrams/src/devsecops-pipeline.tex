@@ -1,0 +1,20 @@
+% out: public/images/devsecops-landing/pipeline.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, grey] (push) {git push};
+\node[box, pink, right=12mm of push, minimum width=40mm] (gl) {\textbf{Gitleaks}\\\sub{secrets, bloquant}};
+\node[box, yellow, right=10mm of gl, minimum width=40mm] (sg) {\textbf{Semgrep}\\\sub{SAST, rapport seul}};
+\node[box, pink, right=10mm of sg, minimum width=40mm] (tv) {\textbf{Trivy}\\\sub{CVE critiques, bloquant}};
+\draw[arr] (push) -- (gl); \draw[arr] (gl) -- (sg); \draw[arr] (sg) -- (tv);
+\node[zone, fit=(gl)(sg)(tv)] (gates) {}; \node[zonetitle] at (gates.north west) {Portes de sécurité (GitHub Actions)};
+\node[box, blue, below=24mm of gl, minimum width=40mm] (build) {\textbf{Build}\\\sub{image arm64, push ghcr.io}};
+\node[box, violet, right=10mm of build, minimum width=40mm] (dep) {\textbf{Déploiement}\\\sub{runner auto-hébergé (VPS)}};
+\node[box, pink, right=10mm of dep, minimum width=40mm] (zap) {\textbf{OWASP ZAP}\\\sub{DAST après déploiement}};
+\draw[arr] (tv.south) -- ++(0,-9mm) -| node[pos=0.25, above, lab]{tout passe} (build.north);
+\draw[arr] (build) -- (dep); \draw[arr] (dep) -- (zap);
+
+\end{tikzpicture}
+\end{document}

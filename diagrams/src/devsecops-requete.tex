@@ -1,0 +1,17 @@
+% out: public/images/devsecops-landing/chemin-requete.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, peach] (nav) {Navigateur};
+\node[box, grey, right=34mm of nav] (dns) {\textbf{DNS sinoro.fr}\\\sub{IP Oracle Cloud}};
+\node[box, blue, right=26mm of dns] (tr) {\textbf{Traefik}\\\sub{TLS Let's Encrypt}};
+\node[box, violet, right=30mm of tr] (ng) {\textbf{nginx:alpine}\\\sub{fichiers statiques}};
+\draw[arr] (nav) -- node[above, lab]{https://} node[below, lab]{indian.sinoro.fr} (dns);
+\draw[arr] (dns) -- node[above, lab]{port 443} (tr);
+\draw[arr] (tr) -- node[above, lab]{réseau Docker} node[below, lab]{interne} (ng);
+\node[zone, fit=(tr)(ng)] (vps) {}; \node[zonetitle] at (vps.north west) {VPS Oracle Cloud};
+
+\end{tikzpicture}
+\end{document}

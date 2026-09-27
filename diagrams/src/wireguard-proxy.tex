@@ -1,0 +1,16 @@
+% out: public/images/wireguard-vpn/filtrage-proxy.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, blue, minimum width=42mm] (px) {\textbf{Reverse proxy}\\\sub{analytics.*}};
+\node[box, green, right=44mm of px, yshift=12mm, minimum width=48mm] (pub) {\textbf{Public}\\\sub{collecte des visites}};
+\node[box, pink, right=44mm of px, yshift=-12mm, minimum width=48mm] (wl) {\textbf{ipwhitelist}\\\sub{10.8.0.0/24}};
+\node[box, violet, right=14mm of wl, minimum width=36mm] (vpn) {\textbf{VPN}\\\sub{uniquement}};
+\draw[arr] (px.east) -- ++(8mm,0) |- node[pos=0.75, above, lab]{/script.js, /api/send} (pub.west);
+\draw[arr] (px.east) -- ++(8mm,0) |- node[pos=0.75, below, lab]{dashboard} (wl.west);
+\draw[arr] (wl) -- (vpn);
+
+\end{tikzpicture}
+\end{document}

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { B612, B612_Mono, Source_Serif_4 } from "next/font/google";
+import { B612, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css"
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -15,10 +15,11 @@ const b612 = B612({
   display: "swap",
 });
 
-const b612Mono = B612_Mono({
+// JetBrains Mono : code. B612 Mono dessine les parenthèses presque carrées, trompeur dans du code.
+const codeMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-b612-mono",
+  weight: ["400", "500"],
+  variable: "--font-code",
   display: "swap",
 });
 
@@ -100,7 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="fr"
-      className={`${b612.variable} ${b612Mono.variable} ${sourceSerif.variable}`}
+      className={`${b612.variable} ${codeMono.variable} ${sourceSerif.variable}`}
       suppressHydrationWarning
     >
       <body className="bg-bg text-fg min-h-screen" suppressHydrationWarning>

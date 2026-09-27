@@ -34,21 +34,7 @@ Le travail est répétitif, mais une seule erreur (un associé oublié, un prén
 
 Le principe est de séparer le jugement (lire un acte juridique) de l'exécution (remplir un formulaire), et de ne jamais laisser le LLM agir sans contrôle.
 
-```
-PDF de la tâche
-    │  prepare.py : pdftotext + résumé compact (identité, actes, capital, répartition, état civil)
-    ▼
-LLM (Claude Code, terminal)
-    │  lit le résumé, ouvre le texte complet aux endroits utiles, écrit un JSON
-    ▼
-validate.py ── contrat JSON Schema + cohérence (parts × nominal = capital)
-    ▼
-fill_repartition.py ── Playwright branché sur Chrome (CDP) remplit le formulaire
-    ▼
-verify.py ── relit le formulaire : sommes, champs obligatoires vides, SIREN ↔ dénomination
-    ▼
-submit.py ── soumission seulement si tout est OK, sinon arrêt et question à l'humain
-```
+![Pipeline d'extraction : le LLM propose, des scripts vérifient, un humain tranche en cas de doute](/images/extraction-llm-documents/pipeline.svg)
 
 Le pipeline a été conçu et itéré avec Claude Code : mon travail a porté sur l'architecture, les règles métier et surtout les contrôles.
 

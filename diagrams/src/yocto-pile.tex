@@ -1,0 +1,23 @@
+% out: public/images/yocto-home-automation/pile-yocto.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\tikzset{L/.style={box, minimum width=132mm, minimum height=12mm, align=left, text width=124mm}}
+\node[L, grey] (board) {\textbf{Carte STM32MP135F-DK} \sub{(Arm Cortex-A7)}};
+\node[L, grey, above=3mm of board] (bsp) {\textbf{Layers BSP de la carte} \sub{: noyau Linux, chargeur de démarrage}};
+\node[L, grey, above=3mm of bsp] (poky) {\textbf{Poky} \sub{: BitBake et openembedded-core}};
+\node[L, violet, above=3mm of poky] (layer) {\textbf{Layer meta-ubs-homeautomation}};
+\node[L, violet, above=3mm of layer] (img) {\textbf{Recette image} \sub{: hérite de core-image, rootfs ext4, paquets ipk, systemd, SSH}};
+\node[L, teal, above=3mm of img] (app) {\textbf{Service systemd} \sub{: application C lancée au démarrage}};
+\node[box, yellow, right=16mm of app, minimum width=34mm] (sen) {\textbf{Si7021}\\\sub{température, humidité}};
+\node[box, grey, right=16mm of img, minimum width=34mm] (uart) {\textbf{UART}\\\sub{sortie des mesures}};
+\node[box, blue, right=16mm of layer, minimum width=34mm] (sdk) {\textbf{SDK}\\\sub{pour l'équipe}};
+\draw[arr] (app.east) -- node[above, lab, pos=0.72]{I²C} (sen.west);
+\draw[arr] (app.east) -- ++(5mm,0) |- node[pos=0.8, above, lab]{écrit} (uart.west);
+\draw[arr] (layer.east) -- node[above, lab]{génère} (sdk.west);
+\node[note, anchor=south west] at ($(app.north west)+(0,4mm)$) {En couleur : ce que j'ai écrit. En gris : briques existantes réutilisées.};
+
+\end{tikzpicture}
+\end{document}

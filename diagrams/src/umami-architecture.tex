@@ -1,0 +1,22 @@
+% out: public/images/umami-analytics/architecture.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, peach, minimum width=46mm] (vis) {\textbf{Visiteur}\\\sub{Internet}};
+\node[box, violet, below=22mm of vis, minimum width=46mm] (me) {\textbf{Mon PC, téléphone}\\\sub{VPN WireGuard}\\\sub{10.8.0.0/24}};
+\node[box, green, right=30mm of vis, minimum width=58mm] (pub) {\textbf{router umami-public}\\\sub{/script.js et /api/send}\\\sub{priorité 100 : public}};
+\node[box, pink, right=30mm of me, minimum width=58mm] (priv) {\textbf{router umami-private}\\\sub{tout le reste}\\\sub{priorité 1 : ipwhitelist 10.8.0.0/24}};
+\node[zone, fit=(pub)(priv)] (tr) {}; \node[zonetitle] at (tr.north west) {Traefik v2.11};
+\node[box, violet, minimum width=36mm] (app) at ($(tr.east)+(34mm,9mm)$) {\textbf{umami}\\\sub{port 3000}};
+\node[box, yellow, below=12mm of app, minimum width=36mm] (db) {\textbf{umami-db}\\\sub{PostgreSQL}};
+\node[zone, fit=(app)(db)] (net) {}; \node[zonetitle] at (net.north west) {Réseau interne, jamais exposé};
+\draw[arr] (vis) -- node[above, lab]{collecte} (pub);
+\draw[arr] (me) -- node[above, lab]{dashboard} (priv);
+\draw[arrRed, dashed] (vis.south east) -- node[pos=0.45, above right=-1mm, labRed]{403} (priv.north west);
+\draw[arr] (pub.east) -- (app.west); \draw[arr] (priv.east) -- (app.west);
+\draw[arr] (app) -- (db);
+
+\end{tikzpicture}
+\end{document}

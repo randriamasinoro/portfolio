@@ -82,18 +82,7 @@ Au build, une fonction `readProjects()` lit ces fichiers, valide le frontmatter 
 
 Chaque `push` sur `main` déclenche un workflow GitHub Actions en trois étages, avec des gates de sécurité bloquants :
 
-```
-git push
-   │
-   ▼
-1. Security  ── npm audit (critical) ── Trivy (CRITICAL, exit on fail)
-   │                                         │ tout passe
-   ▼                                         ▼
-2. Build     ── Docker Buildx ── image linux/arm64 ── push ghcr.io
-   │
-   ▼
-3. Deploy    ── runner auto-hébergé (VPS) ── docker compose pull && up -d ── prune
-```
+![Pipeline en trois étages : sécurité, build, déploiement ; un échec de sécurité arrête tout](/images/ce-portfolio/pipeline-ci-cd.svg)
 
 - Étage 1 échoue → rien n'est construit ni déployé. Une CVE critique ou une dépendance vulnérable bloque la chaîne.
 - Étage 2 compile une image ARM64 (via QEMU sur runner x86) poussée sur le registre.

@@ -75,24 +75,7 @@ Umami fait deux choses aux besoins réseau opposés :
 
 ## Architecture réseau
 
-```
-                          Internet                         VPN WireGuard (10.8.0.0/24)
-   Visiteur lambda  ─────────────┐                         ┌───────── Mon PC / téléphone
-                                 ▼                         ▼
-                          ┌──────────────────────────────────────┐
-                          │              Traefik v2.11            │
-                          │                                       │
-   router umami-public ──▶│  Host + (/script.js | /api/send)      │  priority 100  → public
-   router umami-private ─▶│  Host (tout le reste)                 │  priority 1    → ipwhitelist 10.8.0.0/24
-                          └───────────────────┬───────────────────┘
-                                              ▼
-                                   ┌──────────────────┐
-                                   │   umami  (:3000)  │──┐
-                                   └──────────────────┘  │ réseau interne (jamais exposé)
-                                   ┌──────────────────┐  │
-                                   │ umami-db (Postgres)│◀─┘
-                                   └──────────────────┘
-```
+![Deux routers Traefik : la collecte est publique, le dashboard n'est accessible que par le VPN](/images/umami-analytics/architecture.svg)
 
 ### Le routage scindé (Traefik)
 
@@ -138,7 +121,7 @@ Sur PC, un `/etc/hosts` suffisait. Mais sur iPhone/Android, pas de `/etc/hosts`.
 
 J'ai monté un dnsmasq dans un conteneur, qui n'écoute que sur l'IP du VPN (`10.8.0.1:53`, jamais sur Internet, pas de DNS open resolver) et fait du *split-horizon* :
 
-```
+```ini
 no-resolv
 server=1.1.1.1                              # tout le reste → forward normal
 server=9.9.9.9

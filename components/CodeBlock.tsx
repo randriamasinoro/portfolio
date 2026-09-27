@@ -1,46 +1,41 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { CopyIcon, CheckIcon } from "./icons";
 
 interface Props {
   language?: string;
-  children: string;
+  children: ReactNode; // lignes déjà colorées par Shiki au build (rehype-pretty-code)
 }
 
+// Bloc de code sombre, arrondi, bouton copier en icône à droite (style GitHub).
 export default function CodeBlock({ language, children }: Props) {
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLPreElement>(null);
 
   function copy() {
-    const text = ref.current?.innerText ?? children;
-    navigator.clipboard?.writeText(text);
+    navigator.clipboard?.writeText(ref.current?.innerText ?? "");
     setCopied(true);
-    setTimeout(() => setCopied(false), 1400);
+    setTimeout(() => setCopied(false), 1500);
   }
 
   return (
-    <div className="relative my-6">
+    <div className="group relative my-7 rounded-lg border border-border bg-scope-bg">
       <pre
         ref={ref}
-        className="bg-scope-bg rounded-md font-mono text-[13px] leading-[1.65] text-scope-fg overflow-x-auto"
-        style={{ padding: "40px 16px 16px", margin: 0 }}
+        data-language={language}
+        className="m-0 overflow-x-auto py-5 pl-5 pr-16 font-mono text-[13.5px] leading-[1.75] text-scope-fg"
       >
         {children}
       </pre>
-
       <button
+        type="button"
         onClick={copy}
-        aria-label="Copier le code"
-        className="absolute top-2 right-2 bg-transparent border border-scope-grid rounded-sm font-ui text-[12px] text-scope-text hover:text-scope-fg inline-flex items-center gap-[6px] px-2 py-1 cursor-pointer"
+        aria-label={copied ? "Code copié" : "Copier le code"}
+        className="absolute top-3 right-3 inline-flex items-center justify-center w-10 h-10 rounded-md border border-scope-grid bg-scope-bg text-scope-text hover:text-scope-fg hover:border-scope-text cursor-pointer transition-colors duration-150"
       >
-        {copied ? <CheckIcon /> : <CopyIcon />}
-        {copied ? "Copié" : "Copier"}
+        {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
       </button>
-
-      {language && (
-        <span className="absolute top-3 left-4 font-ui text-[12px] text-scope-text">{language}</span>
-      )}
     </div>
   );
 }

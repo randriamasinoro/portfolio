@@ -48,13 +48,7 @@ Les trois capteurs sont sur le même bus I²C. C'est la contrainte qui structure
 
 Le programme est découpé en six tâches, reliées par cinq files de messages. Chaque étape a sa propre tâche : acquisition, calcul, affichage.
 
-```
-MotionTask ──qAttitudeAlgo──▶ AttitudeTask ──qAttitudeDisplay──┐
-HeartRateTask ──qBPMalgo──▶ processTaskBPM ──qBPMDisplay───────┼──▶ DisplayTask ──▶ OLED
-TempTask ──qTempData───────────────────────────────────────────┘
-
-MotionTask, HeartRateTask, TempTask : accès I²C protégés par mutexI2C
-```
+![Les six tâches FreeRTOS, les files de messages qui les relient et le bus I²C protégé par un mutex](/images/health-hub/taches-et-files.svg)
 
 | Tâche | Rôle | Priorité | Période |
 |---|---|---|---|

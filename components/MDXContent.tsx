@@ -1,6 +1,7 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
-import type { ReactElement, ReactNode } from "react";
+import { isValidElement, type ComponentProps, type ReactNode } from "react";
 import remarkGfm from "remark-gfm";
+import rehypePrettyCode, { type Options as PrettyCodeOptions } from "rehype-pretty-code";
 import CodeBlock from "./CodeBlock";
 import Callout from "./Callout";
 import ImageFigure from "./ImageFigure";
@@ -16,15 +17,37 @@ export default function MDXContent({ content }: Props) {
       <MDXRemote
         source={content}
         components={COMPONENTS}
-        options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+        options={{
+          mdxOptions: {
+            remarkPlugins: [remarkGfm],
+            rehypePlugins: [[rehypePrettyCode, PRETTY_CODE]],
+          },
+        }}
       />
     </div>
   );
 }
 
+// Coloration syntaxique au build (Shiki) : aucun JS côté navigateur.
+// Fond géré par CodeBlock (écran d'instrument), le thème ne fournit que les couleurs du texte.
+const PRETTY_CODE: PrettyCodeOptions = {
+  theme: "github-dark-default",
+  keepBackground: false,
+  defaultLang: "plaintext",
+  bypassInlineCode: true,
+};
+
+// Texte brut d'un titre, même s'il contient du code inline (pour une ancre identique au sommaire).
+function textOf(node: ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(textOf).join("");
+  if (isValidElement<{ children?: ReactNode }>(node)) return textOf(node.props.children);
+  return "";
+}
+
 const COMPONENTS = {
   h2({ children }: { children?: ReactNode }) {
-    const id = slugify(String(children ?? ""));
+    const id = slugify(textOf(children));
     return (
       <h2 id={id} className="text-[1.5rem] leading-tight text-fg mt-14 mb-4 scroll-mt-6">
         {children}
@@ -32,7 +55,7 @@ const COMPONENTS = {
     );
   },
   h3({ children }: { children?: ReactNode }) {
-    const id = slugify(String(children ?? ""));
+    const id = slugify(textOf(children));
     return (
       <h3
         id={id}
@@ -78,23 +101,28 @@ const COMPONENTS = {
       </a>
     );
   },
-  code({ children, className }: { children?: ReactNode; className?: string }) {
-    if (className) return <code className={className}>{children}</code>;
+  code({ children, className, ...rest }: ComponentProps<"code"> & { "data-language"?: string }) {
+    // Code de bloc déjà traité par rehype-pretty-code : on le laisse tel quel.
+    if (className || rest["data-language"]) {
+      return (
+        <code className={className} {...rest}>
+          {children}
+        </code>
+      );
+    }
     return (
       <code className="font-mono text-[0.82em] text-fg bg-surface-2 px-1 py-0.5 rounded-sm">
         {children}
       </code>
     );
   },
-  pre({ children }: { children?: ReactNode }) {
-    const codeEl = children as ReactElement<{
-      className?: string;
-      children?: string;
-    }>;
-    const language =
-      codeEl?.props?.className?.replace("language-", "") ?? "";
-    const code = String(codeEl?.props?.children ?? "").trimEnd();
-    return <CodeBlock language={language}>{code}</CodeBlock>;
+  pre({ children, ...rest }: ComponentProps<"pre"> & { "data-language"?: string }) {
+    return <CodeBlock language={rest["data-language"]}>{children}</CodeBlock>;
+  },
+  figure({ children, ...rest }: ComponentProps<"figure"> & { "data-rehype-pretty-code-figure"?: string }) {
+    // rehype-pretty-code enveloppe chaque bloc dans une <figure> : on neutralise ses marges.
+    if ("data-rehype-pretty-code-figure" in rest) return <>{children}</>;
+    return <figure {...rest}>{children}</figure>;
   },
   blockquote({ children }: { children?: ReactNode }) {
     return (
@@ -145,12 +173,16 @@ const COMPONENTS = {
     if (!src) return null;
     return (
       <figure className="my-8">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={alt ?? ""}
-          className="w-full rounded-sm border border-border"
-        />
+        {src.endsWith(".svg") ? (
+          // Schéma TikZ : fond blanc arrondi intégré ; clic pour l'ouvrir en grand (utile sur mobile)
+          <a href={src} target="_blank" rel="noopener noreferrer" aria-label={`Ouvrir le schéma en grand : ${alt ?? ""}`} className="block rounded-xl focus-visible:outline-offset-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt={alt ?? ""} loading="lazy" className="w-full h-auto rounded-xl" />
+          </a>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={src} alt={alt ?? ""} loading="lazy" className="w-full rounded-sm border border-border" />
+        )}
         {alt && (
           <figcaption className="font-ui text-[13px] text-fg-muted mt-2 leading-snug">
             {alt}

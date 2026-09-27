@@ -67,38 +67,9 @@ Le contenu est volontairement trivial. Ce qui est mis en avant, c'est l'infrastr
 
 ## Architecture de déploiement
 
-```
-git push
-    │
-    ▼
-GitHub Actions ──► Gitleaks ──► Semgrep ──► Trivy
-                                              │
-                                   (security gates)
-                                              │ tout passe
-                                              ▼
-                               Build image linux/arm64
-                               Push → ghcr.io/randriamasinoro/resto-site
-                                              │
-                                              ▼
-                               Runner auto-hébergé sur le VPS
-                               docker compose pull && up -d
-                                              │
-                                              ▼
-                               OWASP ZAP (DAST post-déploiement)
-```
+![Pipeline DevSecOps : portes de sécurité, build, déploiement, puis scan OWASP ZAP](/images/devsecops-landing/pipeline.svg)
 
-```
-Navigateur
-    │ https://indian.sinoro.fr
-    ▼
-DNS sinoro.fr → IP Oracle Cloud
-    │ port 443
-    ▼
-Traefik  ← TLS terminé ici (Let's Encrypt)
-    │ réseau Docker interne
-    ▼
-Docker container (nginx:alpine + fichiers statiques)
-```
+![Chemin d'une requête, du navigateur au conteneur nginx sur le VPS](/images/devsecops-landing/chemin-requete.svg)
 
 ---
 

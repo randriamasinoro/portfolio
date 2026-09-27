@@ -1,0 +1,23 @@
+% out: public/images/wireguard-vpn/tunnel.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\tikzset{d/.style={box, peach, minimum width=38mm}}
+\node[d] (pc) {\textbf{PC Linux}\\\sub{10.8.0.2}};
+\node[d, below=6mm of pc] (ip) {\textbf{iPhone}\\\sub{10.8.0.3}};
+\node[d, below=6mm of ip] (an) {\textbf{Android}\\\sub{10.8.0.4}};
+\node[zone, fit=(pc)(ip)(an)] (dev) {}; \node[zonetitle] at (dev.north west) {Appareils distants};
+\node[box, violet, right=44mm of ip, minimum width=36mm] (wg) {\textbf{wg0}\\\sub{10.8.0.1}};
+\node[box, blue, right=14mm of wg, yshift=13mm, minimum width=40mm] (nat) {\textbf{NAT}\\\sub{MASQUERADE}};
+\node[box, yellow, right=14mm of wg, yshift=-13mm, minimum width=40mm] (svc) {\textbf{Services internes}\\\sub{dashboards d'administration}};
+\node[zone, fit=(wg)(nat)(svc)] (vps) {}; \node[zonetitle] at (vps.north west) {VPS, réseau privé 10.8.0.0/24};
+\node[box, grey, right=12mm of nat.east -| vps.east, anchor=west] (net) {Internet};
+\foreach \n in {pc,ip,an} \draw[arrViolet] (\n.east) -- (wg.west);
+\node[font=\normalsize, text=inkViolet, align=center] at ($(dev.east)!0.5!(vps.west)+(0,22mm)$) {tunnel chiffré\\(UDP)};
+\draw[arr] (wg) |- (nat); \draw[arr] (wg) |- (svc);
+\draw[arr] (nat) -- (net);
+
+\end{tikzpicture}
+\end{document}

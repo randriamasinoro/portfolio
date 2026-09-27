@@ -29,17 +29,6 @@ Le mini-projet n'est pas guidé. Il vient après une série de TP sur Yocto : co
 
 ![Empilement des couches de la distribution Yocto, de la carte au service systemd](/images/yocto-home-automation/pile-yocto.svg)
 
-```
-Carte STM32MP135F-DK
-└── Distribution Linux construite avec Yocto (base Poky)
-    └── layer meta-ubs-homeautomation
-        ├── recette image (hérite de core-image)
-        │   rootfs ext4, paquets ipk, init systemd,
-        │   accès SSH, compte utilisateur par défaut
-        └── recette de l'application capteur
-            └── service systemd ──▶ lit le Si7021 (I²C) ──▶ sortie UART
-```
-
 - Une layer dédiée au projet, `meta-ubs-homeautomation`, pour garder mes recettes séparées de Poky et des layers de la carte.
 - Une recette image qui hérite de la classe `core-image`, plutôt qu'un simple `include` de `core-image-minimal`. L'image est définie dans la layer et non dans `local.conf`, donc elle est reproductible par toute l'équipe.
 - Un rootfs en ext4, des paquets au format ipk, systemd comme système d'init, un accès SSH et un compte utilisateur par défaut.

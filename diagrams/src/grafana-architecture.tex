@@ -1,0 +1,22 @@
+% out: public/images/grafanaprometheus/architecture.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\node[box, teal, minimum width=46mm] (node) {\textbf{Node Exporter}\\\sub{CPU, RAM, disque, réseau}};
+\node[box, teal, below=8mm of node, minimum width=46mm] (cad) {\textbf{cAdvisor}\\\sub{métriques par conteneur}};
+\node[box, yellow, right=54mm of $(node)!0.5!(cad)$, minimum width=46mm] (prom) {\textbf{Prometheus}\\\sub{séries temporelles}\\\sub{rétention 30 jours}};
+\node[box, violet, right=14mm of prom, minimum width=40mm] (graf) {\textbf{Grafana}\\\sub{tableaux de bord}};
+\node[box, blue, below=14mm of graf, minimum width=40mm] (tr) {\textbf{Traefik}\\\sub{accès VPN uniquement}};
+\draw[arr] (node.east) -- ([yshift=4mm]prom.west);
+\draw[arr] (cad.east) -- ([yshift=-4mm]prom.west);
+\node[lab, align=center, fill=white] at ($($(node.east)!0.5!(cad.east)$)!0.45!(prom.west)$) {scrape\\toutes les 15 s};
+\draw[arr] (prom) -- node[above, lab]{lit} (graf);
+\node[zone, fit=(node)(cad)(prom)(graf)(tr)] (vps) {}; \node[zonetitle] at (vps.north west) {VPS Oracle Cloud (ARM64, Ubuntu 24.04)};
+\node[box, peach, right=14mm of tr.east |- vps.east, anchor=west, minimum width=36mm] (me) {\textbf{Mon PC}\\\sub{via WireGuard}};
+\draw[arr] (me.south) |- (tr.east);
+\draw[arr] (tr) -- (graf);
+
+\end{tikzpicture}
+\end{document}

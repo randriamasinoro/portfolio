@@ -32,17 +32,7 @@ J'ai monté une stack d'observabilité classique : Prometheus pour collecter les
 
 ## Architecture
 
-```
-VPS Oracle Cloud (ARM64, Ubuntu 24.04)
-│
-├── Node Exporter   ← métriques système (CPU, RAM, disque, réseau)
-├── cAdvisor        ← métriques par conteneur Docker
-│
-├── Prometheus      ← scrape Node Exporter + cAdvisor toutes les 15s
-│                     stocke les séries temporelles (rétention 30j)
-│
-└── Grafana         ← interface de visualisation (VPN-only via Traefik)
-```
+![Prometheus collecte les métriques des exporteurs, Grafana les affiche, accessible par VPN uniquement](/images/grafanaprometheus/architecture.svg)
 
 Chaque brique a un rôle précis :
 - Node Exporter expose les métriques de la machine hôte

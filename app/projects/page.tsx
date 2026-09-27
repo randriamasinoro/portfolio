@@ -35,8 +35,8 @@ export default function ProjectsPage() {
       <header className="relative mb-10 max-w-[60ch]">
         <h1 className="text-[2.5rem] sm:text-[3.25rem] leading-tight">Projets</h1>
         <p className="text-fg-2 text-[1.0625rem] leading-relaxed mt-3">
-          Projets d&apos;école, de stage et personnels, du plus récent au plus
-          ancien. Cliquez sur une techno pour ne garder que les projets qui l&apos;utilisent.
+          Projets d&apos;école, de stage et personnels. Cliquez sur une techno pour
+          ne garder que les projets qui l&apos;utilisent.
         </p>
       </header>
 

@@ -19,7 +19,13 @@ export function readProjects(): Project[] {
       return data as Project;
     })
     .filter((p) => !p.draft)
-    .sort((a, b) => b.date.localeCompare(a.date));
+    // Par défaut (liste non filtrée) : projets embarqués en tête, puis par année décroissante.
+    .sort((a, b) => {
+      const ea = a.domains.includes("embedded") ? 0 : 1;
+      const eb = b.domains.includes("embedded") ? 0 : 1;
+      if (ea !== eb) return ea - eb;
+      return b.date.localeCompare(a.date);
+    });
 }
 
 // Projets partageant au moins un domaine avec le projet courant.

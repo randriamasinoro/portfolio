@@ -1,7 +1,7 @@
 ---
 id: rover-stm32
-label: "Rover"
-title: "Rover autonome sur STM32 : évitement d'obstacles en bare-metal"
+label: "Rover intelligent"
+title: "Rover intelligent : évitement d'obstacles autonome"
 description: Rover à deux moteurs piloté par un STM32F4, sans RTOS. Des timers matériels cadencent la mesure des distances (ultrason et infrarouge) et une machine à états décide d'avancer, de ralentir ou de tourner.
 domains:
   - embedded
@@ -14,7 +14,6 @@ tags:
   - PWM
   - ADC
 date: "2025"
-featured: false
 resume:
   - label: "L'objectif"
     texte: "Faire avancer seul un rover à deux moteurs en évitant les obstacles, sur STM32, sans système d'exploitation."
@@ -22,6 +21,8 @@ resume:
     texte: "Code C bare-metal piloté par interruptions : des timers matériels cadencent la mesure des distances (ultrason, infrarouge) et une machine à états décide."
   - label: "Ce que j'en retiens"
     texte: "Tout se joue dans les interruptions et les timers ; la machine à états évite les attentes bloquantes qui figeraient le reste du programme."
+featured: true
+order: 2
 ---
 
 ## Contexte

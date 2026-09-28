@@ -56,7 +56,7 @@ health-hub             → [embedded]
 yocto-home-automation  → [embedded]
 vhdl-fpga              → [embedded]
 forensique-usb         → [cybersecurity]
-reverse-engineering    → [cybersecurity]  (brouillon vide, en attente des sources)
+reverse-engineering    → [cybersecurity]
 
 ## Design system (dark par défaut, mode clair disponible)
 
@@ -91,6 +91,7 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
     puis encart disponibilité + "M'écrire"
   - Projets : titre avec halos flous, onglets de domaine (Tous / ...), recherche,
     grille de cards 3 colonnes (4 en 2xl), halos flous sur toute la largeur de l'écran
+  - Tri par défaut de la liste (lib/projects.ts) : projets embarqués en tête, puis année desc
   - Card : couverture typographique (frontmatter `label`, sinon tags[0]) sur fond
     sombre avec halo du domaine ; `cover` seulement pour une vraie belle photo
   - Fiche projet : colonne gauche sticky (fiche + sommaire) ; titre, description et texte
@@ -126,6 +127,8 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
     "de bout en bout", "robuste", "plonger dans", "n'est pas seulement X mais Y",
     énumérations en trois adjectifs
   - Ne jamais inventer un fait absent des sources
+  - Titre ET label (mot de couverture) = le PROJET, jamais une techno ou un protocole
+    seul (ex. "Rover intelligent" pas "Rover", "Tri intelligent" pas "CNN")
 
 ## Composants clés
 NavBar        : logo "E" + nom, menu à droite, lien actif en violet souligné

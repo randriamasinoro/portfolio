@@ -1,0 +1,166 @@
+---
+id: mon-budget
+label: "Prévision de solde"
+title: "Mon budget : une application de prévision de solde"
+description: Application web qui répond à "combien j'aurai à telle date ?" et "quand est-ce que ça coince ?", avec un moteur de calcul testé, plusieurs budgets étanches et une authentification à double vérification. Déployée sur mon VPS ARM64.
+domains:
+  - cybersecurity
+  - devsecops
+tags:
+  - Next.js
+  - TypeScript
+  - SQLite
+  - argon2id
+  - TOTP
+  - Docker
+  - Traefik
+  - GitHub Actions
+date: "2026"
+media:
+  - /images/mon-budget/accueil-ordinateur.png
+  - /images/mon-budget/simulation-ordinateur.png
+featured: false
+resume:
+  - label: "Le problème"
+    texte: "Mes charges tombent avant mon salaire. Mon solde est positif sur le mois mais négatif en début de mois, et une appli de suivi classique ne le montre pas à l'avance."
+  - label: "Ma solution"
+    texte: "Un moteur de calcul jour par jour (en centimes, testé) derrière une application web protégée par mot de passe argon2id, double vérification et budgets étanches."
+  - label: "Le résultat"
+    texte: "Version 1.8.0, déployée par tag Git sur le VPS, avec retour automatique à la version précédente si l'appli ne répond pas."
+---
+
+## Contexte
+
+Mon budget est positif sur un mois entier, mais mes loyers sont prélevés les 5 et 7 du mois alors que mon salaire arrive vers le 15. Résultat : des découverts en début de mois, même quand le mois se termine bien. Les applications de suivi que j'avais essayées montrent ce qui s'est passé. Je voulais savoir ce qui allait se passer.
+
+L'application répond à trois questions dès l'ouverture : combien j'ai, combien j'aurai à une date donnée, et quand ça coince (de combien, entre quelles dates). Elle calcule et signale, elle ne décide rien.
+
+## Ce que fait l'application
+
+Elle est pensée d'abord pour le téléphone, puis adaptée à la tablette et à l'ordinateur (menu latéral, deux colonnes). Les captures ci-dessous viennent de la version 1.8.0, avec un budget fictif de démonstration : aucun chiffre ni nom réel.
+
+<ImageFigure
+  src="/images/mon-budget/accueil-ordinateur.png"
+  alt="Accueil de l'application sur ordinateur : solde actuel, solde à une date, montant dépensable sans risque et dettes en cours"
+  caption="Accueil : solde actuel, solde à la date choisie, dépensable sans risque, alertes de découvert"
+  size="full"
+  href="/images/mon-budget/accueil-ordinateur.png"
+/>
+
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+  <ImageFigure
+    src="/images/mon-budget/simulation-ordinateur.png"
+    alt="Fenêtre Prévisions : bandeau Simulation, moment le plus serré, montant mis de côté, graphique du solde"
+    caption="Simulation : on teste une idée, rien n'est enregistré"
+    size="full"
+    href="/images/mon-budget/simulation-ordinateur.png"
+  />
+  <ImageFigure
+    src="/images/mon-budget/enveloppes-ordinateur.png"
+    alt="Écran Enveloppes : reste à dépenser, barre de progression, parts retirées chaque lundi, dépenses notées"
+    caption="Enveloppes : un budget dépensé petit à petit, réparti par semaine"
+    size="full"
+    href="/images/mon-budget/enveloppes-ordinateur.png"
+  />
+  <ImageFigure
+    src="/images/mon-budget/dettes-epargne-ordinateur.png"
+    alt="Écran Dettes et épargne : une dette avec sa progression de remboursement, une épargne avec son objectif"
+    caption="Dettes et épargne : progression, prochain paiement, date d'objectif"
+    size="full"
+    href="/images/mon-budget/dettes-epargne-ordinateur.png"
+  />
+  <ImageFigure
+    src="/images/mon-budget/accueil-telephone.png"
+    alt="Accueil de l'application sur téléphone, une seule colonne et barre de navigation en bas"
+    caption="Sur téléphone : une colonne, navigation en bas"
+    size="xs"
+    href="/images/mon-budget/accueil-telephone.png"
+  />
+</div>
+
+Les écrans :
+
+- Accueil : solde actuel avec un bouton "Mettre à jour", solde à une date choisie, montant dépensable sans risque, alertes de découvert (début, fin, montant maximal manquant), graphique du passé réel et des prévisions sur 1, 3, 6 ou 12 mois, ou tableau par mois avec le point bas.
+- Revenus et dépenses : tous les flux prévus, ponctuels ou répétés, avec historique des derniers versements.
+- Enveloppes : un budget dépensé au fil de l'eau (les courses, par exemple), réparti par semaine, par jour ou en une fois. Quand une semaine se termine sans tout dépenser, l'appli propose de remettre le reste sur le solde ou de le garder dans l'enveloppe.
+- Dettes et épargne : remboursements découpés jusqu'à une date limite, versements d'épargne avec un objectif et sa date d'atteinte, calculés avec une vérification du découvert.
+- Réglages : double vérification, droits de l'invitée, journal des connexions et modifications, déconnexion des autres appareils.
+
+Un bouton "i" sur chaque écran explique ce qu'on peut y faire. Pas de fenêtre "Êtes-vous sûre ?" : après chaque action, un bouton "Annuler" reste affiché 5 secondes. Le rouge est réservé aux découverts, et la couleur n'est jamais seule (icône et texte aussi).
+
+## Le moteur de calcul
+
+Le moteur (`src/engine/`) est du TypeScript simple, sans base de données ni Next.js, ce qui permet de le tester seul. Quelques choix qui changent le résultat :
+
+- Calcul jour par jour, avec le solde de fin de journée.
+- Montants en centimes, en entiers, pour éviter les erreurs d'arrondi des flottants. Quand un montant est réparti, les centimes restants vont aux premières parts pour que le total soit exact.
+- Dates floues : un salaire "entre le 12 et le 15" est compté le 15, une dépense le premier jour de sa fenêtre. Je prends toujours le pire cas.
+- Revenus incertains exclus par défaut, avec un interrupteur pour les voir.
+- Les jours 29, 30 et 31 passent au dernier jour des mois plus courts.
+
+La fonction que j'utilise le plus est "Quand pourrais-je dépenser X ?" : elle cherche le premier jour, dans les 12 mois, où la dépense ne fait jamais passer le compte sous zéro ensuite, et vérifie encore au moins deux mois après la date trouvée.
+
+## Un problème de données : l'application ne voit pas la banque
+
+L'application ne lit pas mon compte. Elle ne sait donc pas si un loyer prévu le 7 est vraiment passé le 8. Si elle le croyait passé alors qu'il ne l'est pas, elle annoncerait trop d'argent disponible.
+
+La mise à jour du solde pose donc une question : "Tout ce qui était prévu est-il passé ?". Si non, je décoche les lignes en attente, elles restent à venir. Un deuxième cas : un salaire prévu le 15 qui arrive le 13 avec un autre montant. Sans correction, il serait compté deux fois, dans le solde réel du 13 et encore le 15. C'est un bug corrigé en 1.1.0 avec le bouton "Quelque chose a changé ?".
+
+## Simulation
+
+Un écran de simulation permet de tester une idée (un salaire plus bas, une dépense ajoutée, une enveloppe réduite) sans rien enregistrer. Un bandeau le rappelle en permanence, et tout est réinitialisé en quittant l'écran. La courbe réelle reste en gris sous la courbe simulée.
+
+## Sécurité
+
+C'est une application qui contient des données financières, même si ce sont les miennes. Je l'ai traitée comme telle.
+
+| Risque | Ce que j'ai mis en place |
+|--------|--------------------------|
+| Mot de passe volé | Hachage argon2id (64 Mio, 3 passes), 12 caractères minimum |
+| Mot de passe deviné | Blocage de 15 minutes après 5 échecs par compte et adresse, 20 par compte, 20 par adresse |
+| Accès sans le mot de passe | Double vérification TOTP (RFC 6238), rejeu d'un code refusé |
+| Session volée | Jeton stocké en empreinte SHA-256 seulement, cookie `HttpOnly`, `Secure`, `SameSite=Strict`, préfixe `__Host-`, 30 jours maximum |
+| Inscription d'inconnus | Aucune inscription publique, les comptes se créent en ligne de commande sur le serveur |
+| Droits contournés | Droits revérifiés côté serveur à chaque action, l'invitée est en lecture seule par défaut |
+| Injection et clickjacking | CSP avec nonce, HSTS, `X-Frame-Options: DENY`, `nosniff`, validation Zod de toute entrée |
+| Fuite entre utilisateurs | Budgets étanches, vérifiés par des tests avec des requêtes trafiquées |
+
+Le blocage a une histoire : dans la première version, 5 erreurs de n'importe qui bloquaient toute l'adresse, donc deux personnes derrière la même box se bloquaient l'une l'autre. Je suis passé à un compteur par compte et par adresse.
+
+La mise à jour en direct (quand une personne modifie, l'écran de l'autre suit en moins d'une seconde) utilise des Server-Sent Events. Le signal ne transporte aucune donnée : l'écran compare une empreinte et se recharge si besoin. La session est revérifiée à chaque signal, et les connexions sont plafonnées (4 par session, 6 par personne, 40 au total) pour qu'une personne ne prenne pas toutes les places.
+
+<Callout type="warning">
+  L'application fait confiance à l'en-tête `X-Real-Ip` pour l'adresse du
+  visiteur. Elle doit donc toujours rester derrière Traefik, sans port publié
+  directement, sinon le blocage par adresse pourrait être contourné.
+</Callout>
+
+## Plusieurs budgets, étanches
+
+Depuis la 1.5.0, plusieurs budgets cohabitent sur le même serveur, pour d'autres personnes. Chaque budget a sa propriétaire et éventuellement son invitée, démarre vierge, et ne voit rien des autres : ni lecture, ni modification, ni journal. Chaque lecture et écriture est limitée au budget de la personne connectée et revérifiée par la base. Des plafonds par budget (300 revenus et dépenses, 30 enveloppes, 5 000 dépenses notées par enveloppe) empêchent un budget de ralentir les autres.
+
+## Déploiement
+
+Le dépôt est privé et le code source n'arrive jamais sur le serveur.
+
+1. Un tag `vX.Y.Z` lance le workflow de release sur GitHub Actions.
+2. Tests, build et construction de l'image `linux/arm64`.
+3. Analyse de l'image avec Trivy, puis envoi sur ghcr.io (privé).
+4. Un runner sur le VPS reçoit l'ordre de déployer : sauvegarde de la base, `docker compose pull`, `up -d`.
+5. Si l'application ne répond pas, retour automatique à la version précédente.
+
+La CI lance aussi `npm audit`, le typage, le lint sans avertissement, les tests unitaires et les tests de bout en bout Playwright (téléphone et ordinateur) à chaque envoi. Le build refuse d'embarquer une base de données ou un fichier `.env`. Les comptes se gèrent par un menu en ligne de commande sur le serveur, accessible seulement par le VPN.
+
+## Limites
+
+- Les journaux de sécurité sont écrits en JSON sur la sortie standard, prêts pour Wazuh, mais le branchement n'est pas fait.
+- Le blocage par adresse repose sur un en-tête fourni par le reverse proxy, voir l'avertissement plus haut.
+- L'application ne lit pas la banque : le solde reste une saisie manuelle, donc une source d'erreur humaine.
+- Un seul serveur, sans réplication. Une sauvegarde est faite avant chaque déploiement, mais la restauration reste manuelle.
+- Je n'ai pas fait d'audit de sécurité externe. Les protections viennent de mes lectures et de mes tests, pas d'une revue indépendante.
+
+## Perspectives
+
+- Brancher les journaux de sécurité sur le Wazuh de mon VPS.
+- Tester la restauration des sauvegardes de façon régulière plutôt qu'à la main.
+- Remplacer la confiance dans `X-Real-Ip` par une liste de proxys de confiance configurée.

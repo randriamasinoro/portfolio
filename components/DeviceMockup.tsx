@@ -4,9 +4,9 @@ interface Props {
   device: "desktop" | "phone";
   src: string;
   alt: string;
-  /** Dimensions réelles de la capture : gardent ses proportions. */
-  width: number;
-  height: number;
+  /** Dimensions réelles de la capture, en chaînes (le MDX bloque les expressions {…}). */
+  width: string;
+  height: string;
   caption?: string;
   /** Aperçu cliquable : ouvre la capture en grand dans un nouvel onglet. */
   href?: string;
@@ -15,7 +15,7 @@ interface Props {
 // Cadre d'appareil façon prototype Figma : fenêtre de navigateur ou téléphone.
 export default function DeviceMockup({ device, src, alt, width, height, caption, href }: Props) {
   const screen = (
-    <Image src={src} alt={alt} width={width} height={height} sizes="(min-width: 1024px) 720px, 100vw" className="block w-full h-auto" />
+    <Image src={src} alt={alt} width={Number(width)} height={Number(height)} sizes="(min-width: 1024px) 720px, 100vw" className="block w-full h-auto" />
   );
   const linked = href ? (
     <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`Ouvrir ${alt} dans un nouvel onglet`} className="block">

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { B612, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
+import { B612, Instrument_Serif, Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css"
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -28,6 +28,22 @@ const codeMono = JetBrains_Mono({
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   variable: "--font-source-serif",
+  display: "swap",
+});
+
+// Bannière d'accueil : serif italique pour l'accroche, sans gras pour le reste.
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: "italic",
+  variable: "--font-display",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -70,13 +86,13 @@ export const metadata: Metadata = {
     siteName: "Sehenonirina Elisa Randriamasinoro",
     title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité embarquée",
     description:
-      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
+      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 20 semaines minimum à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Sehenonirina Elisa Randriamasinoro, Cybersécurité embarquée",
     description:
-      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
+      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 20 semaines minimum à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   },
   robots: {
     index: true,
@@ -102,7 +118,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="fr"
-      className={`${b612.variable} ${codeMono.variable} ${sourceSerif.variable}`}
+      className={`${b612.variable} ${codeMono.variable} ${sourceSerif.variable} ${instrumentSerif.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
       <body className="text-fg min-h-screen overflow-x-clip" suppressHydrationWarning>

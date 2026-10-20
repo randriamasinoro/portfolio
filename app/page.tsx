@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { readProjects } from "@/lib/projects";
+import HeroBanner from "@/components/HeroBanner";
 import ProjectCard from "@/components/ProjectCard";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/icons";
 
@@ -22,79 +22,40 @@ export default function HomePage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative overflow-x-clip pt-4 md:pt-10 pb-20 md:pb-28">
-        <span
-          className="pointer-events-none select-none absolute top-2 -left-2 font-ui font-bold text-watermark leading-[0.85] text-[5.5rem] sm:text-[9rem] lg:text-[13rem] tracking-[-0.03em] whitespace-nowrap"
-          aria-hidden="true"
-        >
-          EMBARQUÉ
-        </span>
+      <section className="pt-4 md:pt-8 pb-20 md:pb-28">
+        <HeroBanner projectCount={projects.length} />
 
-        <div className="relative grid gap-10 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] items-center">
-          <div className="relative z-10 lg:-mr-32">
-            <div
-              className="rounded-sm border border-border-strong px-6 py-8 sm:px-10 sm:py-12"
-              style={{
-                background:
-                  "linear-gradient(90deg, color-mix(in srgb, var(--surface) 82%, transparent) 55%, color-mix(in srgb, var(--accent-deep) 85%, transparent))",
-              }}
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-x-10 gap-y-6">
+          <p className="text-fg-2 text-[1.0625rem] leading-relaxed max-w-[52ch]">
+            Je cherche un stage de fin d&apos;études de 20 semaines minimum à partir
+            de janvier 2027.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+            <a
+              href="mailto:randriamasnrelisa@gmail.com"
+              className="no-underline bg-accent text-white px-6 py-3 rounded-md hover:opacity-90 transition-opacity duration-150"
             >
-              <h1 className="font-normal">
-                <span className="block text-[1.75rem] sm:text-[2.25rem] text-fg-2">Bonjour,</span>
-                <span className="block text-[2.5rem] sm:text-[3.75rem] leading-tight text-fg">je m&apos;appelle</span>
-                <span className="block text-[3.5rem] sm:text-[5.5rem] leading-[1] font-bold text-accent">
-                  <span className="sr-only">Sehenonirina </span>Elisa
-                </span>
-              </h1>
-              <p className="text-[1.25rem] sm:text-[1.625rem] text-fg mt-5">
-                Cybersécurité des systèmes embarqués
-              </p>
-            </div>
-
-            <p className="text-fg-2 text-[1.0625rem] leading-relaxed mt-8 max-w-[46ch]">
-              Master 2 à l&apos;UBS Lorient. Je cherche un stage de fin d&apos;études
-              de 4 à 6 mois à partir de janvier 2027.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-4 mt-6">
-              <a
-                href="mailto:randriamasnrelisa@gmail.com"
-                className="no-underline bg-accent text-white px-6 py-3 rounded-md hover:opacity-90 transition-opacity duration-150"
-              >
-                M&apos;écrire
-              </a>
-              <Link href="/projects" className="text-fg hover:text-accent-ink">
-                Voir mes projets
-              </Link>
-              <ul className="flex items-center gap-1 list-none p-0 m-0 sm:ml-2">
-                {SOCIALS.map(({ href, label, icon }) => (
-                  <li key={label}>
-                    <a
-                      href={href}
-                      target={href.startsWith("http") ? "_blank" : undefined}
-                      rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      aria-label={label}
-                      className="inline-flex items-center justify-center w-10 h-10 text-fg-muted hover:text-accent-ink transition-colors duration-150"
-                    >
-                      {icon}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-[440px] lg:max-w-[560px] lg:ml-auto lg:mr-0">
-            <div className="absolute inset-x-0 bottom-0 top-[18%] bg-accent-deep" aria-hidden="true" />
-            <Image
-              src="/photo-detouree.png"
-              alt="Portrait de Sehenonirina Elisa Randriamasinoro"
-              width={950}
-              height={810}
-              priority
-              sizes="(min-width: 1024px) 560px, 90vw"
-              className="relative w-full h-auto"
-            />
+              M&apos;écrire
+            </a>
+            <Link href="/projects" className="text-fg hover:text-accent-ink">
+              Voir mes projets
+            </Link>
+            <ul className="flex items-center gap-1 list-none p-0 m-0 sm:ml-2">
+              {SOCIALS.map(({ href, label, icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    aria-label={label}
+                    className="inline-flex items-center justify-center w-10 h-10 text-fg-muted hover:text-accent-ink transition-colors duration-150"
+                  >
+                    {icon}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -125,7 +86,7 @@ export default function HomePage() {
         <div className="max-w-[52ch]">
           <h2 className="text-[1.75rem] leading-tight">Disponible à partir de janvier 2027</h2>
           <p className="text-fg-2 leading-relaxed mt-3">
-            Stage de fin d&apos;études de 4 à 6 mois en cybersécurité des systèmes
+            Stage de fin d&apos;études de 20 semaines minimum en cybersécurité des systèmes
             embarqués, avec une perspective de pré-embauche. L&apos;alternance
             m&apos;intéresse aussi.
           </p>

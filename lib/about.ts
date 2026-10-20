@@ -20,6 +20,9 @@ export interface Certification {
   date?: string;
 }
 
+// Compétences de base, sur la bannière d'accueil.
+export const HERO_SKILLS: string[] = ["Linux embarqué", "IoT", "Cybersécurité", "RTOS"];
+
 export const SKILL_GROUPS: SkillGroup[] = [
   {
     label: "Systèmes embarqués",

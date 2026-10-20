@@ -79,7 +79,7 @@ export default async function Image() {
               maxWidth: 900,
             }}
           >
-            M1 Cybersécurité des Systèmes Embarqués, UBS Lorient
+            M2 Cybersécurité des Systèmes Embarqués, UBS Lorient
           </div>
         </div>
 

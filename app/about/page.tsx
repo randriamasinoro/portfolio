@@ -9,14 +9,14 @@ import { CERTIFICATIONS, SKILL_GROUPS, TIMELINE } from "@/lib/about";
 export const metadata: Metadata = {
   title: "À propos",
   description:
-    "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
+    "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 20 semaines minimum à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   alternates: { canonical: "/about" },
   openGraph: {
     type: "profile",
     url: "https://sinoro.fr/about",
     title: "À propos, Sehenonirina Elisa Randriamasinoro",
     description:
-      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 4 à 6 mois à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
+      "Master 2 Cybersécurité des Systèmes Embarqués (UBS Lorient). Recherche un stage de fin d'études de 20 semaines minimum à partir de janvier 2027, avec perspective de pré-embauche, en cybersécurité et systèmes embarqués. Alternance également envisagée.",
   },
 };
 
@@ -74,7 +74,7 @@ export default function AboutPage() {
               DevSecOps.
             </p>
             <p>
-              Je cherche un stage de fin d&apos;études de 4 à 6 mois à partir
+              Je cherche un stage de fin d&apos;études de 20 semaines minimum à partir
               de janvier 2027, en cybersécurité des systèmes embarqués, avec une
               perspective de pré-embauche. Une alternance m&apos;intéresse
               aussi.

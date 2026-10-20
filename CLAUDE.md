@@ -11,7 +11,7 @@ Les schémas techniques ne sont jamais la première image vue : ils vont dans le
 
 ## Concept
 Site portfolio technique data-driven, modulaire et évolutif.
-Double usage : vitrine recruteurs (stage de fin d'études janv. 2027, alternance envisagée) + outil personnel.
+Double usage : vitrine recruteurs (stage de fin d'études de 20 semaines minimum dès janv. 2027, alternance envisagée) + outil personnel.
 
 ## Stack
 - Framework  : Next.js 16 App Router (React 19)

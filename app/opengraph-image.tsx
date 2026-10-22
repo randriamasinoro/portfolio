@@ -24,7 +24,8 @@ const C = {
 
 // Assets lus une seule fois (ne dépendent pas de la requête). Satori n'accepte pas le woff2.
 const fontDir = join(process.cwd(), "public/fonts");
-const [serifItalic, interRegular, interBold, photo] = await Promise.all([
+const [serifRegular, serifItalic, interRegular, interBold, photo] = await Promise.all([
+  readFile(join(fontDir, "InstrumentSerif-Regular.ttf")),
   readFile(join(fontDir, "InstrumentSerif-Italic.ttf")),
   readFile(join(fontDir, "Inter-Regular.ttf")),
   readFile(join(fontDir, "Inter-Bold.ttf")),
@@ -70,12 +71,14 @@ export default async function Image() {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-end",
-            justifyContent: "space-between",
+            justifyContent: "center",
             textAlign: "right",
             padding: "56px 64px 60px 24px",
           }}
         >
-          <div style={{ display: "flex", fontSize: 26, color: C.fgMuted }}>sinoro.fr</div>
+          <div style={{ position: "absolute", top: 36, right: 64, display: "flex", fontSize: 24, color: C.fgMuted }}>
+            sinoro.fr
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
             <div
@@ -85,45 +88,64 @@ export default async function Image() {
                 gap: 12,
                 border: `1px solid ${C.borderStrong}`,
                 background: C.surface2,
-                borderRadius: 8,
-                padding: "8px 18px",
-                fontSize: 24,
+                borderRadius: 999,
+                padding: "8px 20px",
+                fontSize: 18,
                 fontWeight: 700,
-                marginBottom: 30,
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                color: C.fg2,
+                marginBottom: 26,
               }}
             >
               <div style={{ width: 10, height: 10, borderRadius: 5, background: C.accent }} />
-              Master 2 · UBS Lorient
+              Stage dès janvier 2027
             </div>
 
             <div
               style={{
                 display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
                 fontFamily: "Instrument Serif",
-                fontStyle: "italic",
-                fontSize: 60,
-                lineHeight: 1.1,
+                fontSize: 76,
+                lineHeight: 1,
               }}
             >
-              Bonjour, je m&apos;appelle&nbsp;<span style={{ color: C.accentInk }}>Elisa.</span>
+              <div>Bonjour,</div>
+              <div style={{ display: "flex" }}>
+                je m&apos;appelle&nbsp;
+                <span style={{ fontStyle: "italic", color: C.accent }}>Elisa.</span>
+              </div>
             </div>
             <div
               style={{
                 display: "flex",
-                fontSize: 36,
-                lineHeight: 1.2,
-                letterSpacing: "-0.02em",
-                marginTop: 10,
+                marginTop: 22,
+                fontSize: 17,
+                letterSpacing: "0.16em",
+                whiteSpace: "nowrap",
+                textTransform: "uppercase",
+                color: C.fgMuted,
+              }}
+            >
+              {HERO_SKILLS.join(" · ")}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                fontSize: 28,
+                lineHeight: 1.4,
+                color: C.fg2,
+                marginTop: 22,
                 maxWidth: 540,
               }}
             >
-              Je travaille sur la sécurité des systèmes embarqués, du firmware au réseau.
+              En Master 2 à l&apos;UBS Lorient, je travaille sur la sécurité des systèmes
+              embarqués, du firmware au réseau.
             </div>
           </div>
 
-          <div style={{ display: "flex", fontSize: 23, fontWeight: 700, color: C.fg2, whiteSpace: "nowrap" }}>
-            {HERO_SKILLS.join("  •  ")}
-          </div>
         </div>
       </div>
     ),
@@ -132,6 +154,7 @@ export default async function Image() {
       fonts: [
         { name: "Inter", data: interRegular, style: "normal", weight: 400 },
         { name: "Inter", data: interBold, style: "normal", weight: 700 },
+        { name: "Instrument Serif", data: serifRegular, style: "normal", weight: 400 },
         { name: "Instrument Serif", data: serifItalic, style: "italic", weight: 400 },
       ],
     }

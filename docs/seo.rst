@@ -119,8 +119,9 @@ Solutions techniques (détail par fichier)
 
 ``app/opengraph-image.tsx`` — Image de partage social
    Image 1200×630 via ``next/og``, même composition que la bannière d'accueil
-   (``HeroBanner``) : photo détourée sur halo violet, accroche et compétences.
-   Polices **Instrument Serif** italique et **Inter** (TTF, Satori ne lit pas le
+   (``HeroBanner``) : photo détourée sur halo violet, pastille, titre, compétences
+   et phrase d'accroche (sans les boutons).
+   Polices **Instrument Serif** (droite et italique) et **Inter** (TTF, Satori ne lit pas le
    woff2) et photo lues dans ``public/`` (pas de ``fetch`` réseau, sinon le
    build Docker échoue). Les couleurs y sont en hex : Satori ne lit pas les
    variables CSS.

@@ -79,14 +79,19 @@ Utilisés pour l'étiquette des cards et le halo de la couverture.
 ### Typographie
 Interface et titres : B612 (police Airbus pour écrans de cockpit), police du body
 Textes longs des fiches : Source Serif 4 (classe font-body sur le contenu MDX)
+Hero de l'accueil : Instrument Serif (titre, prénom en italique) + Inter (reste)
 Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trompeur dans du code)
 
 ### Mise en page
   - Pleine largeur : max-w-page = 2400px (garde-fou 4K), marges px-5 / sm:px-10 / xl:px-16
   - Texte limité à 720px (environ 70 caractères) et centré ; schémas, tableaux et
     blocs de code prennent toute la largeur de la colonne (fiches jusqu'à 1000px)
-  - Accueil : hero ("Bonjour, je m'appelle Elisa" dans un cadre, photo détourée
-    public/photo-detouree.png sur bloc violet, mot "EMBARQUÉ" en filigrane),
+  - Accueil : hero HeroBanner (toujours sombre) : photo détourée
+    public/photo-detouree.png sur halo violet façon projecteur, pastille
+    "Stage dès janvier 2027", titre "Bonjour, je m'appelle Elisa." (prénom en
+    italique violet), compétences HERO_SKILLS en capitales espacées, une phrase,
+    deux boutons ("Voir mes projets" plein, "M'écrire" contour) ; l'image de
+    partage app/opengraph-image.tsx reprend la même composition,
     puis projets choisis (featured + order : 1 card large, puis grille 2 colonnes),
     puis encart disponibilité + "M'écrire"
   - Projets : titre avec halos flous, onglets de domaine (Tous / ...), recherche,

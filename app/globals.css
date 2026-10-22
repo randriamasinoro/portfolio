@@ -4,6 +4,10 @@
 
 /* ── Clair : gris d'établi, encre, voies d'oscilloscope ─────────────── */
 :root {
+  /* Police du CV (LaTeX helvet = Nimbus Sans L, clone d'Helvetica) : pile système,
+     Helvetica sur Apple, Nimbus Sans sur Linux, Arial sur Windows. Rien à télécharger. */
+  --font-sans: "Helvetica Neue", Helvetica, "Nimbus Sans", "Nimbus Sans L", Arial, sans-serif;
+
   /* ── Clair ── */
   --bg:            #F5F4F7;
   --surface:       #FFFFFF;
@@ -41,6 +45,9 @@
   --cursor-glow:   rgba(138, 31, 230, 0.12);
   --card-glow:     rgba(138, 31, 230, 0.10);
   --glow-blend:    multiply;
+
+  /* Projecteur derrière la photo du hero */
+  --hero-spot:     rgba(138, 31, 230, 0.38);
 }
 
 .dark {
@@ -70,6 +77,8 @@
   --cursor-glow:   rgba(164, 59, 255, 0.24);
   --card-glow:     rgba(164, 59, 255, 0.22);
   --glow-blend:    screen;
+
+  --hero-spot:     rgba(164, 59, 255, 0.75);
 }
 
 @layer base {
@@ -81,13 +90,13 @@
   html,
   body {
     @apply text-fg;
-    font-family: var(--font-b612), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
   h1, h2, h3 {
-    font-family: var(--font-b612), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-sans);
     text-wrap: balance;
     @apply font-bold text-fg;
     margin: 0;

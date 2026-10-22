@@ -1,3 +1,9 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
+const FULLSCREEN_PATHS = ["/", "/about"];
+
 const LINKS = [
   { href: "mailto:randriamasnrelisa@gmail.com", label: "randriamasnrelisa@gmail.com" },
   { href: "https://github.com/randriamasinoro", label: "GitHub" },
@@ -6,6 +12,11 @@ const LINKS = [
 ] as const;
 
 export default function Footer() {
+  // L'accueil et À propos tiennent dans un seul écran, sans défilement : pas de
+  // footer (les contacts sont sur la page À propos).
+  const pathname = usePathname();
+  if (FULLSCREEN_PATHS.includes(pathname)) return null;
+
   return (
     <footer className="border-t border-border mt-8">
       <div className="max-w-page mx-auto px-5 sm:px-10 xl:px-16 py-8 flex flex-wrap justify-between gap-x-8 gap-y-3 font-ui text-sm text-fg-muted">

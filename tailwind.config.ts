@@ -28,11 +28,10 @@ const config: Config = {
         "scope-fg":     "var(--scope-fg)",
       },
       fontFamily: {
-        ui:      ["var(--font-b612)", "ui-sans-serif", "system-ui", "sans-serif"],
+        ui:      ["var(--font-sans)"],
         body:    ["var(--font-source-serif)", "ui-serif", "Georgia", "serif"],
         mono:    ["var(--font-code)", "ui-monospace", "SF Mono", "Menlo"],
         display: ["var(--font-display)", "ui-serif", "Georgia", "serif"],
-        inter:   ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       fontSize: {
         sm:      ["0.875rem",{ lineHeight: "1.55" }],

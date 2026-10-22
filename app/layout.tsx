@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { B612, Instrument_Serif, Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
+import { Instrument_Serif, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css"
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -8,15 +8,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import JsonLd from "@/components/JsonLd";
 import Analytics from "@/components/Analytics";
 
-// B612 : police dessinée par Airbus pour les écrans de cockpit (titres, interface).
-const b612 = B612({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-b612",
-  display: "swap",
-});
-
-// JetBrains Mono : code. B612 Mono dessine les parenthèses presque carrées, trompeur dans du code.
+// JetBrains Mono : code. Police d'interface et des titres : --font-sans (globals.css), celle du CV.
 const codeMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
@@ -31,19 +23,12 @@ const sourceSerif = Source_Serif_4({
   display: "swap",
 });
 
-// Bannière d'accueil : serif pour l'accroche (prénom en italique), Inter pour le reste.
+// Bannière d'accueil : serif pour l'accroche (prénom en italique).
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
   style: ["normal", "italic"],
   variable: "--font-display",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-inter",
   display: "swap",
 });
 
@@ -116,18 +101,24 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    // overflow-x-clip sur <html> : seule la racine propage au viewport ; sur <body>
+    // seul, un débordement (halo du hero) rendait la page défilable à l'horizontale.
     <html
       lang="fr"
-      className={`${b612.variable} ${codeMono.variable} ${sourceSerif.variable} ${instrumentSerif.variable} ${inter.variable}`}
+      className={`overflow-x-clip ${codeMono.variable} ${sourceSerif.variable} ${instrumentSerif.variable}`}
       suppressHydrationWarning
     >
-      <body className="text-fg min-h-screen overflow-x-clip" suppressHydrationWarning>
+      {/* Grille nav / contenu / footer : le contenu remplit la hauteur restante, ce qui
+          permet à l'accueil (data-fullscreen) de tenir exactement dans l'écran. */}
+      <body className="text-fg min-h-[100dvh] grid grid-rows-[auto_1fr_auto] overflow-x-clip" suppressHydrationWarning>
         <JsonLd />
         <Analytics />
         <ThemeProvider>
           <CursorGlow />
           <NavBar />
-          <main className="max-w-page mx-auto px-5 sm:px-10 xl:px-16 pb-24">{children}</main>
+          <main className="w-full max-w-page mx-auto px-5 sm:px-10 xl:px-16 pb-24 has-[>[data-fullscreen]]:pb-0">
+            {children}
+          </main>
           <Footer />
         </ThemeProvider>
       </body>

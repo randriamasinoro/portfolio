@@ -36,8 +36,8 @@ date        : string    -- année YYYY
 github      : string    -- URL GitHub
 demo?       : string    -- URL démo optionnel
 media?      : string[]  -- chemins images optionnel
-featured?   : boolean   -- affiché dans "Projets choisis" sur l'accueil
-order?      : number    -- position dans la sélection (1 = premier, le plus mémorisé)
+featured?   : boolean   -- inutilisé depuis l'accueil en un écran (gardé dans les MDX)
+order?      : number    -- inutilisé depuis l'accueil en un écran (gardé dans les MDX)
 cover?      : string    -- visuel de la vitrine (sinon media[0]) ; SVG accepté
 resume?     : {label,texte}[] -- bloc "L'essentiel" en haut de fiche : 3 lignes
             (perso : problème/solution/résultat ; école : objectif/démarche/acquis)
@@ -64,7 +64,7 @@ Thème piloté par next-themes (darkMode: "class", defaultTheme "dark").
 Couleurs = variables CSS dans app/globals.css (:root clair, .dark sombre),
 exposées en tokens Tailwind (bg-bg, bg-surface, text-fg, text-fg-2, text-fg-muted,
 border-border, bg-accent, text-accent-ink, bg-accent-deep, text-watermark...).
-Jamais de hex dans un composant (exception : écran d'instrument UartTrace).
+Jamais de hex dans un composant (exception : app/opengraph-image.tsx, Satori ne lit pas les variables CSS).
 
 ### Palette sombre (.dark)
 bg #161616, surface #1E1E1F, surface-2 #262628, border #303033 / #48484D
@@ -77,23 +77,27 @@ cybersecurity rouge --ch1, embedded turquoise --ch2, data ambre --ch3, devsecops
 Utilisés pour l'étiquette des cards et le halo de la couverture.
 
 ### Typographie
-Interface et titres : B612 (police Airbus pour écrans de cockpit), police du body
+Interface, titres et body : police du CV (LaTeX helvet = Nimbus Sans L), pile système
+--font-sans : Helvetica Neue, Helvetica, Nimbus Sans, Arial (classe font-ui), rien à télécharger
 Textes longs des fiches : Source Serif 4 (classe font-body sur le contenu MDX)
-Hero de l'accueil : Instrument Serif (titre, prénom en italique) + Inter (reste)
-Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trompeur dans du code)
+Hero de l'accueil : Instrument Serif pour le titre (prénom en italique), --font-sans pour le reste
+Code : JetBrains Mono
 
 ### Mise en page
   - Pleine largeur : max-w-page = 2400px (garde-fou 4K), marges px-5 / sm:px-10 / xl:px-16
   - Texte limité à 720px (environ 70 caractères) et centré ; schémas, tableaux et
     blocs de code prennent toute la largeur de la colonne (fiches jusqu'à 1000px)
-  - Accueil : hero HeroBanner (toujours sombre) : photo détourée
-    public/photo-detouree.png sur halo violet façon projecteur, pastille
-    "Stage dès janvier 2027", titre "Bonjour, je m'appelle Elisa." (prénom en
-    italique violet), compétences HERO_SKILLS en capitales espacées, une phrase,
-    deux boutons ("Voir mes projets" plein, "M'écrire" contour) ; l'image de
-    partage app/opengraph-image.tsx reprend la même composition,
-    puis projets choisis (featured + order : 1 card large, puis grille 2 colonnes),
-    puis encart disponibilité + "M'écrire"
+  - Accueil : un seul écran, sans défilement ni footer : le hero HeroBanner seul
+    (data-fullscreen ; body en grille nav / contenu / footer). Posé sur la page
+    (pas de carte, suit le thème). Composition symétrique : bloc centré
+    verticalement, bas de la photo (coupé droit, côtés fondus) sur la ligne des
+    boutons, photo aussi loin du bord gauche que le texte du bord droit. Photo
+    détourée public/photo-detouree.png sur halo violet diffus (--hero-spot),
+    taille calculée en dvh. Pastille "Stage dès janvier 2027", titre "Bonjour,
+    je m'appelle Elisa." (prénom en italique violet), compétences HERO_SKILLS en
+    capitales espacées, une phrase, deux boutons ("Voir mes projets" plein,
+    "M'écrire" contour). Projets et À propos se rejoignent par le menu.
+    L'image de partage app/opengraph-image.tsx reprend la même composition
   - Projets : titre avec halos flous, onglets de domaine (Tous / ...), recherche,
     grille de cards 3 colonnes (4 en 2xl), halos flous sur toute la largeur de l'écran
   - Tri par défaut de la liste (lib/projects.ts) : projets embarqués en tête, puis année desc
@@ -103,9 +107,11 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
     serif dans la même colonne centrée (mobile : titre, fiche, contenu)
   - Fiche : sous le titre, bloc "L'essentiel" (frontmatter resume) AVANT le détail,
     pour qu'un recruteur comprenne problème/solution/résultat en un coup d'œil
-  - À propos : 3 colonnes en xl (bio + UART | compétences, formation, certifications |
-    photo + contact), 2 colonnes en lg, 1 colonne sur mobile (photo et contact en tête)
-  - Card phare de l'accueil : horizontale à partir de lg seulement
+  - À propos : un seul écran sans défilement ni footer à partir de lg (data-fullscreen),
+    deux colonnes : photo + titre, 2 phrases, ligne de contacts (icônes) | compétences
+    (version courte de lib/about.ts, étiquettes) et formation (M1 et M2 regroupés,
+    + certification) en lignes "libellé | contenu". Peu de texte, taille normale.
+    Mobile : une colonne qui défile
   - Vérif responsive à chaque changement : 320, 390, 768, 1024, 1440, 1840 px
   - Pas de carrousel
 
@@ -119,10 +125,10 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
 ### Lois UX appliquées (lawsofux.com)
   - Fitts : cibles cliquables >= 40px
   - Hick / Miller : un bouton principal, 4 technos max par card
-  - Position : ordre des projets choisis réglé par `order`
   - Postel : recherche insensible aux accents et à la casse
-  - Apogée-fin : l'accueil se termine sur la disponibilité + "M'écrire"
-  - Jakob : logo à gauche, menu à droite, lien actif souligné
+  - Apogée-fin : l'accueil tient en un écran et finit sur "Voir mes projets" + "M'écrire"
+  - Jakob : logo à gauche, menu centré en pilule, thème seul à droite, lien actif
+    en violet sur fond surface-2
 
 ### Rédaction (textes du site et des MDX)
   - Première personne, phrases courtes, faits vérifiables (chiffres, outils, résultats)
@@ -136,9 +142,9 @@ Code : JetBrains Mono (B612 Mono dessine les parenthèses presque carrées, trom
     seul (ex. "Rover intelligent" pas "Rover", "Tri intelligent" pas "CNN")
 
 ## Composants clés
-NavBar        : logo "E" + nom, menu à droite, lien actif en violet souligné
+NavBar        : logo "E" (+ nom en lg), menu centré en pilule ("Accueil" masqué sur
+                mobile), bouton de thème seul à droite
 Footer        : contact + lien vers le code source du site
-UartTrace     : panneau analyseur logique, trame UART 8N1 interactive (page À propos)
 ProjectCard   : card projet (couverture typographique, domaines, titre, résumé, technos)
 ProjectSummary : bloc "L'essentiel" en haut de fiche (3 lignes scannables, data-driven)
 DomainBadge   : libellé du domaine avec repère à la couleur de sa voie

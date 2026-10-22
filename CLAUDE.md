@@ -91,7 +91,8 @@ Code : JetBrains Mono
     (data-fullscreen ; body en grille nav / contenu / footer). Posé sur la page
     (pas de carte, suit le thème). Composition symétrique : bloc centré
     verticalement, bas de la photo (coupé droit, côtés fondus) sur la ligne des
-    boutons, photo aussi loin du bord gauche que le texte du bord droit. Photo
+    boutons (fondu vers le noir en sombre, coupé net en clair), photo aussi loin
+    du bord gauche que le texte du bord droit. Photo
     détourée public/photo-detouree.png sur halo violet diffus (--hero-spot),
     taille calculée en dvh. Pastille "Stage dès janvier 2027", titre "Bonjour,
     je m'appelle Elisa." (prénom en italique violet), compétences HERO_SKILLS en
@@ -108,7 +109,7 @@ Code : JetBrains Mono
   - Fiche : sous le titre, bloc "L'essentiel" (frontmatter resume) AVANT le détail,
     pour qu'un recruteur comprenne problème/solution/résultat en un coup d'œil
   - À propos : un seul écran sans défilement ni footer à partir de lg (data-fullscreen),
-    deux colonnes : photo + titre, 2 phrases, ligne de contacts (icônes) | compétences
+    deux colonnes : photo + titre, un court paragraphe, ligne de contacts (icônes) | compétences
     (version courte de lib/about.ts, étiquettes) et formation (M1 et M2 regroupés,
     + certification) en lignes "libellé | contenu". Peu de texte, taille normale.
     Mobile : une colonne qui défile

@@ -62,8 +62,10 @@ export default function HeroBanner() {
 
         {/* Photo sur son halo : sous le texte sur mobile, à gauche à partir de lg.
             Sa largeur dépend de la hauteur d'écran (dvh) pour que tout tienne sans
-            défilement. Côtés fondus (image) et bas fondu en ligne droite (enveloppe) :
-            deux masques imbriqués plutôt que mask-composite. */}
+            défilement. Côtés fondus (image) ; bas fondu vers le noir en thème sombre
+            seulement (enveloppe), coupé droit en thème clair où une veste noire
+            fondue vers le blanc paraît délavée. Deux masques imbriqués plutôt que
+            mask-composite. */}
         <div className="relative justify-self-center lg:justify-self-start w-[clamp(160px,calc((100dvh-36rem)*950/810),420px)] lg:w-[min(100%,calc((96dvh-15rem)*950/810),640px)]">
           {/* Halo en ellipse : il s'éteint avant le haut de la section (sinon une
               ligne apparaît sous la nav) et au bas de la photo, pour que le fondu du
@@ -76,7 +78,7 @@ export default function HeroBanner() {
                 "radial-gradient(closest-side, var(--hero-spot), color-mix(in srgb, var(--hero-spot) 45%, transparent) 35%, color-mix(in srgb, var(--hero-spot) 12%, transparent) 70%, transparent 100%)",
             }}
           />
-          <div className="[mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
+          <div className="dark:[mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
             <Image
               src="/photo-detouree.png"
               alt="Portrait de Sehenonirina Elisa Randriamasinoro"

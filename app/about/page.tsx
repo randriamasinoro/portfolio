@@ -94,10 +94,6 @@ export default function AboutPage() {
               Je cherche un stage de fin d&apos;études de 20 semaines minimum à partir de
               janvier 2027. Une alternance m&apos;intéresse aussi.
             </p>
-            <p>
-              Je développe en C sur STM32 et sous Linux embarqué, et je travaille sur des
-              attaques Zigbee et l&apos;injection de trames CAN.
-            </p>
           </div>
 
           <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-1 list-none p-0 m-0 text-[0.9375rem]">

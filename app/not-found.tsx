@@ -7,7 +7,7 @@ export default function NotFound() {
       <p className="text-[1.1875rem] text-fg-2 mb-6">
         Cette adresse ne correspond à aucune page. Le projet a peut-être changé de nom.
       </p>
-      <Link href="/projects" className="font-ui text-fg">
+      <Link href="/projects" className="inline-flex items-center min-h-10 font-ui text-fg">
         Voir la liste des projets
       </Link>
     </div>

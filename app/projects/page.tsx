@@ -4,14 +4,14 @@ import { Suspense } from "react";
 export const metadata: Metadata = {
   title: "Projets techniques",
   description:
-    "Projets en cybersécurité des systèmes embarqués : reverse engineering de firmware, analyse de protocoles radio (Zigbee, BLE, CAN Bus), sécurité IoT et pipelines DevSecOps. UBS Lorient.",
+    "Projets en cybersécurité, systèmes embarqués, data et IA, et DevSecOps : attaques Zigbee, injection de trames CAN, reverse engineering de firmware, Linux embarqué Yocto, pipelines DevSecOps. UBS Lorient.",
   alternates: { canonical: "/projects" },
   openGraph: {
     type: "website",
     url: "https://sinoro.fr/projects",
     title: "Projets techniques, Sehenonirina Elisa Randriamasinoro",
     description:
-      "Projets cybersécurité embarquée, reverse engineering firmware, protocoles radio (Zigbee, CAN Bus), IoT et DevSecOps.",
+      "Projets en cybersécurité, systèmes embarqués, data et IA, et DevSecOps : Zigbee, CAN, reverse engineering, Yocto.",
   },
 };
 import { readProjects } from "@/lib/projects";
@@ -35,8 +35,8 @@ export default function ProjectsPage() {
       <header className="relative mb-10 max-w-[60ch]">
         <h1 className="text-[2.5rem] sm:text-[3.25rem] leading-tight">Projets</h1>
         <p className="text-fg-2 text-[1.0625rem] leading-relaxed mt-3">
-          Projets d&apos;école, de stage et personnels. Cliquez sur une techno pour
-          ne garder que les projets qui l&apos;utilisent.
+          Cybersécurité, systèmes embarqués, data et IA, DevSecOps : mes projets
+          d&apos;école, de stage et personnels, à filtrer par domaine.
         </p>
       </header>
 

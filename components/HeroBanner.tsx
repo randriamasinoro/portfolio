@@ -1,96 +1,87 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CheckIcon } from "@/components/icons";
+import { ArrowRightIcon, MailIcon } from "@/components/icons";
 import { HERO_SKILLS } from "@/lib/about";
-import { HERO_LOGOS } from "@/lib/tech-logos";
-
-interface HeroBannerProps {
-  projectCount: number;
-}
 
 // Bannière de présentation de l'accueil. Toujours sombre (classe `dark` locale),
-// y compris en thème clair, comme un écran.
-export default function HeroBanner({ projectCount }: HeroBannerProps) {
+// y compris en thème clair, comme un écran. La photo est posée sur un halo violet
+// qui fait office de projecteur ; le texte est aligné à droite à partir de lg.
+export default function HeroBanner() {
   return (
-    <div className="dark relative overflow-hidden rounded-xl border border-border bg-surface text-fg">
+    <div className="dark relative isolate overflow-hidden rounded-xl border border-border bg-bg text-fg">
+      {/* Ambiance : violet profond à gauche, bords assombris */}
       <div
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 -z-10"
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(55% 75% at 18% 100%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 70%), radial-gradient(40% 60% at 100% 0%, color-mix(in srgb, var(--accent-deep) 70%, transparent), transparent 70%)",
+            "radial-gradient(70% 90% at 22% 70%, color-mix(in srgb, var(--accent-deep) 85%, transparent), transparent 70%), radial-gradient(130% 120% at 50% 40%, transparent 55%, color-mix(in srgb, black 55%, transparent))",
         }}
       />
 
-      <div className="relative grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        {/* Photo : en bas sur mobile, à gauche à partir de lg */}
-        <div className="order-last lg:order-first flex items-end justify-center lg:justify-start px-6 lg:pl-10 lg:pr-0 pt-2 lg:pt-20">
+      <div className="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:min-h-[600px] xl:min-h-[680px]">
+        <div className="flex flex-col items-start justify-center px-6 pt-10 sm:px-10 sm:pt-14 lg:order-last lg:items-end lg:text-right lg:py-16 xl:pr-16">
+          <p className="inline-flex items-center gap-2.5 rounded-full border border-border-strong bg-surface px-4 py-1.5 whitespace-nowrap font-inter font-semibold text-[0.6875rem] sm:text-[0.75rem] uppercase tracking-[0.14em] sm:tracking-[0.18em] text-fg-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" aria-hidden="true" />
+            Stage dès janvier 2027
+          </p>
+
+          <h1 className="mt-6 font-display font-normal text-[2.75rem] sm:text-[4rem] xl:text-[4.75rem] 2xl:text-[5.5rem] leading-[0.98] tracking-[-0.01em]">
+            Bonjour,
+            <br />
+            <span className="sm:whitespace-nowrap">
+              je m&apos;appelle <span className="sr-only">Sehenonirina </span>
+              <span className="italic text-accent">Elisa.</span>
+            </span>
+          </h1>
+
+          <p className="mt-6 font-inter text-[0.8125rem] sm:text-[0.875rem] uppercase tracking-[0.22em] text-fg-muted">
+            {/* Le point suit le mot : un retour à la ligne ne commence jamais par un point */}
+            {HERO_SKILLS.join("\u00a0· ")}
+          </p>
+
+          <p className="mt-7 max-w-[40ch] font-inter text-[1.0625rem] sm:text-[1.1875rem] leading-relaxed text-fg-2">
+            En Master 2 à l&apos;UBS Lorient, je travaille sur la sécurité des systèmes
+            embarqués, du firmware au réseau.
+          </p>
+
+          <div className="mt-9 flex flex-wrap items-center gap-3 lg:justify-end">
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 min-h-12 rounded-full bg-accent px-6 font-inter font-semibold text-white no-underline hover:opacity-90 transition-opacity duration-150"
+            >
+              Voir mes projets
+              <ArrowRightIcon size={15} />
+            </Link>
+            <a
+              href="mailto:randriamasnrelisa@gmail.com"
+              className="inline-flex items-center gap-2 min-h-12 rounded-full border border-border-strong bg-surface px-6 font-inter font-semibold text-fg no-underline hover:border-fg-muted transition-colors duration-150"
+            >
+              <MailIcon size={16} />
+              M&apos;écrire
+            </a>
+          </div>
+        </div>
+
+        {/* Photo sur son halo : sous le texte sur mobile, à gauche à partir de lg */}
+        <div className="relative flex items-end justify-center px-6 pt-10 lg:justify-start lg:pl-10 lg:pr-0 lg:pt-16">
+          <div
+            className="pointer-events-none absolute left-1/2 bottom-0 -z-10 w-[130%] max-w-[900px] aspect-square -translate-x-1/2 translate-y-[30%] lg:left-[42%]"
+            aria-hidden="true"
+            style={{
+              background:
+                "radial-gradient(closest-side, color-mix(in srgb, var(--accent) 75%, transparent), color-mix(in srgb, var(--accent) 30%, transparent) 45%, transparent 100%)",
+            }}
+          />
           <Image
             src="/photo-detouree.png"
             alt="Portrait de Sehenonirina Elisa Randriamasinoro"
             width={950}
             height={810}
             priority
-            sizes="(min-width: 1024px) 460px, 85vw"
-            className="w-full max-w-[340px] lg:max-w-[460px] h-auto"
+            sizes="(min-width: 1024px) 600px, 90vw"
+            className="w-full max-w-[400px] lg:max-w-[600px] h-auto [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
           />
-        </div>
-
-        <div className="flex flex-col items-start lg:items-end lg:text-right gap-6 px-6 pt-6 sm:px-10 sm:pt-10 lg:py-14 xl:px-14 xl:py-16">
-          <Link
-            href="/projects"
-            className="lg:absolute lg:top-8 lg:left-10 inline-flex items-center gap-2.5 min-h-10 no-underline font-inter text-[0.9375rem] text-fg-2 hover:text-fg transition-colors duration-150"
-          >
-            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent text-white">
-              <CheckIcon size={13} />
-            </span>
-            <span>
-              <span className="font-display text-[1.25rem] text-fg">{projectCount}</span> projets réalisés
-            </span>
-          </Link>
-
-          <p className="inline-flex items-center gap-2.5 rounded-md border border-border-strong bg-surface-2/80 px-3.5 py-1.5 font-inter font-semibold text-[0.9375rem] text-fg">
-            <span className="w-2 h-2 rounded-full bg-accent" aria-hidden="true" />
-            Master 2 · UBS Lorient
-          </p>
-
-          <h1 className="font-inter font-normal text-[2rem] sm:text-[2.5rem] xl:text-[2.875rem] leading-[1.12] tracking-[-0.02em] max-w-[24ch]">
-            <span className="font-display text-[1.12em] tracking-normal">
-              Bonjour, je m&apos;appelle <span className="sr-only">Sehenonirina </span>
-              <span className="text-accent-ink">Elisa.</span>
-            </span>{" "}
-            Je travaille sur la sécurité des systèmes embarqués, du firmware au réseau.
-          </h1>
-
-          <div className="flex flex-col items-start lg:items-end gap-5 xl:flex-row xl:items-center xl:gap-8 lg:mt-2">
-            {/* La puce suit le mot : un retour à la ligne ne commence jamais par une puce */}
-            <ul className="flex flex-wrap items-center gap-x-2.5 gap-y-1 list-none p-0 m-0 font-inter font-bold text-[1.0625rem] sm:text-[1.1875rem] lg:justify-end xl:flex-nowrap xl:whitespace-nowrap">
-              {HERO_SKILLS.map((skill, i) => (
-                <li key={skill} className="flex items-center gap-2.5">
-                  {skill}
-                  {i < HERO_SKILLS.length - 1 && (
-                    <span className="text-fg-muted" aria-hidden="true">
-                      •
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-
-            <ul className="flex items-center -space-x-2 list-none p-0 m-0" aria-label="Outils">
-              {HERO_LOGOS.map(({ title, path }) => (
-                <li
-                  key={title}
-                  title={title}
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-full border-2 border-surface bg-surface-2 text-fg"
-                >
-                  <svg width={19} height={19} viewBox="0 0 24 24" fill="currentColor" role="img" aria-label={title}>
-                    <path d={path} />
-                  </svg>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
     </div>

@@ -47,7 +47,7 @@ Fait (dans le code)
 - ✅ **Métadonnées** complètes (title, description) par page
 - ✅ **Canonical par page** (corrige un bug critique d'héritage)
 - ✅ **OpenGraph + Twitter Card** (aperçus sociaux)
-- ✅ **Image OG dynamique** 1200×630 (police Syne bundlée)
+- ✅ **Image OG dynamique** 1200×630 (reprend la bannière d'accueil)
 - ✅ **JSON-LD** : Person, WebSite, TechArticle, BreadcrumbList
 - ✅ **H1 unique** sur chaque page (corrigé sur l'accueil)
 - ✅ **Contenu rendu côté serveur** (le nom n'était plus vide dans le HTML)
@@ -118,9 +118,12 @@ Solutions techniques (détail par fichier)
    **BreadcrumbList** (fil d'Ariane).
 
 ``app/opengraph-image.tsx`` — Image de partage social
-   Image 1200×630 (fond noir, nom, badges domaines) via ``next/og``. Police
-   **Syne** bundlée dans ``public/fonts/`` (pas de ``fetch`` réseau, sinon le
-   build Docker échoue).
+   Image 1200×630 via ``next/og``, même composition que la bannière d'accueil
+   (``HeroBanner``) : photo détourée sur halo violet, accroche et compétences.
+   Polices **Instrument Serif** italique et **Inter** (TTF, Satori ne lit pas le
+   woff2) et photo lues dans ``public/`` (pas de ``fetch`` réseau, sinon le
+   build Docker échoue). Les couleurs y sont en hex : Satori ne lit pas les
+   variables CSS.
 
 ``app/llms.txt/route.ts`` — Référencement IA (GEO)
    Résumé structuré du site au format `llmstxt.org <https://llmstxt.org>`_, lu

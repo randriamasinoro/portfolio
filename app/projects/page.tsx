@@ -35,8 +35,7 @@ export default function ProjectsPage() {
       <header className="relative mb-10 max-w-[60ch]">
         <h1 className="text-[2.5rem] sm:text-[3.25rem] leading-tight">Projets</h1>
         <p className="text-fg-2 text-[1.0625rem] leading-relaxed mt-3">
-          Cybersécurité, systèmes embarqués, data et IA, DevSecOps : mes projets
-          d&apos;école, de stage et personnels, à filtrer par domaine.
+          Mes projets d&apos;école, de stage et personnels, classés par domaine.
         </p>
       </header>
 

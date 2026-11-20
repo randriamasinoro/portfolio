@@ -1,0 +1,87 @@
+---
+id: csaw-2026
+label: "Finale CSAW"
+title: "CSAW 2026 : finale européenne d'une compétition de sécurité embarquée"
+description: Compétition CSAW Embedded Security Challenge avec l'équipe BZH-Falcons de l'UBS. Qualifiés pour la finale Europe, nous avons résolu les 7 épreuves sur une passerelle domotique, avec un usage imposé de l'IA agentique que j'ai mesuré et comparé.
+domains:
+  - cybersecurity
+  - embedded
+tags:
+  - ESP32
+  - UART
+  - I2C
+  - SPI
+  - RFID
+  - BLE
+  - Python
+  - Agents IA
+date: "2026"
+resume:
+  - label: "Le défi"
+    texte: "Évaluer la sécurité d'une passerelle domotique fournie par les organisateurs, en équipe de quatre, avec l'IA agentique comme outil imposé."
+  - label: "Ma part"
+    texte: "Montage du banc, 6 des 7 épreuves, les scripts de reproduction et les comptes rendus, et un banc de mesure de plusieurs modèles d'IA sur la vraie carte."
+  - label: "Le résultat"
+    texte: "Équipe qualifiée en finale Europe, 7 épreuves résolues sur 7, soit 1 950 points au 7 novembre 2026."
+featured: false
+---
+
+## Contexte
+
+Le CSAW Embedded Security Challenge est une compétition internationale de sécurité des systèmes embarqués. J'y ai participé de septembre à novembre 2026 avec l'équipe BZH-Falcons, quatre étudiants de l'UBS. L'édition 2026 demandait d'utiliser l'IA agentique, c'est-à-dire un modèle de langage qui enchaîne lui-même des actions avec des outils.
+
+La compétition se joue en deux temps : un rapport de qualification, puis une finale sur du matériel envoyé aux équipes retenues. Notre équipe a été qualifiée pour la finale de la région Europe, qui s'est tenue du 12 au 14 novembre 2026.
+
+<Callout type="info">
+Cette fiche décrit le déroulement et ma part du travail. Les solutions des épreuves ne sont pas publiées ici.
+</Callout>
+
+## La qualification
+
+Nous avons rédigé à plusieurs un rapport de deux pages au format IEEE. Il traite de l'analyse de firmwares pour objets connectés, de la sécurité des périphériques d'une passerelle (lecteur de badges, mémoire externe) et des réseaux de neurones embarqués. J'ai ajouté cette dernière partie. La partie sur les périphériques a été écrite par un coéquipier.
+
+## La finale
+
+### Le matériel
+
+Les organisateurs fournissent une passerelle domotique construite autour d'un ESP32 : un lecteur de badges RFID 13,56 MHz relié en SPI, une mémoire EEPROM reliée en I2C, un écran, une console série, le Wi-Fi et le Bluetooth Low Energy.
+
+J'ai monté le banc : câblage des périphériques sur l'ESP32 avec une alimentation 3,3 V commune, puis chargement des firmwares des épreuves sur la carte.
+
+### Les épreuves
+
+La finale compte 7 épreuves. Chacune demande de trouver et de démontrer une faiblesse de la passerelle, souvent en passant d'une interface à une autre : console série, mémoire externe, badge, Wi-Fi, Bluetooth.
+
+J'ai résolu 6 des 7 épreuves, dont la plus difficile (450 points), qui enchaîne quatre interfaces. Un coéquipier a résolu la septième. Pour chaque épreuve résolue, j'ai écrit un script Python qui rejoue la démonstration et un compte rendu.
+
+Ce que ces épreuves ont en commun, vu du côté du concepteur :
+
+- une console de maintenance laissée accessible donne beaucoup d'informations ;
+- une mémoire externe non protégée ne doit contenir ni secret ni compteur de sécurité ;
+- une comparaison de mot de passe dont la durée dépend de la saisie laisse fuir de l'information ;
+- un secret réutilisé d'une interface à l'autre fait tomber toute la chaîne.
+
+## Mesurer l'IA plutôt que la croire
+
+L'usage de l'IA étant imposé, j'ai voulu savoir ce qu'elle apportait vraiment. J'ai construit un banc de mesure sur la première épreuve, avec la vraie carte : des modèles locaux lancés avec Ollama sur un processeur sans carte graphique, comparés à un modèle en ligne. Pour chaque modèle, je relève le taux de succès sur 5 répétitions, le nombre de tokens, le temps, la charge du processeur et la mémoire.
+
+J'ai aussi mesuré la consommation de l'agent autonome de l'équipe (tokens et temps actif) et je l'ai comparée à celle d'un assistant de programmation du commerce. Pour que la comparaison soit honnête, chaque épreuve est rejouée dans une session neuve, sans souvenir des solutions, avec un chronomètre qui exclut le temps de préparation du matériel.
+
+## Travail d'équipe
+
+- L'agent autonome de l'équipe a été développé par un coéquipier. Ma part porte sur sa mesure et sa comparaison.
+- Le rapport final a été rédigé surtout par un autre coéquipier.
+- La septième épreuve a été résolue par un troisième coéquipier.
+
+## Limites
+
+- Je ne connais pas encore le classement final de l'équipe.
+- Les épreuves sont conçues pour être résolues. Une passerelle du commerce bien protégée ne se laisse pas évaluer aussi vite.
+- Sur le lecteur de badges, mon travail s'arrête à l'analyse de sécurité du rapport et aux épreuves. Je n'ai pas étudié le chiffrement des badges en pratique.
+- Le banc de mesure de l'IA ne porte que sur la première épreuve, avec 5 répétitions par modèle : c'est peu pour conclure sur les autres.
+
+## Ce que j'en retiens
+
+- Sur un objet connecté, les interfaces se protègent ensemble. La plus faible sert de point d'entrée vers les autres.
+- Un agent d'IA accélère l'exploration, mais il faut vérifier chaque résultat sur la carte et compter ce qu'il consomme.
+- Écrire un script qui rejoue chaque démonstration oblige à comprendre ce qu'on a fait, et permet à l'équipe de le vérifier.

@@ -1,0 +1,108 @@
+---
+id: openmp-parallele
+label: "Calcul parallèle"
+title: "Accélérer des programmes C et C++ avec OpenMP, mesures à l'appui"
+description: Deux TP de Master 2 où je parallélise des programmes sur un processeur à 4 cœurs et où je mesure chaque version. Le meilleur résultat, un traitement d'image 11,7 fois plus rapide, vient d'un changement d'algorithme avant d'être un gain de threads.
+domains:
+  - embedded
+tags:
+  - C
+  - C++
+  - OpenMP
+  - gcc
+  - Linux
+  - Python
+date: "2026"
+media:
+  - /images/openmp-parallele/pointillisme-acceleration.png
+resume:
+  - label: "L'objectif"
+    texte: "Apprendre à paralléliser un programme sans le rendre faux, et savoir dire par la mesure si le gain est réel."
+  - label: "Ma démarche"
+    texte: "Pour chaque exercice, plusieurs versions comparées sur la même machine, avec un résultat vérifié contre la version séquentielle."
+  - label: "Les acquis"
+    texte: "Un traitement d'image passé de 5,04 s à 0,43 s, et plusieurs cas où paralléliser ralentit le programme."
+featured: false
+---
+
+## Contexte
+
+Deux TP du cours de programmation parallèle, en Master 2 à l'UBS Lorient, en 2026. Le premier fait découvrir OpenMP sur des exercices classiques. Le second l'applique à un traitement d'image.
+
+Tout est mesuré sur la même machine, mon PC portable : un Intel Core i5-1135G7, 4 cœurs physiques et 8 threads. Les programmes sont compilés avec gcc 13.3 en `-O2 -fopenmp`. Chaque mesure est lancée plusieurs fois et je garde la médiane. L'accélération est le temps séquentiel divisé par le temps parallèle.
+
+## Objectifs
+
+- Reconnaître une situation de concurrence et la corriger
+- Choisir la bonne construction OpenMP selon le problème : boucle, réduction, tâches
+- Mesurer et expliquer un résultat, y compris quand il est mauvais
+
+## Un compteur faux
+
+Le premier exercice parcourt un tableau et compte ses passages dans une variable partagée. Avec un simple `parallel for`, le compteur est faux et change d'une exécution à l'autre : pour 16 000 000 passages attendus, j'obtiens 2 000 000 avec 8 threads.
+
+L'incrémentation n'est pas une seule opération : lire, ajouter 1, réécrire. Deux threads peuvent lire la même valeur. En plus, avec `-O2`, le compilateur garde le compteur dans un registre pendant la boucle, donc chaque thread écrase le total des autres.
+
+J'ai comparé trois corrections sur un million d'éléments, avec 8 threads :
+
+| Correction | Temps | Remarque |
+|---|---|---|
+| Version séquentielle | 1,10 s | Référence |
+| `critical` | 3,26 s | Juste, mais trois fois plus lent que le séquentiel : les threads attendent le verrou |
+| `atomic` | 0,39 s | Juste, la variable fait des allers-retours entre les caches |
+| `reduction` | 0,22 s | Juste et la plus rapide : chaque thread compte dans sa copie |
+
+Pour un tableau de 100 éléments, toutes les versions parallèles sont plus lentes que la version séquentielle. Créer les threads coûte quelques millisecondes pour un calcul de 0,2 ms.
+
+## Multiplication de matrices
+
+Le code fourni plantait au démarrage : trois matrices de 1 500 par 1 500 déclarées sur la pile, soit 54 Mo pour une pile de 8 Mo. Je les ai déplacées.
+
+| Version (4 threads) | Temps |
+|---|---|
+| Séquentiel, boucles dans l'ordre i-j-k | 5,9 s |
+| Parallèle sur la boucle externe | 1,4 s |
+| Séquentiel, boucles dans l'ordre i-k-j | 2,8 s |
+| Parallèle, ordre i-k-j | 0,88 s |
+
+Le changement le plus efficace n'est pas le parallélisme. En échangeant deux boucles, les matrices sont lues dans l'ordre de la mémoire et le cache du processeur travaille bien. Avec 8 threads, la version de départ est plus lente qu'avec 4 : les deux threads d'un même cœur partagent les mêmes caches.
+
+## Fonctions récursives
+
+Une fonction récursive ne se parallélise pas avec une boucle. J'ai utilisé les tâches OpenMP sur la suite de Fibonacci et sur un tri rapide.
+
+Créer une tâche pour chaque appel donne un programme environ 1 000 fois plus lent : chaque tâche ne fait qu'une addition. Avec un seuil en dessous duquel le calcul reste séquentiel, le calcul de `fibo(45)` passe de 2,31 s à 0,70 s. Avec un seuil trop bas, il monte à 54 s.
+
+## Un traitement d'image : le pointillisme
+
+Le second TP reproduit une image en tirant au hasard des millions de points, plus nombreux dans les zones claires. Deux points peuvent tomber sur le même pixel, donc la mise à jour du pixel pose problème en parallèle.
+
+Première idée : protéger la mise à jour par une section critique. Le gain plafonne à 1,5 et le programme est plus lent avec 8 threads qu'avec 2, car tous les threads attendent la même section.
+
+Deuxième idée : changer l'algorithme. Je compte d'abord le nombre de points par ligne, puis je génère les points ligne par ligne. Une ligne n'est alors traitée que par un seul thread et la section critique disparaît.
+
+![Accélération selon le nombre de threads : la version en deux étapes monte jusqu'à 4,5 avec 8 threads, la version avec section critique reste proche de 1](/images/openmp-parallele/pointillisme-acceleration.png)
+
+| Version, sur la première image | 1 thread | 8 threads |
+|---|---|---|
+| Départ, séquentiel | 5,04 s | |
+| Section critique | 5,29 s | 3,97 s |
+| Deux étapes, séquentiel | 1,93 s | |
+| Deux étapes, parallèle | 1,93 s | 0,43 s |
+
+La version en deux étapes est déjà 2,6 fois plus rapide sans aucun thread, probablement grâce au cache. Avec 8 threads, elle est 11,7 fois plus rapide que le programme de départ.
+
+Les lignes n'ont pas toutes le même nombre de points. Un ordonnancement `dynamic` répartit mieux le travail qu'un découpage fixe : jusqu'à 41 % de gain sur la seconde image avec 8 threads.
+
+## Limites
+
+- Les mesures viennent d'un seul PC portable, dont la fréquence baisse quand tous les cœurs travaillent. Les chiffres varient d'une exécution à l'autre, surtout avec 8 threads.
+- Plusieurs explications restent des hypothèses que je n'ai pas vérifiées avec un outil de profilage, par exemple l'effet du cache sur la version en deux étapes.
+- De 4 à 8 threads, le gain est faible : le PC n'a que 4 cœurs physiques.
+- Je n'ai pas porté ces programmes sur une cible embarquée multicœur.
+
+## Ce que j'en retiens
+
+- Vérifier le résultat avant de regarder le temps. Un programme parallèle faux est souvent très rapide.
+- Regarder l'algorithme et l'accès à la mémoire avant d'ajouter des threads.
+- Un verrou partagé par tous les threads peut annuler tout le gain.

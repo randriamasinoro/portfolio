@@ -1,0 +1,97 @@
+---
+id: candidatures
+label: "Suivi de candidatures"
+title: "Candidatures : préparer, envoyer et suivre ma recherche de stage"
+description: Application web que j'utilise pour ma recherche de stage. Elle prépare un CV et un mail adaptés à chaque entreprise à partir d'une source unique, me laisse tout relire avant l'envoi, puis suit les réponses et propose les relances.
+domains:
+  - web
+  - data-science
+tags:
+  - Python
+  - LaTeX
+  - Jinja2
+  - Playwright
+  - LLM
+  - Docker
+  - GitHub Actions
+  - Traefik
+date: "2026"
+resume:
+  - label: "Le problème"
+    texte: "Adapter un CV et un mail à chaque entreprise prend du temps, et une fois les envois partis je ne savais plus qui relancer ni quand."
+  - label: "Ma solution"
+    texte: "Une source unique pour mon parcours, un CV généré et contrôlé pour chaque cible, une page où je relis et valide chaque envoi, un suivi des réponses."
+  - label: "Le résultat"
+    texte: "Application en ligne sur mon VPS, environ 600 tests sur des données fictives, déploiement avec retour à la version précédente en cas d'échec."
+featured: false
+---
+
+## Contexte
+
+Je cherche un stage de fin d'études pour janvier 2027. Une bonne candidature demande de lire ce que fait l'entreprise, de choisir les projets qui la concernent et d'écrire un mail court. Faite à la main, cette préparation prend du temps. Et une fois les candidatures parties, je perdais le fil : qui a répondu, qui relancer, quel CV exact j'avais envoyé.
+
+J'ai donc construit un outil pour moi. Il prépare, je décide. Aucune candidature ne part sans que je l'aie relue.
+
+## Une seule source pour tous les CV
+
+Tout mon parcours est dans un fichier unique, le référentiel : formations, expériences, projets, compétences avec leur niveau réel. Chaque élément a un statut. Seuls les éléments que j'ai confirmés peuvent apparaître dans un CV.
+
+Le référentiel contient aussi des formules interdites. Par exemple, pour un projet dont la partie matérielle n'a été que simulée, il liste les phrases qui laisseraient croire le contraire. C'est ce même fichier qui sert de référence aux fiches de ce portfolio.
+
+Pour une cible donnée, je n'écris que ce qui change : le titre, les projets retenus et leur ordre. Un script produit le CV en LaTeX à partir d'un gabarit, le compile, puis refuse le résultat dans trois cas :
+
+- le CV dépasse une page ;
+- il contient un lien cliquable ou un autre contenu actif, mal accepté par les portails de recrutement ;
+- il contient une formule interdite par le référentiel.
+
+## Ce que fait l'application
+
+Trois écrans, pensés d'abord pour le téléphone : À faire, Suivi, Réglages.
+
+1. Préparation. Pour une candidature spontanée, l'outil lit le site de l'entreprise (accueil, produits, page carrières) et en tire une fiche courte avec l'adresse de chaque page lue. Un modèle de langage rédige la fiche et propose le CV et le mail, toujours à partir du référentiel.
+2. Validation. Je lis la fiche, le mail et le CV. Je peux envoyer, demander une correction ou écarter.
+3. Envoi. Le mail part de ma propre boîte, avec le CV en pièce jointe.
+4. Suivi. Une réponse est détectée dans ma boîte mail et rattachée à sa candidature. C'est moi qui indique son sens : entretien, refus, demande de pièces.
+5. Relance. Elle est proposée après dix jours sans réponse et je la valide comme un envoi normal. Une seule relance par candidature.
+
+L'application reprend aussi les offres publiées sur les sites d'emploi que je consulte, pour les avoir au même endroit, et les candidatures que je fais en dehors d'elle.
+
+## Des garde-fous plutôt que de l'automatisme
+
+Un outil qui écrit et envoie à ma place peut faire des dégâts. Les règles que je me suis fixées :
+
+| Risque | Règle |
+|---|---|
+| Envoi en masse | Pas de bouton "tout envoyer", plafond de 10 envois par jour, relances comprises |
+| Doublon | Jamais deux envois à la même adresse ni à la même entreprise, contrôlé par un registre |
+| Adresse inventée | L'adresse du destinataire doit être publiée sur le site, avec sa page source. Jamais d'adresse devinée |
+| Candidature hors sujet | Si l'embarqué n'apparaît nulle part sur le site, la candidature est marquée "lien faible" et attend ma décision |
+| Fait inventé dans le CV | Contenu tiré du référentiel seulement, formules interdites vérifiées par un contrôle automatique |
+| Réponse à ma place sur un sujet sensible | Une déclaration légale, un consentement ou une question sur le salaire n'est jamais remplie automatiquement |
+| Erreur pendant les essais | Un mode essai envoie tous les mails à ma propre adresse |
+
+Le modèle de langage n'intervient que là où des règles simples ne suffisent pas. La détection des réponses et les relances n'y font pas appel.
+
+## Sécurité et déploiement
+
+L'application contient des données personnelles : mon parcours, mes candidatures, l'accès à ma boîte mail. Le dépôt Git ne contient donc que le code. Le référentiel, les CV, les lettres et les secrets restent hors de Git, et les tests tournent sur un jeu de données fictif.
+
+- Connexion par compte, sans inscription publique. Les mots de passe sont générés, longs, et hachés avec scrypt. Cookie de session `HttpOnly`, `Secure` et `SameSite`.
+- Conteneur Docker en lecture seule, sans capacité Linux, sans élévation de privilèges, avec mémoire et processeur limités. Aucun port publié : seul le reverse proxy Traefik joint l'application.
+- Les secrets sont montés en lecture seule depuis un dossier séparé.
+
+À chaque modification, GitHub Actions construit l'image et lance les tests dans un conteneur sans réseau. Si la branche principale est verte, un runner sur le VPS construit l'image ARM64, relance les tests, met en ligne et revient à la version précédente si la nouvelle ne répond pas. Je reçois une notification sur le téléphone.
+
+## Limites
+
+- La lecture des sites d'emploi est fragile. Leurs pages changent et l'outil doit être corrigé régulièrement.
+- Les portails de recrutement sont tous différents. Le dépôt automatique d'une candidature sur un portail ne fonctionne que pour quelques familles de portails, et je garde la main sur l'envoi final.
+- La qualité d'une fiche d'entreprise dépend de ce que le site publie. Un site pauvre donne une candidature faible.
+- Le projet est récent et évolue vite. Il est fait pour mon usage et celui d'une autre personne, pas pour être distribué.
+- Je n'ai pas encore assez de recul pour dire si ces candidatures obtiennent plus de réponses que celles faites à la main.
+
+## Ce que j'en retiens
+
+- La partie la plus utile n'est pas la génération, c'est la source unique. Elle m'empêche d'écrire sur un CV quelque chose que je ne pourrais pas défendre en entretien.
+- Un contrôle automatique vaut mieux qu'une consigne. Un CV de deux pages est refusé par le script, pas par ma relecture.
+- Garder une validation humaine sur chaque envoi ralentit peu et évite l'erreur qui coûte cher.

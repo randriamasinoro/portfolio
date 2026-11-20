@@ -43,7 +43,9 @@ resume?     : {label,texte}[] -- bloc "L'essentiel" en haut de fiche : 3 lignes
             (perso : problème/solution/résultat ; école : objectif/démarche/acquis)
 
 ## Domaines valides
-"data-science" | "cybersecurity" | "embedded" | "devsecops"
+"data-science" | "cybersecurity" | "embedded" | "devsecops" | "web"
+"web" = applications web personnelles (outils que j'utilise) : onglet à part, pour ne pas les mélanger
+avec la cybersécurité et l'embarqué, qui restent en tête de liste.
 Extensible sans refonte — ajouter une valeur à la liste suffit.
 
 ## Projets à intégrer
@@ -57,6 +59,15 @@ yocto-home-automation  → [embedded]
 vhdl-fpga              → [embedded]
 forensique-usb         → [cybersecurity]
 reverse-engineering    → [cybersecurity]
+trivium-fpga           → [embedded, cybersecurity]
+hardware-security      → [cybersecurity, embedded]
+durcissement-box-domotique → [cybersecurity, embedded]
+csaw-2026              → [cybersecurity, embedded]
+openmp-parallele       → [embedded]
+mon-budget             → [web, devsecops]
+mon-temps              → [web]
+candidatures           → [web, data-science]
+ce-portfolio           → [web, devsecops]
 
 ## Design system (dark par défaut, mode clair disponible)
 
@@ -73,7 +84,8 @@ accent #A43BFF (grands textes, boutons), accent-ink #C27CFF (liens, petits texte
 accent-deep #4A1F6E (bloc derrière la photo), watermark #211A27 (mot en filigrane)
 
 ### Domaines (types/project.ts, DOMAIN_CONFIG : trace + ink)
-cybersecurity rouge --ch1, embedded turquoise --ch2, data ambre --ch3, devsecops bleu --ch4
+cybersecurity rouge --ch1, embedded turquoise --ch2, data ambre --ch3, devsecops bleu --ch4,
+web vert --ch5
 Utilisés pour l'étiquette des cards et le halo de la couverture.
 
 ### Typographie

@@ -36,6 +36,7 @@
   --ch2: #2EC4B6;  --ch2-ink: #0E7F75;   /* embarqué */
   --ch3: #F2B33D;  --ch3-ink: #8A6100;   /* data */
   --ch4: #5B8CFF;  --ch4-ink: #2F5BD6;   /* devsecops */
+  --ch5: #6FCF6A;  --ch5-ink: #2F7A2B;   /* applications web */
 
   --selection-bg:  rgba(138, 31, 230, 0.22);
 
@@ -71,6 +72,7 @@
   --ch2-ink: #5ED8CC;
   --ch3-ink: #F5C566;
   --ch4-ink: #8DAEFF;
+  --ch5-ink: #9BE096;
 
   --selection-bg:  rgba(164, 59, 255, 0.35);
 

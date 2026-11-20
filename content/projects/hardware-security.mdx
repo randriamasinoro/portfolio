@@ -1,0 +1,80 @@
+---
+id: hardware-security
+label: "Sécurité matérielle"
+title: "Sécurité matérielle : TPM, TrustZone et évaluation d'une carte"
+description: Travaux pratiques de Master 2 sur les protections matérielles d'un système embarqué. J'ai utilisé un TPM 2.0 sur Raspberry Pi, découvert TrustZone sur un STM32L552, puis évalué la sécurité d'une carte d'entraînement et proposé des contre-mesures.
+domains:
+  - cybersecurity
+  - embedded
+tags:
+  - TPM 2.0
+  - TrustZone
+  - Raspberry Pi
+  - STM32L552
+  - AWS IoT Core
+  - Python
+date: "2026"
+resume:
+  - label: "L'objectif"
+    texte: "Comprendre comment le matériel protège un système embarqué, et ce qui se passe quand ces protections manquent."
+  - label: "Ma démarche"
+    texte: "Trois volets : un TPM 2.0 sur Raspberry Pi, TrustZone sur un microcontrôleur Cortex-M33, puis l'évaluation d'une carte d'entraînement."
+  - label: "Les acquis"
+    texte: "Attestation distante et authentification cloud avec une clé qui ne sort jamais du TPM, et une liste de failles avec leurs contre-mesures."
+featured: false
+---
+
+## Contexte
+
+Travaux pratiques du cours Hardware Security, en Master 2 Cybersécurité des Systèmes Embarqués à l'UBS Lorient, en 2026. Le cours part d'une idée simple : un logiciel bien écrit ne suffit pas si le matériel laisse lire ses secrets. Les séances couvrent trois sujets, que j'ai réunis dans un compte rendu de 18 pages.
+
+<Callout type="info">
+Cette fiche décrit le projet sans le détail des manipulations ni leurs résultats. C'est un exercice de cours : les publier donnerait la solution aux promotions suivantes.
+</Callout>
+
+## Objectifs
+
+- Utiliser un TPM pour prouver l'état d'une machine et protéger une clé
+- Comprendre la séparation entre monde sécurisé et monde non sécurisé sur un microcontrôleur
+- Évaluer la sécurité d'une carte et proposer des corrections
+
+## Volet 1 : le TPM
+
+Un TPM (Trusted Platform Module) est une puce qui garde des clés et réalise des opérations cryptographiques sans jamais laisser sortir les clés privées. J'ai travaillé avec un TPM 2.0 Infineon OPTIGA SLB 9670 monté sur un Raspberry Pi 3 B+.
+
+Deux applications réalisées :
+
+- Attestation distante : un serveur envoie un nombre aléatoire, le TPM signe l'état mesuré du système avec ce nombre, et le serveur vérifie la signature. Il sait alors que la machine est dans un état connu, et que la réponse n'est pas un ancien message rejoué.
+- Authentification auprès d'un service cloud (AWS IoT Core) : la paire de clés est générée dans le TPM et la demande de certificat est signée dans la puce. La clé privée n'est jamais chargée en mémoire.
+
+Le compte rendu décrit aussi un troisième scénario, la protection d'une partition chiffrée par le TPM. Je l'ai étudié sur le papier, je ne l'ai pas mis en pratique.
+
+## Volet 2 : TrustZone
+
+TrustZone est une technologie d'ARM qui sépare le processeur en deux mondes, sécurisé et non sécurisé. Le code non sécurisé ne peut appeler le code sécurisé que par des points d'entrée déclarés.
+
+J'ai pris en main cette séparation sur une carte Nucleo STM32L552 (cœur Cortex-M33) avec STM32CubeIDE : découpage de la mémoire entre les deux mondes, démarrage dans le monde sécurisé, attribution des périphériques, appels d'un monde à l'autre. C'est une première approche, à partir du projet guidé du TP.
+
+## Volet 3 : évaluer une carte
+
+Le dernier volet porte sur une carte d'entraînement qui simule un système de verrouillage. Le travail consiste à examiner ses interfaces de communication et son logiciel embarqué pour juger sa sécurité, comme le ferait un évaluateur.
+
+J'en ai tiré un tableau de failles avec, pour chacune, une contre-mesure. Les principales recommandations :
+
+- ne jamais stocker un secret en clair dans une mémoire ou dans le logiciel embarqué ;
+- désactiver les interfaces de débogage en production et activer la protection en lecture du microcontrôleur ;
+- initialiser tout générateur de nombres aléatoires à partir d'une vraie source d'aléa matérielle ;
+- limiter le nombre de tentatives après des échecs répétés ;
+- déporter les secrets dans un composant sécurisé.
+
+## Limites
+
+- TrustZone : je connais le principe et j'ai suivi un projet guidé, je n'ai pas conçu d'application sécurisée complète.
+- La protection d'une partition par le TPM reste un scénario étudié, pas une réalisation.
+- Les contre-mesures du volet 3 sont proposées dans le compte rendu, je ne les ai pas mises en œuvre sur la carte.
+
+## Ce que j'en retiens
+
+- Une clé qui ne sort jamais de la puce change la question : voler la carte mémoire ne suffit plus à voler l'identité de l'appareil.
+- La sécurité d'un produit se juge aussi sur ce qui reste accessible physiquement une fois qu'il est chez le client.
+- Les trois volets se répondent : les faiblesses observées dans le troisième sont celles que les deux premiers servent à éviter.

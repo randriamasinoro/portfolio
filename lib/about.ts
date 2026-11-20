@@ -29,7 +29,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
   {
     label: "Systèmes embarqués",
     domain: "embedded",
-    skills: ["STM32", "FreeRTOS", "Yocto", "ESP32", "I²C, SPI, UART, CAN"],
+    skills: ["STM32", "FreeRTOS", "Yocto", "ESP32", "FPGA et VHDL (Vivado, ModelSim)", "I²C, SPI, UART, CAN"],
   },
   {
     label: "Cybersécurité",

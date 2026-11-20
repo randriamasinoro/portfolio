@@ -1,0 +1,101 @@
+---
+id: mon-temps
+label: "Agenda et rappels"
+title: "Mon temps : un agenda qui rassemble mes échéances et me prévient"
+description: Application web qui réunit mes devoirs, mes cours et mes examens au même endroit et m'envoie un rappel sur le téléphone au bon moment. Version 0.1.0, en développement sur mon PC, pas encore en ligne.
+domains:
+  - web
+tags:
+  - Next.js
+  - TypeScript
+  - SQLite
+  - iCal
+  - ntfy
+  - Docker
+  - Vitest
+  - Playwright
+date: "2026"
+resume:
+  - label: "Le problème"
+    texte: "Mes devoirs sont sur Moodle, mes cours sur l'emploi du temps de l'université, mes réunions ailleurs, et rien ne me prévient au bon moment."
+  - label: "Ma solution"
+    texte: "Un cœur de calcul testé (répétitions, rappels, heures calmes), des sources lues par leur export de calendrier, des notifications par un serveur ntfy à moi."
+  - label: "L'état"
+    texte: "Version 0.1.0 qui tourne en local. La mise en ligne sur mon VPS est l'étape suivante."
+featured: false
+---
+
+## Contexte
+
+Ce que j'ai à faire est éparpillé. Les devoirs à rendre sont sur Moodle, les cours et les examens dans l'emploi du temps de l'université, les réunions dans un agenda, et le reste dans ma tête. Pour savoir ce qui m'attend, je dois ouvrir plusieurs sites.
+
+L'application répond à trois questions dès l'ouverture : qu'est-ce que j'ai aujourd'hui, qu'est-ce qui arrive bientôt, qu'est-ce que j'ai laissé passer. Elle rassemble et elle rappelle. Elle ne rend pas les devoirs à ma place : elle donne le lien direct vers l'endroit où le faire.
+
+C'est le deuxième outil personnel que je construis sur la même base technique que [Mon budget](/projects/mon-budget).
+
+## Ce que fait l'application
+
+- Deux natures d'éléments : une échéance (un devoir, un mail à envoyer) a une date limite et peut être cochée, un rendez-vous (un cours, un examen) a un début et une fin.
+- Un écran "À venir" : en retard, aujourd'hui, demain, cette semaine, plus tard. Une vue par semaine sur ordinateur.
+- Des répétitions : chaque jour, certains jours de la semaine, toutes les N semaines, chaque mois.
+- Des listes de vérification réutilisables, par exemple pour un jour d'examen.
+- Des rappels envoyés sur le téléphone, avec un résumé chaque matin.
+
+## Le cœur de calcul
+
+Le cœur (`src/core/`) est du TypeScript sans base de données ni interface, avec la date du jour passée en paramètre. Il se teste donc seul. Les règles qui m'ont demandé le plus de soin :
+
+- Les occurrences d'une série sont calculées, pas recopiées en base. Seules les exceptions sont stockées : une occurrence faite, déplacée ou supprimée.
+- Un cours répété à 8 h reste à 8 h à l'heure de Paris, avant comme après le changement d'heure. La base stocke les instants en UTC.
+- Moodle fixe souvent une limite à 00 h 00. Un devoir à rendre "jeudi à 00 h 00" est en réalité à rendre mercredi soir, donc l'application l'affiche la veille.
+- Heures calmes de 23 h à 7 h : un rappel qui tombe pendant la nuit part au matin, sauf si ce report le ferait arriver trop tard. Dans ce cas il est avancé à la veille au soir.
+- Un rappel part une seule fois, même si le serveur redémarre au mauvais moment.
+
+Chaque règle a ses tests, et un bug corrigé devient un test.
+
+## Lire Moodle et l'emploi du temps sans mot de passe
+
+Je ne voulais pas stocker mon mot de passe universitaire dans une application : il ouvre mes mails et mes notes. L'application lit donc les exports de calendrier (iCal) que Moodle et l'emploi du temps proposent, par un lien secret en lecture seule.
+
+J'ai aussi lu la charte informatique de l'université avant de choisir. Elle interdit les robots qui aspirent un site. L'API de Moodle resterait possible, mais seulement avec un accord écrit du service informatique. En attendant, l'export de calendrier est une fonction prévue pour cet usage, et l'application le relit au plus une fois par heure.
+
+Un problème que je n'avais pas prévu : sur Moodle, je suis inscrite à des cours qui ne sont pas dans mon parcours. Leurs devoirs ne me concernent pas. L'emploi du temps sert donc de référence, et chaque cours Moodle est rattaché une fois : "c'est mon cours" ou "pas mon cours". Un cours inconnu va dans une file "à trier" et ne déclenche qu'une seule notification.
+
+Si une source ne renvoie plus rien alors qu'elle renvoyait des éléments avant, l'application me prévient au lieu de vider l'agenda en silence.
+
+## Notifications
+
+Les rappels passent par ntfy, un serveur de notifications que j'héberge moi-même. L'accès est fermé par défaut : l'application publie avec un jeton qui ne peut qu'écrire sur un seul sujet, le téléphone s'abonne avec un compte en lecture seule.
+
+Les rappels ne dépendent pas d'une page ouverte. Un second processus, lancé depuis la même image Docker, vérifie chaque minute ce qui doit partir. Si l'interface plante, les rappels continuent.
+
+## Sécurité
+
+Je reprends ce qui est en place dans Mon budget : mots de passe en argon2id, double vérification TOTP, blocage après des échecs de connexion, sessions stockées en empreinte, CSP avec nonce, conteneur en lecture seule sans capacité Linux, aucun port publié.
+
+Ce qui est propre à cette application :
+
+| Risque | Protection |
+|---|---|
+| Lien de calendrier volé (il donne accès à mon agenda) | Liens chiffrés en base en AES-256-GCM, clé hors du code et hors de la base, jamais réaffichés en entier |
+| Une source détournée pour atteindre le réseau interne du serveur | HTTPS uniquement, adresses privées et locales refusées, y compris après redirection, taille et délai limités |
+| Contenu importé piégé | Tout ce qui est importé est traité comme du texte, jamais comme du HTML |
+| Envois en rafale à cause d'un bug | Plafond de notifications par heure, puis un seul message d'alerte |
+
+## Architecture
+
+Chaque partie qui risque de s'enrichir est derrière une interface. Les canaux de notification et les connecteurs de sources sont déclarés dans un registre : ajouter l'e-mail ou une nouvelle source, c'est un fichier et une ligne, sans toucher au reste. Chaque donnée porte un identifiant de propriétaire, pour accueillir d'autres personnes plus tard sans tout réécrire.
+
+## Limites
+
+- L'application n'est pas en ligne. Tout tourne sur mon PC, avec un ntfy local dans Docker.
+- Le dépôt est jeune : version 0.1.0, trois commits. Sur 270 tests unitaires, 5 échouent en ce moment sur une modification en cours.
+- Une seule utilisatrice pour l'instant.
+- Un export de calendrier ne dit pas si un devoir est déjà rendu. Je dois le cocher à la main.
+- Je n'ai pas encore la réponse du service informatique sur l'API de Moodle.
+
+## Perspectives
+
+- Mise en ligne sur mon VPS ARM64 avec le même pipeline que Mon budget : tag Git, tests, image, analyse Trivy, déploiement avec retour à la version précédente en cas d'échec.
+- Brancher l'agenda de mes réunions par son export de calendrier.
+- Tester les notifications sur iPhone et sur Android en conditions réelles.

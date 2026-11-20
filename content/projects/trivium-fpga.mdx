@@ -1,0 +1,128 @@
+---
+id: trivium-fpga
+label: "Chiffrement sur FPGA"
+title: "Chiffrement à flot Trivium sur FPGA, piloté depuis le PC"
+description: Le chiffrement Trivium décrit en VHDL, validé sur les 84 vecteurs officiels en simulation puis sur une carte Basys 3. Le PC envoie les données par l'UART, le FPGA les chiffre, et je compare calcul, simulation et mesure sur carte.
+domains:
+  - embedded
+  - cybersecurity
+tags:
+  - VHDL
+  - FPGA
+  - Vivado
+  - Basys 3
+  - UART
+  - Python
+  - ILA
+date: "2026"
+media:
+  - /images/trivium-fpga/image-chiffree.png
+  - /images/trivium-fpga/debit-simulation-carte.png
+resume:
+  - label: "L'objectif"
+    texte: "Implémenter le chiffrement à flot Trivium en VHDL et le faire tourner sur une vraie carte, pas seulement en simulation."
+  - label: "Ma démarche"
+    texte: "Cinq étapes sauvegardées une par une : protocole UART, montée en débit, chiffrement de 1 à 64 bits par cycle, analyseur logique intégré, horloge à 96 MHz."
+  - label: "Le résultat"
+    texte: "84 vecteurs officiels sur 84 sur la carte, 1 191 Ko/s vus du PC (99,3 % du maximum de la liaison), jusqu'à 800 Mo/s dans le FPGA seul."
+featured: false
+---
+
+## Contexte
+
+Projet de Master 2 à l'UBS Lorient, en novembre 2026. Trivium est un chiffrement à flot du portfolio eSTREAM : une clé de 80 bits, un vecteur d'initialisation (IV) de 80 bits, un état interne de 288 bits et 1 152 tours d'initialisation. Il produit une suite de bits (le keystream) que l'on combine au message par un XOR.
+
+Ce projet prolonge mes [TP de conception numérique en VHDL](/projects/vhdl-fpga) de licence et de Master 1. J'ai commencé par une version simulée sous Vivado, puis je l'ai portée sur une carte Basys 3 (FPGA Artix-7). Le PC envoie la clé, l'IV et le message par l'UART de la carte, le FPGA renvoie le chiffré. Un Trivium écrit en Python sert de référence pour vérifier chaque octet.
+
+## Objectifs
+
+- Écrire Trivium en VHDL avec des blocs réutilisables
+- Le valider sur les vecteurs de test officiels, en simulation puis sur la carte
+- Mesurer le débit réel et comprendre ce qui le limite
+- Voir les signaux internes de la carte, pas seulement ceux de la simulation
+
+## Le circuit
+
+L'état de Trivium est fait de trois registres à décalage à rétroaction non linéaire, de 93, 84 et 111 bits. J'ai écrit une seule entité générique, instanciée trois fois.
+
+Le nombre de bits produits par cycle d'horloge est un paramètre, W, de 1 à 64. Le circuit calcule toujours 64 tours en parallèle : l'initialisation avance de 64 cases par cycle (1 152 tours en 18 cycles, quel que soit W), le chiffrement avance de W cases. Un petit réservoir garde les bits de keystream non utilisés, pour que la suite produite soit la même quel que soit W.
+
+Autour de Trivium, le sommet du design contient un récepteur et un émetteur UART, une file d'attente (FIFO) en sortie et un contrôleur qui comprend cinq commandes d'une lettre : charger la clé et l'IV, chiffrer un message d'une taille donnée, renvoyer la valeur de W, renvoyer le nombre de cycles de l'initialisation, et lancer une mesure de débit interne qui ne passe pas par l'UART.
+
+## Vérifier avant de mesurer
+
+Le banc de test contient un modèle de référence de Trivium écrit en VHDL, lui-même vérifié contre le fichier de vecteurs officiel. Chaque version du circuit passe les mêmes tests :
+
+- les 84 vecteurs officiels, avec un message découpé en blocs de 1, 7, 13 et 43 octets pour vérifier que le keystream continue d'un bloc à l'autre ;
+- un bloc de 4 096 octets envoyé d'un coup par un PC volontairement un peu trop rapide, pour vérifier que la file de sortie ne déborde pas ;
+- la mesure de débit interne comparée au modèle.
+
+Ces tests passent pour W = 1, 2, 3, 5, 7, 8, 9, 13, 16, 33, 63 et 64. Sur la carte, j'ai programmé quatre versions (W = 1, 3, 8 et 64) : 84 vecteurs sur 84 pour chacune.
+
+## Résultats sur la carte
+
+### Le débit dans le FPGA
+
+À 100 MHz, la mesure interne donne exactement le nombre de cycles attendu :
+
+| W (bits par cycle) | Débit de Trivium seul | Ressources (LUT) | Marge de timing (WNS) |
+|---|---|---|---|
+| 1 | 12,5 Mo/s | 974 | +1,71 ns |
+| 3 | 37,5 Mo/s | 1 039 | +2,27 ns |
+| 8 | 100 Mo/s | 864 | +3,18 ns |
+| 64 | 800 Mo/s | 1 417 | +0,64 ns |
+
+### Le débit vu du PC
+
+Vu du PC, W ne change rien : c'est la liaison série qui limite. J'ai donc travaillé sur la liaison.
+
+| Liaison | Débit mesuré | Part du maximum théorique |
+|---|---|---|
+| 115 200 bauds, première version | 5,71 Ko/s | 99 % |
+| 4 Mbauds, horloge 100 MHz | 397,6 Ko/s | 99,4 % |
+| 12 Mbauds, horloge 96 MHz | 1 191,2 Ko/s | 99,3 % |
+
+![Débit en pourcentage du maximum théorique pour trois liaisons : la simulation, la carte avec une attente USB de 16 ms et la carte avec une attente de 1 ms](/images/trivium-fpga/debit-simulation-carte.png)
+
+Pour passer à 12 Mbauds, le maximum de la puce USB de la carte, 100 MHz ne convient pas : 100 / 12 donne 8,33 cycles par bit. J'ai ajouté un générateur d'horloge (MMCM) qui fabrique du 96 MHz, soit 8 cycles pile.
+
+L'écart restant entre la simulation et la carte venait de la puce USB, qui garde les octets jusqu'à 16 ms avant de les donner au PC. Avec ce délai réglé à 1 ms depuis le script Python, la carte rejoint la simulation.
+
+### Une image chiffrée par la carte
+
+![En haut l'image d'origine et sa version chiffrée par le FPGA, en bas l'image déchiffrée avec la bonne clé et avec une clé fausse d'un seul bit](/images/trivium-fpga/image-chiffree.png)
+
+Pour avoir un résultat visible, j'ai fait chiffrer une image de 460 800 octets par la carte. Le chiffré est identique à celui du Trivium Python et l'image déchiffrée est identique à l'originale. L'entropie passe de 2,02 à 7,9996 bits par octet. Avec une clé fausse d'un seul bit sur 80, 50,03 % des bits sont faux : on ne retrouve rien.
+
+J'ai aussi abîmé le chiffré avant de le faire déchiffrer par la carte. Avec 1 % d'octets modifiés, exactement ces octets sont faux, sans propagation. Avec un seul octet retiré au milieu, tout ce qui suit est illisible. Un chiffrement à flot ne protège donc pas l'intégrité du message.
+
+### Voir les signaux dans la carte
+
+J'ai intégré un analyseur logique (ILA) dans le FPGA : 14 sondes, 4 096 échantillons, relus par le JTAG pendant que l'UART fonctionne. Sur l'envoi du mot "Bonjour", la capture montre les octets reçus, une avance de Trivium par octet et l'octet chiffré qui entre dans la file un cycle plus tard, avec les mêmes valeurs que le calcul en Python. L'ILA coûte cher : environ 2 300 LUT à lui seul.
+
+## Les défauts trouvés en route
+
+| Défaut | Comment je l'ai vu | Correction |
+|---|---|---|
+| L'émetteur UART laissait un cycle de repos entre deux octets, donc émettait plus lentement qu'il ne recevait | La file de sortie débordait sur un bloc de 4 096 octets, une LED de diagnostic s'allumait en simulation | L'émetteur accepte l'octet suivant pendant le dernier cycle du bit de stop |
+| Perte d'octets côté PC au-delà d'environ 12,9 Ko par bloc | Toujours le même nombre d'octets reçus, quelle que soit la taille du bloc | Le script écrit par morceaux de 1 Ko et lit entre deux morceaux |
+| Placement impossible dans Vivado | Le reset venait directement d'un bouton et commandait des centaines de bascules | Reset synchronisé par deux bascules |
+| Un latch dans la synthèse | Rapport de synthèse | Chaque octet de réponse est construit en entier avant d'être affecté |
+| W = 64 ne tenait pas 100 MHz (WNS de -2,72 ns, 17 niveaux de logique) | Rapport de timing | Chemin de données simplifié : +0,64 ns, 7 niveaux |
+| Le récepteur UART lisait chaque bit un cycle trop tard | En relisant le code pour le documenter | Lecture recentrée, marge mesurée de 2,5 % à 3,75 % à 12 Mbauds |
+
+Le dernier défaut ne se voyait dans aucun test : tout passait. Je l'ai confirmé avec deux bancs de mesure dédiés, l'un sur l'instant de lecture et l'autre sur la tolérance à une erreur de vitesse.
+
+## Limites
+
+- Vu du PC, le débit est celui de l'UART. Les 800 Mo/s de W = 64 ne sont mesurés que dans le FPGA.
+- La liaison n'a pas de contrôle de flux. Avec une vitesse qui ne tombe pas juste (8 Mbauds à 100 MHz, 13 cycles par bit), le FPGA lit correctement mais renvoie moins vite qu'il ne reçoit : la file déborde et l'image revient décalée.
+- Pour aller au-delà d'environ 107 MHz avec W = 64, il faudrait couper les longs chemins par des registres (pipeline). Je ne l'ai pas fait.
+- Je n'ai pas fait la capture ILA avec W = 3, qui montrerait le réservoir de keystream en action.
+- Toutes les mesures utilisent une clé et un IV de test.
+
+## Ce que j'en retiens
+
+- Une simulation qui passe ne prouve pas que les marges sont bonnes : le défaut du récepteur UART était invisible tant que les deux horloges étaient proches.
+- Avant d'optimiser, mesurer ce qui limite vraiment. Ici, accélérer Trivium ne changeait rien pour l'utilisateur, il fallait accélérer la liaison.
+- Comparer trois sources (calcul, simulation, carte) fait ressortir ce que chacune ne voit pas. La latence de la puce USB n'existe ni dans le calcul ni dans la simulation.

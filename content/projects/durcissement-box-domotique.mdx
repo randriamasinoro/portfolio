@@ -1,0 +1,98 @@
+---
+id: durcissement-box-domotique
+label: "Box durcie"
+title: "Durcissement d'une box domotique sur Raspberry Pi"
+description: Mise en sécurité d'un prototype de box domotique sous Linux en suivant la démarche de l'ANSSI. Démarrage vérifié par signature, service cloisonné dans un conteneur, journal d'audit, et chaque protection prouvée par un test avant et après.
+domains:
+  - cybersecurity
+  - embedded
+tags:
+  - Raspberry Pi
+  - Linux
+  - U-Boot
+  - Docker
+  - auditd
+  - iptables
+  - ANSSI
+  - STRIDE
+date: "2026"
+resume:
+  - label: "Le problème"
+    texte: "Un prototype de box domotique livré avec de nombreuses faiblesses : service exposé avec tous les droits, aucun journal d'audit, démarrage non vérifié."
+  - label: "Ma démarche"
+    texte: "Modèle de menace, liste de règles de sécurité, puis trois protections mises en place et prouvées chacune par un test avant et après."
+  - label: "Le résultat"
+    texte: "Une image de démarrage modifiée est refusée, le service ne tourne plus en administrateur, les actions sensibles laissent une trace."
+featured: false
+---
+
+## Contexte
+
+Mini-projet du cours de sécurité des systèmes et des réseaux, en Master 2 à l'UBS Lorient, en 2026. On me fournit l'image d'un prototype de box domotique : un Raspberry Pi 3 B+ sous Linux, qui fait point d'accès Wi-Fi et héberge un service web. Le prototype est volontairement mal configuré. C'est une image de TP, aucun capteur réel n'y est branché.
+
+Le travail suit le guide de configuration Linux de l'ANSSI et se déroule en trois temps : analyser, décider, mettre en œuvre.
+
+<Callout type="info">
+Les secrets, les mots de passe et les détails des faiblesses du prototype restent dans mon dossier de TP. Les publier donnerait la solution aux promotions suivantes.
+</Callout>
+
+## Objectifs
+
+- Comprendre ce qu'il faut protéger avant de toucher au système
+- Mettre en place des protections à trois niveaux : démarrage, applications, traçabilité
+- Prouver l'efficacité de chaque protection, pas seulement l'installer
+
+## Analyser avant d'agir
+
+J'ai commencé par un audit de l'image fournie, sans rien modifier : services lancés, ports ouverts, comptes, options du noyau. Puis j'ai rédigé un modèle de menace avec la méthode STRIDE, en listant les biens à protéger, les attaquants possibles et les points d'entrée, et je l'ai rapproché de l'OWASP IoT Top 10.
+
+J'en ai tiré dix règles de sécurité (chaîne de démarrage, minimisation, identités et secrets, cloisonnement, filtrage réseau, données au repos, mises à jour, traçabilité, noyau) et une liste de contrôle pour chacune. Le périmètre de la mise en œuvre a ensuite été fixé avec l'enseignant : trois protections.
+
+## Une règle de méthode : le test avant et après
+
+Une protection sans preuve n'est pas considérée comme validée. Pour chacune, je montre d'abord le problème sur le système de départ, puis je rejoue exactement le même test sur le système durci.
+
+| Protection | Avant | Après |
+|---|---|---|
+| Cloisonnement du service web | Une faille du service donne les droits d'administrateur sur toute la box | Le même test n'obtient plus ces droits, ne peut plus écrire sur le système ni sortir sur le réseau |
+| Journal d'audit | Une action sensible ne laisse aucune trace | La même action apparaît dans le journal d'audit |
+| Démarrage sécurisé | Une image de démarrage modifiée démarre quand même | Le chargeur de démarrage refuse l'image modifiée ou non signée |
+
+## Les trois protections
+
+### Cloisonner le service exposé
+
+Le service web du prototype tournait avec les droits d'administrateur. Je l'ai placé dans un conteneur Docker verrouillé : utilisateur sans privilège, système de fichiers en lecture seule, capacités Linux retirées, sortie réseau coupée. Si le service est compromis, les dégâts restent dans le conteneur.
+
+### Tracer les actions sensibles
+
+Le noyau de l'image avait été compilé sans le support de l'audit. Il a fallu le recompiler avec l'option `CONFIG_AUDIT`, puis configurer `auditd`. J'ai vérifié la traçabilité avec `ausearch` et les journaux d'audit.
+
+### Vérifier ce qui démarre
+
+La chaîne de démarrage passe par U-Boot, qui charge une image FIT signée. La clé privée de signature reste sur le poste de travail et n'est jamais copiée sur la box. Une image altérée ou non signée est refusée au démarrage.
+
+## Le réseau du banc
+
+Pour travailler, le Raspberry Pi devait avoir une adresse et un accès à Internet par mon PC. J'ai configuré le PC en passerelle : serveur DHCP et DNS avec `dnsmasq`, traduction d'adresses avec `iptables` (MASQUERADE), routage.
+
+Deux obstacles m'ont appris quelque chose. Le transit était bloqué par des règles ajoutées par d'autres logiciels du PC (libvirt et Docker), alors que la politique générale l'autorisait. Et une ancienne route par défaut, laissée par un autre TP dans la configuration `netplan`, envoyait tout le trafic vers une passerelle qui n'existait plus. Elle revenait à chaque redémarrage du réseau jusqu'à ce que je corrige le fichier.
+
+## Ce qui n'a pas marché : la montée de version
+
+L'image tournait sur une version ancienne de Raspbian (buster). Avec l'accord de l'enseignant, j'ai tenté une mise à niveau directe vers bookworm, en sautant une version. Pendant l'opération, la bibliothèque C a été remplacée avant que le paquet qui fournit `libcrypt` soit installé. Résultat : `sudo`, `su` et la connexion ne fonctionnaient plus.
+
+J'ai tenté une réparation hors ligne, en montant la carte SD sur mon PC pour remettre la bibliothèque manquante à partir du paquet déjà téléchargé. À ce jour, cette réparation n'a pas abouti. L'image d'origine était conservée, ce qui permet de repartir de zéro.
+
+## Limites
+
+- La réparation après la montée de version n'est pas terminée.
+- Le périmètre validé avec l'enseignant couvre trois protections. Le reste de ma liste de contrôle (pare-feu complet de la box, renouvellement des secrets, suppression des services inutiles) est décrit mais sort de ce périmètre.
+- C'est un prototype de TP sans capteur réel : je n'ai pas mesuré l'effet du durcissement sur un usage domotique.
+- Le démarrage sécurisé repose sur une clé gardée sur mon poste, sans matériel dédié pour la protéger.
+
+## Ce que j'en retiens
+
+- Une montée de version majeure se fait une version à la fois, et jamais sans copie de secours.
+- L'ordre compte : j'ai placé le démarrage sécurisé en dernier pour ne signer le noyau qu'une fois, après sa recompilation pour l'audit.
+- Installer une protection ne prouve rien. Rejouer le même test avant et après, si.

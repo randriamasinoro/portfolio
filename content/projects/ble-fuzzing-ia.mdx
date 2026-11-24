@@ -2,7 +2,7 @@
 id: ble-fuzzing-ia
 label: "Fuzzing BLE"
 title: "Fuzzing BLE guidé par IA (Master 2, en cours)"
-description: "Une chaîne de fuzzing Bluetooth Low Energy où une IA locale ou gratuite oriente la génération des trames et où des règles jugent les réponses. Testée sur un téléphone et, sous QEMU, sur un firmware ESP32 volontairement vulnérable."
+description: "Une chaîne de fuzzing Bluetooth Low Energy où des règles jugent les réponses et où une IA locale ou gratuite choisit parmi leurs propositions. Essayée sur un téléphone et, sous QEMU, sur un firmware ESP32 volontairement vulnérable."
 domains:
   - iot
   - cybersecurity
@@ -23,32 +23,34 @@ resume:
   - label: "L'objectif"
     texte: "Faire planter un objet connecté Bluetooth Low Energy avec des trames malformées, en laissant une IA sans budget (locale ou gratuite) orienter la recherche, et compter ce qu'elle consomme."
   - label: "Ma démarche"
-    texte: "Quatre blocs interchangeables : générateur, injecteur, oracle, orchestrateur. L'IA donne une direction par lot, le code fabrique les trames, des règles gèrent seules les cas sûrs."
+    texte: "Un générateur, un injecteur, un oracle et un orchestrateur interchangeables. Des règles gèrent seules les cas sûrs, l'IA n'est consultée qu'un tir sur k pour choisir parmi leurs propositions."
   - label: "Où j'en suis"
-    texte: "La chaîne tourne sur un vrai téléphone et, sous QEMU, repère le débordement d'un firmware ESP32 de labo dès 33 octets. La cible matérielle est bloquée par un problème d'alimentation."
+    texte: "Le dépôt du projet tourne avec un injecteur simulé. Mes modules de l'arsenal ont mené une campagne sur un vrai téléphone et, sous QEMU, repèrent le débordement d'un firmware ESP32 de labo dès 33 octets. La cible matérielle est bloquée par un problème d'alimentation."
 ---
 
 ## Contexte
 
 Projet de Master 2 Cybersécurité des Systèmes Embarqués à l'UBS Lorient, commencé en octobre 2026 et toujours en cours. Le thème est le fuzzing sans fil guidé par IA. Fuzzer, c'est envoyer à un programme un grand nombre d'entrées malformées et observer celles qui le font planter. Ici, le programme visé est la pile Bluetooth Low Energy (BLE) d'un objet connecté.
 
-Le projet prolonge mon mémoire Zigbee de M1. Il vise le même banc de test (la plateforme WANTED du laboratoire) et le même outillage radio : un dongle nRF52840 piloté par WHAD, qui gère aussi le BLE.
+Il fait suite à mon mémoire Zigbee de M1. Il vise le même banc de test (la plateforme WANTED du laboratoire) et le même outillage radio : un dongle nRF52840 piloté par WHAD, qui gère aussi le BLE.
 
 Une contrainte a guidé l'architecture : je n'ai pas de budget pour des API payantes. Tout doit tourner avec un modèle local (Ollama) ou une offre gratuite (Gemini, Groq), et un repli sans IA doit toujours exister.
 
 ---
 
-## La chaîne de fuzzing
+## Le dépôt du projet M2
 
-![Boucle de fuzzing : l'IA oriente le générateur une fois par lot, l'injecteur envoie les trames aux cibles, l'oracle et les règles jugent la réponse et proposent des candidats à l'IA.](/images/ble-fuzzing-ia/boucle.svg)
+Le dépôt du projet découpe la boucle en quatre blocs : un générateur de mutations, un injecteur qui envoie les trames, un oracle qui rend un verdict (rien, suspect, plantage) et un orchestrateur qui enchaîne le tout. Seul le générateur appelle l'IA, une fois par lot, puis il produit les trames en local sans consommer de token. C'est ce qui permet de tenir dans un quota gratuit.
 
-Le dépôt du projet M2 découpe la boucle en quatre blocs : un générateur de mutations, un injecteur qui envoie les trames, un oracle qui rend un verdict (rien, suspect, plantage) et un orchestrateur qui enchaîne le tout. Seul le générateur appelle l'IA, une fois par lot. Il reçoit une consigne, puis produit les trames en local sans consommer de token. C'est ce qui permet de tenir dans un quota gratuit.
+Aujourd'hui, la consigne de l'IA est demandée et enregistrée avec ses tokens, mais elle ne pilote pas encore les mutations : le générateur inverse des bits au hasard. L'injecteur est encore simulé, celui du banc WANTED reste à écrire.
 
-Chaque bloc a une interface et plusieurs implémentations. Trois moteurs d'IA sont branchés : Gemini (offre gratuite), Ollama en local et un témoin sans IA qui fait du fuzzing aléatoire. Le témoin sert de référence : une IA n'a d'intérêt que si elle trouve plus, ou plus vite, que le hasard. La consommation de tokens est enregistrée pour chaque campagne. C'est la mesure fiable, un coût en euros resterait une estimation.
+Chaque bloc a une interface et plusieurs implémentations. Dans ce dépôt, trois moteurs d'IA sont branchés : Gemini (offre gratuite), Ollama en local et un témoin sans IA qui fait du fuzzing aléatoire. Le témoin sert de référence : une IA n'a d'intérêt que si elle trouve plus, ou plus vite, que le hasard. La consommation de tokens est enregistrée pour chaque campagne. C'est la mesure fiable, un coût en euros resterait une estimation.
 
 ---
 
 ## Guider l'IA plutôt que la remplacer
+
+![Boucle de fuzzing de l'arsenal : le moteur de mutations envoie les trames par l'injecteur, l'oracle et les règles jugent la réponse, et proposent des candidats à l'IA, consultée un tir sur k, qui choisit la prochaine charge.](/images/ble-fuzzing-ia/boucle.svg)
 
 En parallèle, je me suis construit un arsenal : une boîte à outils où chaque outil est un module qu'on réutilise sans l'ouvrir, réglé par ses paramètres, comme un generic en VHDL. Chaque fichier commence par une fiche façon datasheet : rôle, paramètres, API, dépendances, méthode de vérification et limites.
 
@@ -61,7 +63,7 @@ Pour le BLE, quatre modules font le travail :
 
 En local, qwen3:4b sait appeler l'arsenal pour forger une requête d'écriture ATT. L'arsenal est aussi exposé à un assistant IA par un serveur MCP (Model Context Protocol) : l'assistant peut scanner, explorer un appareil, forger une trame et décoder la réponse en appelant les modules. Des garde-fous limitent ce qu'il peut faire : fichiers confinés à un dossier autorisé, réseau limité aux adresses privées, aucune écriture dangereuse exposée.
 
-L'arsenal compte aujourd'hui environ 70 modules, dont beaucoup hors BLE : 802.15.4 et Thread, Wi-Fi passif, LoRaWAN, analyse de firmware, cryptographie. La plupart ont été écrits avec Claude Code, chaque lot relu par un second agent. Chaque fiche dit comment le module a été testé : vecteurs officiels, captures réelles comparées à tcpdump, ou seulement cohérence interne.
+L'arsenal compte aujourd'hui environ 70 modules, dont beaucoup hors BLE : réseau, radio, analyse de firmware, cryptographie. La plupart ont été écrits avec Claude Code, chaque lot relu par un second agent. Chaque fiche dit comment le module a été testé : vecteurs officiels, captures réelles comparées à tcpdump, ou seulement cohérence interne.
 
 ---
 
@@ -75,7 +77,7 @@ Le premier essai radio utilise un téléphone Android comme serveur GATT, avec l
 
 Pour avoir quelque chose à faire planter, la cible prévue est une ESP32-CAM avec un serveur GATT NimBLE. Sa caractéristique 0xFF01 copie la valeur reçue dans un tampon de 32 octets sur la pile, sans vérifier la longueur. Un canari et un marqueur signalent la corruption.
 
-Cette carte n'a pas encore servi. Elle redémarre en boucle, et le reset survient dans le bootloader, avant même l'application. Même un hello-world sans radio redémarre au bout d'environ 40 minutes : le firmware n'est pas en cause, c'est une chute de tension de l'alimentation (brownout). Le firmware a été allégé (émission à −12 dBm, advertising lent, processeur à 80 MHz). La vraie correction est une alimentation 5 V plus solide.
+Cette carte n'a pas encore servi. Elle redémarre en boucle, et le reset survient dans le bootloader, avant même l'application. Après environ 40 minutes de redémarrages en boucle, même un hello-world sans radio ne démarrait plus : le firmware n'est pas en cause, c'est une chute de tension de l'alimentation (brownout). Le firmware a été allégé (émission à −12 dBm, advertising lent, processeur à 80 MHz). La correction prévue est une alimentation 5 V plus solide.
 
 ### Contourner la carte avec QEMU
 
@@ -89,13 +91,14 @@ QEMU Espressif émule l'ESP32 mais pas sa radio. Le même motif vulnérable a do
 | Débit plantages compris (environ 1,4 s par redémarrage) | 1,7 charge/s |
 | Campagne de 200 essais | 75 anomalies : 61 plantages, 14 suspects |
 
-Le canari est écrasé dès 33 octets, un de plus que la taille du tampon : l'oracle voit la corruption avant le plantage. Ce résultat porte sur la logique du gestionnaire, pas sur la radio, puisque la charge arrive par l'UART. Aucun plantage n'a encore été obtenu par radio.
+Cette campagne utilise le moteur de mutations et l'oracle seuls, sans IA. Le canari est écrasé dès 33 octets, un de plus que la taille du tampon : l'oracle voit la corruption avant le plantage. Ce résultat porte sur la logique du gestionnaire, pas sur la radio, puisque la charge arrive par l'UART. Aucun plantage n'a encore été obtenu par radio.
 
 ---
 
 ## Limites
 
-- Aucun résultat sur matériel pour l'instant : l'ESP32-CAM est bloquée par son alimentation et l'injecteur du banc WANTED (WHAD, nRF52840) n'est pas encore écrit.
+- Aucun plantage sur matériel pour l'instant : l'ESP32-CAM est bloquée par son alimentation et l'injecteur du banc WANTED (WHAD, nRF52840) n'est pas encore écrit.
+- Dans le dépôt du projet, la consigne de l'IA ne pilote pas encore les mutations.
 - Le fuzzing agit au niveau GATT, en écrivant une caractéristique. Un plantage se voit par une déconnexion, un délai dépassé ou une erreur. Un vrai crash mémoire demande d'observer la cible, par sa console par exemple.
 - Les tests des règles tournent sur des cibles simulées qui partagent mes hypothèses. Ils vérifient la cohérence du code, pas son efficacité sur un vrai appareil.
 - Les offres gratuites (Gemini, Groq) peuvent réutiliser les requêtes. Je n'y envoie que des charges de fuzzing, jamais de secret.
@@ -107,4 +110,5 @@ Le canari est écrasé dès 33 octets, un de plus que la taille du tampon : l'or
 
 - Alimenter correctement l'ESP32-CAM et fuzzer la cible par radio.
 - Écrire l'injecteur du banc WANTED avec WHAD et le nRF52840.
+- Faire piloter les mutations du dépôt par la consigne de l'IA.
 - Comparer Ollama, Gemini, Groq et le témoin sur des campagnes de même taille : plantages trouvés, temps, tokens.

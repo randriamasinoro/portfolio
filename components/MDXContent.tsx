@@ -5,7 +5,7 @@ import rehypePrettyCode, { type Options as PrettyCodeOptions } from "rehype-pret
 import CodeBlock from "./CodeBlock";
 import Callout from "./Callout";
 import ImageFigure from "./ImageFigure";
-import DeviceMockup, { MockupBoard, MockupGrid, MockupPair } from "./DeviceMockup";
+import DeviceMockup, { MockupBoard, MockupGrid, MockupPair, MockupRow, MockupTrio } from "./DeviceMockup";
 import { slugify } from "@/lib/toc";
 
 interface Props {
@@ -203,4 +203,6 @@ const COMPONENTS = {
   MockupBoard,
   MockupGrid,
   MockupPair,
+  MockupRow,
+  MockupTrio,
 };

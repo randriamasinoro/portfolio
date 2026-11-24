@@ -1,0 +1,154 @@
+---
+id: kitrana
+label: "Suivi nutrition"
+title: "Kitrana : un suivi nutrition qui compte aussi ce que je dépense"
+description: "Application web qui note ce que je mange, compare ma journée et ma semaine aux repères officiels, vitamines et minéraux compris, et calcule le coût avec les prix du magasin le plus proche. Version 1.2.1, en ligne sur mon VPS."
+domains:
+  - web
+  - devsecops
+tags:
+  - Next.js
+  - TypeScript
+  - SQLite
+  - Docker
+  - Drizzle
+  - Python
+  - PP-OCR
+  - Vitest
+  - Playwright
+  - Trivy
+date: "2026"
+resume:
+  - label: "Le problème"
+    texte: "Savoir chaque jour ce que je mange, si c'est équilibré et ce que ça me coûte, avec des chiffres dont je connais la source."
+  - label: "Ma solution"
+    texte: "Un journal par repas sur la table Ciqual (3 400 aliments), des besoins calculés pour moi, 2 500 prix relevés en magasin et une lecture des étiquettes en photo."
+  - label: "L'état"
+    texte: "Version 1.2.1 en ligne sur mon VPS, derrière un compte. Chaque version passe les tests et une analyse Trivy. Si elle ne démarre pas, le déploiement revient à la précédente."
+---
+
+## Contexte
+
+Je voulais savoir trois choses : ce que je mange, si c'est équilibré, et ce que ça me coûte. Kitrana est mon suivi nutrition personnel et répond aux trois. Les prix sont ceux de l'Intermarché de Lanveur, le magasin le plus proche de la bibliothèque universitaire de Lorient. Une règle tient tout le projet : aucune valeur inventée. Chaque référence nutritionnelle a sa source, et un seuil sans source est affiché comme un choix de l'application.
+
+## Ce que fait l'application
+
+Sur téléphone, une colonne et une barre en bas. À partir de 1024 px, la navigation passe dans une colonne à gauche, et sur grand écran les écrans se rangent en deux colonnes. Les captures viennent d'un compte de démonstration, avec quatre jours de repas fictifs.
+
+<MockupBoard>
+  <MockupTrio caption="Le journal du jour à 1440, 820 et 390 px de large">
+    <DeviceMockup
+      device="desktop"
+      src="/images/kitrana/journal-ordinateur.png"
+      width="1440"
+      height="900"
+      alt="Sur ordinateur : le journal du jour, avec l'énergie, les macronutriments, les repas et l'équilibre du jour"
+      href="/images/kitrana/journal-ordinateur.png"
+    />
+    <DeviceMockup
+      device="tablet"
+      src="/images/kitrana/journal-tablette.png"
+      width="820"
+      height="1180"
+      alt="Sur tablette : le journal du jour, avec l'énergie, les macronutriments et les repas"
+      href="/images/kitrana/journal-tablette.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/kitrana/journal-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : le journal du jour, avec l'énergie, les macronutriments et le petit-déjeuner"
+      href="/images/kitrana/journal-telephone.png"
+    />
+  </MockupTrio>
+  <MockupRow>
+    <DeviceMockup
+      device="phone"
+      src="/images/kitrana/semaine-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : ma semaine, avec les repères tenus jour par jour"
+      caption="Ma semaine : repères tenus et moyennes"
+      href="/images/kitrana/semaine-telephone.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/kitrana/objectifs-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : mes objectifs, vitamines, minéraux et oméga-3 sur 7 jours"
+      caption="Objectifs : vitamines et minéraux sur 7 jours"
+      href="/images/kitrana/objectifs-telephone.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/kitrana/sources-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : sources et méthodes, les documents de référence cités"
+      caption="Sources et méthodes"
+      href="/images/kitrana/sources-telephone.png"
+    />
+  </MockupRow>
+</MockupBoard>
+
+- Un journal par repas : énergie, protéines, glucides, lipides et coût estimé. Les aliments viennent de la table Ciqual 2025 de l'Anses (3 400 aliments), d'Open Food Facts par code-barres, ou d'une étiquette que je saisis.
+- Des besoins calculés pour moi (sexe, âge, taille, poids, activité) selon l'objectif : équilibre, prise de muscle ou perte de gras, avec des garde-fous (IMC, jamais sous le métabolisme de base).
+- L'équilibre de la journée et de la semaine : repères de Santé publique France par groupe d'aliments (fruits et légumes, légumes secs, poisson, charcuterie), un minimum de fibres, et des limites pour le sel, les sucres libres et les graisses saturées.
+- Les vitamines, les minéraux et les oméga-3, comparés aux références sur les 7 derniers jours. La fiche d'un nutriment montre les aliments de mon assiette qui en apportent le plus et les sources les moins chères du magasin.
+- Les dépenses : tickets de caisse, repas payés, budget de la semaine, protéines et énergie les moins chères.
+- Une liste de courses pour 30 jours, déduite du journal des 28 derniers jours : quantités (le cuit converti en cru), nombre de paquets et coût.
+
+## D'où viennent les chiffres
+
+| Calcul | Source |
+|---|---|
+| Métabolisme de base | Équations de Schofield, rapport FAO/OMS/UNU sur les besoins énergétiques (2004) |
+| Niveau d'activité | Même rapport, tableau 5.3 (une valeur choisie dans chaque fourchette) |
+| Macronutriments, fibres, sel | Nordic Nutrition Recommendations 2023 |
+| Vitamines et minéraux | NNR 2023, tableaux 12 à 15 |
+| Repères par groupe d'aliments | Santé publique France, recommandations pour les adultes (2019) |
+
+Une teneur inconnue reste inconnue : elle n'est jamais comptée comme zéro, et le total affiche « donnée partielle ». Les rapports de l'Anses et de l'EFSA n'ont pas pu être téléchargés, leurs sites affichant une vérification anti-robot que je ne contourne pas. NNR 2023 couvre les mêmes références, en plus récent.
+
+## Vérifier les données, valeur par valeur
+
+La version 1.2.1 est une relecture complète des données et des calculs. Elle a trouvé de vraies erreurs :
+
+- La table Ciqual range la vitamine E dans deux colonnes selon l'aliment, et l'application n'en lisait qu'une. 1 730 aliments de plus ont maintenant une valeur. Même cause pour les folates (895 aliments).
+- La vitamine A n'était pas exprimée comme la référence NNR (bêta-carotène ÷ 12 au lieu de ÷ 6). Pour les fruits et légumes colorés, l'application affichait deux fois moins de vitamine A.
+- Pour les conserves, le site du magasin calcule parfois le prix au kilo sur le poids total de la boîte. Le prix vient maintenant du poids net égoutté : +32 % pour les sardines à l'huile d'olive.
+- Le rendement de cuisson (rapport cru/cuit) reposait sur le seul rapport des protéines. Il prend maintenant la médiane de quatre rapports, ce qui change le coût et la quantité à acheter de −18 % à +22 % selon le féculent.
+
+Ce qui a été vérifié sans rien trouver : les 108 834 teneurs du fichier embarqué contre la table d'origine, par un second programme indépendant, et la vraisemblance physique des 3 403 aliments (saturés inférieurs aux lipides, sucres inférieurs aux glucides, énergie cohérente).
+
+## Les prix du magasin
+
+Les 2 500 articles sont relevés depuis mon PC, à petit volume : 40 recherches par passage. Si le site affiche une vérification anti-robot, le script s'arrête net : il ne la contourne jamais. Le relevé ne tourne jamais sur le serveur.
+
+Le prix que je paie vraiment remplace toujours le prix relevé. Il vaut pour toute la famille d'achat : le prix du riz cru s'applique au riz cuit du journal, avec son rendement de cuisson.
+
+## Lire une étiquette en photo
+
+Pour créer un aliment, je photographie son tableau nutritionnel. Un service séparé, en Python avec PP-OCR, rend les mots et leur position, et l'application en tire les valeurs. Une valeur que l'étiquette ne confirme pas elle-même est marquée « à vérifier », une case illisible reste vide. Le service tourne dans son propre conteneur, sur un réseau interne sans accès à l'extérieur, et la photo n'est pas conservée.
+
+## Sécurité et déploiement
+
+- Mots de passe hachés en argon2id, au-dessus du minimum de l'OWASP. Le jeton de session n'est stocké que sous forme d'empreinte SHA-256, inutilisable si la base fuit.
+- Toutes les données personnelles portent l'identifiant du compte, et chaque accès à la base le filtre.
+- Les deux conteneurs tournent sans root, en lecture seule, sans capacités Linux, avec une limite de mémoire et de processus.
+- Une version se publie par un tag git. GitHub Actions lance les tests, construit et publie les deux images ARM64, puis Trivy les analyse : une faille critique qui a un correctif arrête le déploiement. Le runner du VPS sauvegarde la base, déploie, et revient à la version précédente si le conteneur ne démarre pas.
+- La base est sauvegardée chaque jour, 30 jours sont gardés.
+
+## Architecture
+
+Un dossier par domaine (comptes, aliments, journal, objectifs, équilibre, prix, dépenses, liste de courses). Chacun sépare les tables, un moteur de calcul en fonctions pures testées, l'accès à la base et ce que l'écran affiche. Les actions du serveur valident chaque entrée avec zod avant d'appeler la base. Les parcours complets sont testés avec Playwright sur le build de production.
+
+## Limites
+
+- Les prix sont ceux d'un seul magasin, relevés par un script que je lance moi-même, à petit volume : ils vieillissent.
+- Pour les conserves en sauce, l'étiquette ne donne pas le poids égoutté : le prix au kilo inclut la sauce.
+- La vitamine B3 n'est pas comparée, sa référence est en équivalents niacine, que Ciqual ne donne pas.
+- Le métabolisme de base reste une estimation : l'erreur type des équations est de 108 à 167 kcal par jour.
+- L'application est faite pour moi. Les comptes se créent en ligne de commande, il n'y a pas d'inscription.

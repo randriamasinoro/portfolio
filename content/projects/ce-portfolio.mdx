@@ -36,6 +36,58 @@ Ce portfolio est à la fois une vitrine pour des recruteurs et un outil personne
 
 Le projet que vous lisez en ce moment est lui-même décrit par un fichier MDX, c'est sa propre démonstration.
 
+<MockupBoard>
+  <MockupPair>
+    <DeviceMockup
+      device="desktop"
+      src="/images/ce-portfolio/accueil-ordinateur.png"
+      width="1440"
+      height="900"
+      alt="Sur ordinateur : l'accueil du portfolio, avec la photo, le titre, les compétences et deux boutons"
+      caption="L'accueil tient en un écran"
+      href="/images/ce-portfolio/accueil-ordinateur.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/ce-portfolio/accueil-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : l'accueil du portfolio"
+      caption="Le même accueil sur téléphone"
+      href="/images/ce-portfolio/accueil-telephone.png"
+    />
+  </MockupPair>
+  <MockupRow>
+    <DeviceMockup
+      device="phone"
+      src="/images/ce-portfolio/projets-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : la page Projets, avec ses onglets de domaine"
+      caption="Projets : onglets et recherche"
+      href="/images/ce-portfolio/projets-telephone.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/ce-portfolio/fiche-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : la fiche d'un projet"
+      caption="Une fiche projet"
+      href="/images/ce-portfolio/fiche-telephone.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/ce-portfolio/a-propos-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : la page À propos"
+      caption="À propos"
+      href="/images/ce-portfolio/a-propos-telephone.png"
+    />
+  </MockupRow>
+</MockupBoard>
+
 ---
 
 ## Objectifs
@@ -129,10 +181,10 @@ En plus des balises `title`/`description`, j'ai ajouté les signaux que Google u
 
 ## Accessibilité & design system
 
-- Dark mode soigné, palette définie par tokens Tailwind (couleur par domaine).
+- Thème sombre par défaut et thème clair, palette définie par tokens Tailwind (une couleur par domaine).
 - `aria-label` sur tous les boutons-icônes, structure de titres cohérente.
-- Typographie : IBM Plex Sans pour le texte, JetBrains Mono pour le code. Depuis la refonte de septembre 2026, le site n'a plus d'animations et tient sur une colonne de lecture.
-- Composants réutilisables : `ProjectCard`, `DomainBadge`, `TechTag`, `Callout`, `CodeBlock`…
+- Typographie : la police de mon CV pour l'interface (une pile de polices système, Helvetica Neue ou Nimbus Sans, rien à télécharger), Source Serif 4 pour les textes longs des fiches, Instrument Serif pour le titre de l'accueil, JetBrains Mono pour le code. Depuis la refonte de septembre 2026, les animations sont en CSS seulement.
+- Composants réutilisables : `ProjectCard`, `DomainBadge`, `Callout`, `CodeBlock`, `DeviceMockup`…
 
 ---
 
@@ -149,7 +201,6 @@ En plus des balises `title`/`description`, j'ai ajouté les signaux que Google u
 - Analytics : intégration d'un compteur de vues par projet (déjà branché sur mon [Umami auto-hébergé](/projects/umami-analytics)).
 - Recherche plein-texte côté client sur les projets.
 - Internationalisation (FR/EN) via les routes App Router.
-- Mode clair complet en complément du dark mode.
 
 ---
 

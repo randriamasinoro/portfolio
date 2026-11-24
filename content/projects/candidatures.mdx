@@ -46,7 +46,49 @@ Pour une cible donnée, je n'écris que ce qui change : le titre, les projets re
 
 ## Ce que fait l'application
 
-Trois écrans, pensés d'abord pour le téléphone : À faire, Suivi, Réglages.
+Quatre écrans, pensés d'abord pour le téléphone : À faire, Offres, Suivi, Réglages.
+
+Les captures sont faites avec des entreprises inventées et une API simulée, comme dans les tests de l'interface : aucune vraie candidature n'y figure.
+
+<MockupBoard>
+  <MockupTrio caption="L'écran À faire à 1440, 820 et 390 px de large">
+    <DeviceMockup
+      device="desktop"
+      src="/images/candidatures/a-faire-ordinateur.png"
+      width="1440"
+      height="900"
+      alt="Sur ordinateur : l'écran À faire, avec une candidature à valider, le mail proposé et ce que l'outil a lu du site de l'entreprise"
+      href="/images/candidatures/a-faire-ordinateur.png"
+    />
+    <DeviceMockup
+      device="tablet"
+      src="/images/candidatures/a-faire-tablette.png"
+      width="820"
+      height="1180"
+      alt="Sur tablette : l'écran À faire, avec une candidature à valider et le mail proposé"
+      href="/images/candidatures/a-faire-tablette.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/candidatures/a-faire-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : l'écran À faire, avec une candidature à valider et le mail proposé"
+      href="/images/candidatures/a-faire-telephone.png"
+    />
+  </MockupTrio>
+  <MockupRow>
+    <DeviceMockup
+      device="phone"
+      src="/images/candidatures/suivi-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : le Suivi, avec l'état et la prochaine action de chaque candidature"
+      caption="Suivi : état et prochaine action"
+      href="/images/candidatures/suivi-telephone.png"
+    />
+  </MockupRow>
+</MockupBoard>
 
 1. Préparation. Pour une candidature spontanée, l'outil lit le site de l'entreprise (accueil, produits, page carrières) et en tire une fiche courte avec l'adresse de chaque page lue. Un modèle de langage rédige la fiche et propose le CV et le mail, toujours à partir du référentiel.
 2. Validation. Je lis la fiche, le mail et le CV. Je peux envoyer, demander une correction ou écarter.

@@ -2,7 +2,7 @@
 id: mon-temps
 label: "Agenda et rappels"
 title: "Mon temps : un agenda qui rassemble mes échéances et me prévient"
-description: Application web qui réunit mes devoirs, mes cours et mes examens au même endroit et m'envoie un rappel sur le téléphone au bon moment. Version 0.1.0, en développement sur mon PC, pas encore en ligne.
+description: Application web qui réunit mes devoirs, mes cours et mes examens au même endroit et m'envoie un rappel sur le téléphone au bon moment. Version 1.0.0, en ligne sur mon VPS depuis le 20 novembre 2026.
 domains:
   - web
 tags:
@@ -21,7 +21,7 @@ resume:
   - label: "Ma solution"
     texte: "Un cœur de calcul testé (répétitions, rappels, heures calmes), des sources lues par leur export de calendrier, des notifications par un serveur ntfy à moi."
   - label: "L'état"
-    texte: "Version 0.1.0 qui tourne en local. La mise en ligne sur mon VPS est l'étape suivante."
+    texte: "Version 1.0.0 en ligne sur mon VPS depuis le 20 novembre 2026, derrière un compte. Les 382 tests unitaires passent."
 featured: false
 ---
 
@@ -35,8 +35,59 @@ C'est le deuxième outil personnel que je construis sur la même base technique 
 
 ## Ce que fait l'application
 
+Les captures viennent d'une base de test, avec l'heure figée au mercredi 11 novembre 2026 à 15 h, les calendriers de test de l'application et quelques échéances fictives.
+
+<MockupBoard>
+  <MockupTrio caption="L'écran À venir à 1440, 820 et 390 px de large">
+    <DeviceMockup
+      device="desktop"
+      src="/images/mon-temps/a-venir-ordinateur.png"
+      width="1440"
+      height="900"
+      alt="Sur ordinateur : l'écran À venir, avec aujourd'hui, demain et cette semaine"
+      href="/images/mon-temps/a-venir-ordinateur.png"
+    />
+    <DeviceMockup
+      device="tablet"
+      src="/images/mon-temps/a-venir-tablette.png"
+      width="820"
+      height="1180"
+      alt="Sur tablette : l'écran À venir, d'aujourd'hui à plus tard"
+      href="/images/mon-temps/a-venir-tablette.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/mon-temps/a-venir-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : l'écran À venir, aujourd'hui et demain"
+      href="/images/mon-temps/a-venir-telephone.png"
+    />
+  </MockupTrio>
+  <MockupRow>
+    <DeviceMockup
+      device="phone"
+      src="/images/mon-temps/semaine-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : la semaine, jour par jour"
+      caption="Semaine : jour par jour"
+      href="/images/mon-temps/semaine-telephone.png"
+    />
+    <DeviceMockup
+      device="phone"
+      src="/images/mon-temps/cours-telephone.png"
+      width="780"
+      height="1688"
+      alt="Sur téléphone : Mes cours, avec les devoirs Moodle à trier"
+      caption="Mes cours : les devoirs Moodle à trier"
+      href="/images/mon-temps/cours-telephone.png"
+    />
+  </MockupRow>
+</MockupBoard>
+
 - Deux natures d'éléments : une échéance (un devoir, un mail à envoyer) a une date limite et peut être cochée, un rendez-vous (un cours, un examen) a un début et une fin.
-- Un écran "À venir" : en retard, aujourd'hui, demain, cette semaine, plus tard. Une vue par semaine sur ordinateur.
+- Un écran "À venir" : en retard, aujourd'hui, demain, cette semaine, plus tard. Une vue par semaine, jour par jour.
 - Des répétitions : chaque jour, certains jours de la semaine, toutes les N semaines, chaque mois.
 - Des listes de vérification réutilisables, par exemple pour un jour d'examen.
 - Des rappels envoyés sur le téléphone, avec un résumé chaque matin.
@@ -88,14 +139,12 @@ Chaque partie qui risque de s'enrichir est derrière une interface. Les canaux d
 
 ## Limites
 
-- L'application n'est pas en ligne. Tout tourne sur mon PC, avec un ntfy local dans Docker.
-- Le dépôt est jeune : version 0.1.0, trois commits. Sur 270 tests unitaires, 5 échouent en ce moment sur une modification en cours.
+- Le dépôt est jeune : version 1.0.0, quinze commits. Les 382 tests unitaires passent (relancés le 24 novembre 2026).
 - Une seule utilisatrice pour l'instant.
 - Un export de calendrier ne dit pas si un devoir est déjà rendu. Je dois le cocher à la main.
 - Je n'ai pas encore la réponse du service informatique sur l'API de Moodle.
 
 ## Perspectives
 
-- Mise en ligne sur mon VPS ARM64 avec le même pipeline que Mon budget : tag Git, tests, image, analyse Trivy, déploiement avec retour à la version précédente en cas d'échec.
 - Brancher l'agenda de mes réunions par son export de calendrier.
 - Tester les notifications sur iPhone et sur Android en conditions réelles.

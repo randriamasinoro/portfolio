@@ -57,7 +57,7 @@ function Section({ title, children, className = "" }: { title: string; children:
 // Ligne "libellé | contenu" des sections de droite.
 function Row({ label, children }: { label: ReactNode; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-y-2 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-5 py-2.5 border-t border-border">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-y-2 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-5 py-2 border-t border-border">
       <div className="pt-1">{label}</div>
       <div className="min-w-0">{children}</div>
     </div>
@@ -72,7 +72,7 @@ export default function AboutPage() {
 
   return (
     <div data-fullscreen className="min-h-full flex flex-col justify-center py-8 lg:py-2">
-      <div className="w-full max-w-[1180px] mx-auto grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-x-16 xl:gap-x-20 lg:items-center">
+      <div className="w-full max-w-[1180px] mx-auto grid gap-12 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-x-10 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:gap-x-20 lg:items-center">
         <div className="min-w-0">
           <div className="flex items-center gap-5">
             {photoSrc && (
@@ -85,7 +85,7 @@ export default function AboutPage() {
                 priority
               />
             )}
-            <h1 className="text-[2.5rem] sm:text-[3rem] leading-tight m-0">À propos</h1>
+            <h1 className="text-[2.5rem] sm:text-[3rem] leading-tight m-0 whitespace-nowrap">À propos</h1>
           </div>
 
           <div className="mt-8 max-w-[34rem] text-[1.1875rem] leading-relaxed text-fg-2 space-y-4">

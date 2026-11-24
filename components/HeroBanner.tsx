@@ -32,7 +32,7 @@ export default function HeroBanner() {
             </span>
           </h1>
 
-          <p className="mt-6 font-ui text-[0.8125rem] sm:text-[0.875rem] uppercase tracking-[0.22em] lg:tracking-[0.14em] xl:tracking-[0.22em] text-fg-muted">
+          <p className="mt-6 font-ui text-[0.8125rem] sm:text-[0.875rem] lg:text-[0.8125rem] xl:text-[0.875rem] uppercase tracking-[0.22em] lg:tracking-[0.06em] xl:tracking-[0.12em] 2xl:tracking-[0.22em] text-fg-muted">
             {/* Le point suit le mot : un retour à la ligne ne commence jamais par un point */}
             {HERO_SKILLS.join(" · ")}
           </p>

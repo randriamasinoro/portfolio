@@ -13,7 +13,7 @@ export function GET() {
       const domains = p.domains
         .map((d) => DOMAIN_CONFIG[d]?.label ?? d)
         .join(", ");
-      return `- [${p.title}](https://sinoro.fr/projects/${p.id}) : ${p.description} (${domains}) — code : ${p.github}`;
+      return `- [${p.title}](https://sinoro.fr/projects/${p.id}) : ${p.description} (${domains})${p.github ? `, code : ${p.github}` : ""}`;
     })
     .join("\n");
 

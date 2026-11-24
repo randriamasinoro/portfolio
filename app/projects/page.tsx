@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     url: "https://sinoro.fr/projects",
     title: "Projets techniques, Sehenonirina Elisa Randriamasinoro",
     description:
-      "Projets en IoT, systèmes embarqués, FPGA, cybersécurité, data et IA, et DevSecOps : Zigbee, CAN, FPGA, Yocto.",
+      "Projets en IoT, systèmes embarqués, FPGA, cybersécurité, data et IA, et DevSecOps : Zigbee, CAN, Trivium, Yocto.",
   },
 };
 import { readProjects } from "@/lib/projects";

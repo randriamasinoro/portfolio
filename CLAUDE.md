@@ -54,7 +54,7 @@ Extensible sans refonte — ajouter une valeur à la liste suffit.
 ## Projets à intégrer
 zigbee-security        → [iot, cybersecurity, embedded]
 rover-stm32            → [embedded]
-classification-graines → [data-science]
+classification-graines → [data-science, embedded]
 devsecops-landing      → [devsecops, cybersecurity]
 can-bus                → [embedded, cybersecurity]
 health-hub             → [embedded]
@@ -73,6 +73,7 @@ mon-budget             → [web, devsecops]
 mon-temps              → [web]
 candidatures           → [web, data-science]
 ce-portfolio           → [web, devsecops]
+kitrana                → [web, devsecops]
 
 ## Design system (dark par défaut, mode clair disponible)
 
@@ -173,6 +174,12 @@ TableOfContents : sommaire de la colonne latérale (lg+)
 CodeBlock     : bloc code sombre arrondi, coloration Shiki au build (rehype-pretty-code,
                 thème github-dark-default), bouton copier en icône
 Callout       : note avec filet gauche à la couleur d'une voie
+DeviceMockup  : cadre CSS ordinateur / tablette / téléphone autour d'une capture. Groupes :
+                MockupTrio (même écran à 1440, 820 et 390 px, tablette et téléphone qui
+                chevauchent l'ordinateur), MockupRow (rangée de téléphones), MockupPair, MockupGrid.
+                Posés directement sur la page (MockupBoard sans planche ni fond de couleur).
+                Captures des applications web : uniquement des données fictives ou de test,
+                jamais un vrai compte (fichiers dans public/images/<id>/<ecran>-<appareil>.png)
 
 ## Conventions code
 - Composants    : PascalCase (ProjectCard.tsx)

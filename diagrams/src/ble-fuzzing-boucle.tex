@@ -1,0 +1,35 @@
+% out: public/images/ble-fuzzing-ia/boucle.svg
+\documentclass[tikz,border=0pt]{standalone}
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[fig]
+
+\tikzset{b/.style={box, minimum width=48mm, minimum height=18mm}}
+\tikzset{t/.style={box, teal, minimum width=52mm, minimum height=14mm}}
+
+% Ligne du haut : l'IA guide, le code fabrique et envoie
+\node[b, grey] (ia) {\textbf{IA au choix}\\\sub{Ollama (local), Gemini, Groq}\\\sub{ou aucune : témoin aléatoire}};
+\node[b, violet, right=22mm of ia] (gen) {\textbf{Générateur}\\\sub{mutations produites}\\\sub{en local, 0 token}};
+\node[b, violet, right=22mm of gen] (inj) {\textbf{Injecteur}\\\sub{écriture GATT (bleak)}\\\sub{ou UART sous QEMU}};
+
+% Cibles
+\node[t, right=26mm of inj, yshift=14mm] (tel) {\textbf{Téléphone Android}\\\sub{serveur GATT nRF Connect}};
+\node[t, below=5mm of tel] (qemu) {\textbf{ESP32 sous QEMU}\\\sub{motif vulnérable, sans radio}};
+\node[t, simulated, below=5mm of qemu] (cam) {\textbf{ESP32-CAM}\\\sub{en pause : alimentation}};
+\node[zone, fit=(tel)(qemu)(cam)] (cibles) {};
+\node[zonetitle] at (cibles.north west) {Cibles};
+
+% Ligne du bas : juger et garder une trace
+\node[b, violet, below=30mm of gen] (orc) {\textbf{Oracle et règles}\\\sub{verdict, bisection du plantage,}\\\sub{balayage de longueur}};
+\node[b, yellow, below=30mm of ia] (log) {\textbf{Journal de campagne}\\\sub{trames, verdicts,}\\\sub{tokens par campagne}};
+
+\draw[arr] (ia) -- node[above, lab]{1 appel} node[below, lab]{par lot} (gen);
+\draw[arr] (gen) -- node[above, lab]{trames} (inj);
+\draw[arr] (inj.east) -- (inj.east -| cibles.west);
+\draw[arr] (cibles.south) |- node[pos=0.75, below, lab]{réponse, déconnexion, console} (orc.east);
+\draw[arr] (orc) -- node[right, lab]{verdict} (gen);
+\draw[arr] (orc.north west) -- node[sloped, below, lab, pos=0.55]{candidats} (ia.south east);
+\draw[arr] (orc) -- (log);
+
+\end{tikzpicture}
+\end{document}

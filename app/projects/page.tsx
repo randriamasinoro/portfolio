@@ -4,14 +4,14 @@ import { Suspense } from "react";
 export const metadata: Metadata = {
   title: "Projets techniques",
   description:
-    "Projets en cybersécurité, systèmes embarqués, data et IA, et DevSecOps : attaques Zigbee, injection de trames CAN, reverse engineering de firmware, Linux embarqué Yocto, pipelines DevSecOps. UBS Lorient.",
+    "Projets en IoT, systèmes embarqués, FPGA, cybersécurité, data et IA, et DevSecOps : attaques Zigbee, injection de trames CAN, chiffrement Trivium sur FPGA, Linux embarqué Yocto, pipelines DevSecOps. UBS Lorient.",
   alternates: { canonical: "/projects" },
   openGraph: {
     type: "website",
     url: "https://sinoro.fr/projects",
     title: "Projets techniques, Sehenonirina Elisa Randriamasinoro",
     description:
-      "Projets en cybersécurité, systèmes embarqués, data et IA, et DevSecOps : Zigbee, CAN, reverse engineering, Yocto.",
+      "Projets en IoT, systèmes embarqués, FPGA, cybersécurité, data et IA, et DevSecOps : Zigbee, CAN, FPGA, Yocto.",
   },
 };
 import { readProjects } from "@/lib/projects";

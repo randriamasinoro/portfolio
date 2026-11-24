@@ -19,13 +19,15 @@ export function readProjects(): Project[] {
       return data as Project;
     })
     .filter((p) => !p.draft)
-    // Par défaut (liste non filtrée) : projets embarqués en tête, puis par année décroissante.
-    .sort((a, b) => {
-      const ea = a.domains.includes("embedded") ? 0 : 1;
-      const eb = b.domains.includes("embedded") ? 0 : 1;
-      if (ea !== eb) return ea - eb;
-      return b.date.localeCompare(a.date);
-    });
+    // Par défaut (onglet "Tous") : IoT en tête, puis embarqué et FPGA/matériel,
+    // puis le reste ; à rang égal, par année décroissante.
+    .sort((a, b) => rank(a) - rank(b) || b.date.localeCompare(a.date));
+}
+
+function rank(p: Project): number {
+  if (p.domains.includes("iot")) return 0;
+  if (p.domains.includes("embedded") || p.domains.includes("hardware")) return 1;
+  return 2;
 }
 
 // Projets partageant au moins un domaine avec le projet courant.

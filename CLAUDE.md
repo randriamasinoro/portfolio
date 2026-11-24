@@ -43,26 +43,30 @@ resume?     : {label,texte}[] -- bloc "L'essentiel" en haut de fiche : 3 lignes
             (perso : problème/solution/résultat ; école : objectif/démarche/acquis)
 
 ## Domaines valides
-"data-science" | "cybersecurity" | "embedded" | "devsecops" | "web"
+"iot" | "embedded" | "hardware" | "cybersecurity" | "data-science" | "devsecops" | "web"
+"iot" = objets connectés (domotique, Zigbee, télémétrie) : en tête de l'onglet "Tous".
+"hardware" = onglet "FPGA et matériel" : conception FPGA/VHDL et sécurité matérielle (TPM, TrustZone).
 "web" = applications web personnelles (outils que j'utilise) : onglet à part, pour ne pas les mélanger
-avec la cybersécurité et l'embarqué, qui restent en tête de liste.
+avec l'IoT, l'embarqué et la cybersécurité, qui restent en tête de liste.
+Dans un MDX, le premier domaine donne la couleur du halo de la couverture.
 Extensible sans refonte — ajouter une valeur à la liste suffit.
 
 ## Projets à intégrer
-zigbee-security        → [cybersecurity, embedded]
+zigbee-security        → [iot, cybersecurity, embedded]
 rover-stm32            → [embedded]
 classification-graines → [data-science]
 devsecops-landing      → [devsecops, cybersecurity]
 can-bus                → [embedded, cybersecurity]
 health-hub             → [embedded]
-yocto-home-automation  → [embedded]
-vhdl-fpga              → [embedded]
+yocto-home-automation  → [iot, embedded]
+vhdl-fpga              → [hardware, embedded]
 forensique-usb         → [cybersecurity]
 reverse-engineering    → [cybersecurity]
-trivium-fpga           → [embedded, cybersecurity]
-hardware-security      → [cybersecurity, embedded]
-durcissement-box-domotique → [cybersecurity, embedded]
-csaw-2026              → [cybersecurity, embedded]
+trivium-fpga           → [hardware, embedded, cybersecurity]
+hardware-security      → [hardware, cybersecurity, embedded]
+durcissement-box-domotique → [iot, cybersecurity, embedded]
+csaw-2026              → [iot, cybersecurity, embedded]
+driveinsight           → [iot, embedded]
 openmp-parallele       → [embedded]
 mon-budget             → [web, devsecops]
 mon-temps              → [web]
@@ -85,7 +89,8 @@ accent-deep #4A1F6E (bloc derrière la photo), watermark #211A27 (mot en filigra
 
 ### Domaines (types/project.ts, DOMAIN_CONFIG : trace + ink)
 cybersecurity rouge --ch1, embedded turquoise --ch2, data ambre --ch3, devsecops bleu --ch4,
-web vert --ch5
+web vert --ch5, iot orange --ch6, hardware rose --ch7 (encres AA vérifiées en clair et en sombre).
+L'ordre des clés de DOMAIN_CONFIG = l'ordre des onglets (IoT, embarqué, FPGA et matériel, cyber...).
 Utilisés pour l'étiquette des cards et le halo de la couverture.
 
 ### Typographie
@@ -113,7 +118,8 @@ Code : JetBrains Mono
     L'image de partage app/opengraph-image.tsx reprend la même composition
   - Projets : titre avec halos flous, onglets de domaine (Tous / ...), recherche,
     grille de cards 3 colonnes (4 en 2xl), halos flous sur toute la largeur de l'écran
-  - Tri par défaut de la liste (lib/projects.ts) : projets embarqués en tête, puis année desc
+  - Tri par défaut de la liste (lib/projects.ts) : IoT en tête, puis embarqué et FPGA/matériel,
+    puis le reste ; à rang égal, année desc
   - Card : couverture typographique (frontmatter `label`, sinon tags[0]) sur fond
     sombre avec halo du domaine ; `cover` seulement pour une vraie belle photo
   - Fiche projet : colonne gauche sticky (fiche + sommaire) ; titre, description et texte
@@ -323,7 +329,8 @@ Validation :
 
 ### Ajout d'un nouveau domaine
 1. Ajouter la valeur dans types/ + CLAUDE.md
-2. Définir sa couleur dans tailwind.config.ts
+2. Définir sa couleur dans app/globals.css (--chN et --chN-ink, clair et sombre) et
+   l'ajouter à DOMAIN_CONFIG (types/project.ts)
 3. Aucune autre modification nécessaire
 
 ### Ajout d'une nouvelle page

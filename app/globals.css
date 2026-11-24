@@ -37,6 +37,8 @@
   --ch3: #F2B33D;  --ch3-ink: #8A6100;   /* data */
   --ch4: #5B8CFF;  --ch4-ink: #2F5BD6;   /* devsecops */
   --ch5: #6FCF6A;  --ch5-ink: #2F7A2B;   /* applications web */
+  --ch6: #FF8A3D;  --ch6-ink: #B04A0E;   /* IoT */
+  --ch7: #EC5FC0;  --ch7-ink: #B0237F;   /* FPGA et matériel */
 
   --selection-bg:  rgba(138, 31, 230, 0.22);
 
@@ -73,6 +75,8 @@
   --ch3-ink: #F5C566;
   --ch4-ink: #8DAEFF;
   --ch5-ink: #9BE096;
+  --ch6-ink: #FFA766;
+  --ch7-ink: #F38BD4;
 
   --selection-bg:  rgba(164, 59, 255, 0.35);
 
